@@ -141,6 +141,9 @@ h1{font-family:'Special Elite',monospace;font-size:22px;margin:0 0 2px}
 .sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--niebla);margin-bottom:12px}
 .b{font-family:'Special Elite',monospace;font-size:12px;padding:8px 12px;border-radius:7px;
    border:1px solid var(--musgo);background:var(--asfalto);color:var(--tiza);cursor:pointer}
+/* el «empezar de cero», una vez armado: óxido, que aquí es el color de los
+   sellos y de lo que no tiene vuelta atrás */
+.b.armado{border-color:var(--oxido);color:var(--oxido)}
 .b.ok{background:var(--aceituna);color:#0D110F;border-color:var(--aceituna)}
 .b[aria-pressed="true"]{background:var(--aceituna);color:#0D110F;border-color:var(--aceituna)}
 .b:disabled{opacity:.45;cursor:default}
@@ -1224,6 +1227,7 @@ html[lang^="ca"] .dique::after{content:'DIC'}
   <button class="b" id="sonido">Sonido: sí</button>
   <button class="b" id="verActa">El acta</button>
   <button class="b modo">Modo papel</button>
+  <button class="b" id="cero" hidden>Empezar de cero</button>
   </div>
 </div>
 
@@ -1869,10 +1873,36 @@ const CASOS = {
    porque es la que decide si el botón de la carpeta abre o no, y el día que
    se añada un caso nuevo al plano hará falta otra vez. */
 const MONTADOS = new Set([1, 2, 3, 4, 5, 6, 7, 8]);
-/* Los casos resueltos viven en la sesión: no se guarda nada en el aparato.
-   En clase, cada uno abre la ciudad y la recorre; el acta la lleva el papel. */
+/* Los casos resueltos se guardan en el propio aparato —sin servidor y sin
+   cuentas—, porque ocho expedientes no caben en una sesión y una tablet que
+   se bloquea los borraba todos. El acta la sigue llevando el papel; esto es
+   solo para poder volver mañana. Caduca a las cuatro horas: en un ordenador
+   compartido, el grupo siguiente empieza su propia ciudad. */
 const resueltos = new Set();
 let abierto = 1;
+
+let EXPS = null;                  // los ocho expedientes, cuando estén montados
+const GUARDADO = 'np.turno.v1';
+const CADUCA = 4*60*60*1000;
+
+function guardaTurno(){
+  try{
+    localStorage.setItem(GUARDADO, JSON.stringify({
+      v:1, ts:Date.now(), resueltos:[...resueltos], abierto:abierto,
+      casos: EXPS ? Object.fromEntries(Object.entries(EXPS).map(([k, c]) => [k, c.guarda()])) : {},
+      idioma:idioma, sonido:Ruido.on, modo:document.body.dataset.modo
+    }));
+  }catch(e){ /* sin almacén disponible: se sigue igual, sin guardar */ }
+}
+function leeTurno(){
+  try{
+    const d = JSON.parse(localStorage.getItem(GUARDADO) || 'null');
+    if(!d || d.v !== 1 || !Array.isArray(d.resueltos)) return null;
+    if(Date.now() - d.ts > CADUCA){ borraTurno(); return null; }
+    return d;
+  }catch(e){ return null; }
+}
+function borraTurno(){ try{ localStorage.removeItem(GUARDADO); }catch(e){} }
 
 /* Las caras, clonadas de sus plantillas: cada carpeta pide la suya. */
 document.querySelectorAll('.cara-caja[data-cara]').forEach(c =>
@@ -2244,11 +2274,25 @@ function montaExpediente(cfg){
     if(bien){
       hechos.add(enc);
       if(enc === cfg.encargos.length - 1){ resueltos.add(cfg.caso); pintaMapa(); }
+      guardaTurno();
       pintaEncargo();
       inf.hidden = false;                      // pintaEncargo ya lo deja puesto
     }
   });
-  return { abre(){ enc = 0; pintaEncargo(); }, repinta(){ vistos.add(enc); pintaEncargo(); } };
+  /* GUARDA y CARGA. Lo que el expediente sabe de sí mismo: qué encargos ha
+     resuelto y cuáles ya se han visto escribir —al volver, el texto está
+     puesto y no se teclea otra vez—. El encargo abierto no se guarda porque
+     abre() siempre entra por el primero, que es como funcionaba ya. */
+  return {
+    abre(){ enc = 0; pintaEncargo(); },
+    repinta(){ vistos.add(enc); pintaEncargo(); },
+    guarda(){ return {h:[...hechos], v:[...vistos]}; },
+    carga(d){
+      if(!d) return;
+      (d.h || []).forEach(i => { if(i >= 0 && i < cfg.encargos.length) hechos.add(i); });
+      (d.v || []).forEach(i => { if(i >= 0 && i < cfg.encargos.length) vistos.add(i); });
+    }
+  };
 }
 
 /* ═══ EL CASO 1 · LA CINTA ══════════════════════════════════════════ */
@@ -3061,7 +3105,7 @@ const Ruido = (() => {
   const b = document.getElementById('sonido');
   const pinta = () => { b.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
                         b.setAttribute('aria-pressed', String(Ruido.on)); };
-  b.addEventListener('click', () => { Ruido.on = !Ruido.on; Ruido.despierta(); pinta(); });
+  b.addEventListener('click', () => { Ruido.on = !Ruido.on; Ruido.despierta(); pinta(); guardaTurno(); });
   pinta();
   /* el primer toque de cualquier cosa despierta el audio */
   document.addEventListener('pointerdown', () => Ruido.despierta(), {once:true});
@@ -3093,6 +3137,7 @@ document.querySelectorAll('.chincheta').forEach(b => b.addEventListener('click',
   caja.classList.add('abierto');
   Ruido.chincheta();
   if(!quieto()) setTimeout(Ruido.sello, 430);
+  guardaTurno();
 }));
 document.getElementById('cCerrar').addEventListener('click', () => caja.classList.remove('abierto'));
 document.getElementById('cAbrir').addEventListener('click', () => {
@@ -3108,6 +3153,7 @@ document.querySelectorAll('.volver').forEach(b =>
 document.querySelectorAll('.b.modo').forEach(b => b.addEventListener('click', () => {
   const cuerpo = document.body, papel = cuerpo.dataset.modo === 'papel';
   cuerpo.dataset.modo = papel ? 'pantalla' : 'papel';
+  guardaTurno();
   document.querySelectorAll('.b.modo').forEach(o =>
     o.textContent = T(papel ? 'Modo papel' : 'Modo pantalla'));
   /* el coche del plano anda con SMIL, que no hace caso al CSS: se le para a mano */
@@ -3132,19 +3178,73 @@ document.getElementById('lengua').addEventListener('click', () => {
     o.textContent = T(document.body.dataset.modo === 'papel' ? 'Modo pantalla' : 'Modo papel'));
   const so = document.getElementById('sonido');
   so.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
-  pintaMapa(); pintaActa();
+  pintaMapa(); pintaActa(); pintaCero(); guardaTurno();
   if(document.getElementById('caso').classList.contains('abierto'))
     document.querySelector('.chincheta[data-c="' + abierto + '"]').click();
 });
 
+/* ── EMPEZAR DE CERO. Vive en la barra del plano, que es el vestíbulo de la
+      ciudad, y solo asoma cuando hay algo que borrar. Borra a la SEGUNDA
+      pulsación —el gesto de la terminal—, y se desarma solo a los cinco
+      segundos: son ocho expedientes, no se tiran de un dedazo. ── */
+let pintaCero = () => {};
+{
+  const ce = document.getElementById('cero');
+  let armado = false, reloj = 0;
+  const desarma = () => { armado = false; clearTimeout(reloj);
+                          ce.classList.remove('armado'); pintaCero(); };
+  pintaCero = () => {
+    ce.hidden = resueltos.size === 0 && !armado;
+    ce.textContent = T(armado ? 'Pulsa otra vez para borrarlo' : 'Empezar de cero');
+  };
+  ce.addEventListener('click', () => {
+    if(!armado){
+      armado = true; ce.classList.add('armado'); pintaCero();
+      clearTimeout(reloj); reloj = setTimeout(desarma, 5000);
+      return;
+    }
+    /* se recarga, como en la terminal: la ciudad queda igual que recién
+       abierta y no a medio camino, con medio expediente en memoria. */
+    desarma(); borraTurno(); location.reload();
+  });
+}
+
+/* ── LA APERTURA. Si el aparato guarda un turno de hace menos de cuatro
+      horas, la ciudad se abre con sus casos cerrados, su hilo rojo tendido
+      y sus ajustes puestos. Se entra por el PLANO, que es donde se entra
+      siempre: los expedientes se abren desde su chincheta. ── */
+EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
+{
+  const d = leeTurno();
+  if(d){
+    d.resueltos.forEach(c => { if(ORDEN.includes(c)) resueltos.add(c); });
+    if(ORDEN.includes(d.abierto)) abierto = d.abierto;
+    if(d.casos) Object.entries(d.casos).forEach(([k, v]) => EXPS[k] && EXPS[k].carga(v));
+    if(d.sonido === false) Ruido.on = false;
+    if(d.modo === 'papel'){
+      document.body.dataset.modo = 'papel';
+      document.querySelectorAll('.b.modo').forEach(o => o.textContent = 'Modo pantalla');
+    }
+    if(d.idioma === 'va'){
+      idioma = 'va';
+      const b = document.getElementById('lengua');
+      b.textContent = 'Castellano'; b.lang = 'es';
+    }
+  }
+  const so = document.getElementById('sonido');
+  so.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
+  so.setAttribute('aria-pressed', String(Ruido.on));
+}
+
 traduce();
 [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
-pintaMapa();
+[caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
+pintaMapa(); pintaCero();
 
 /* ═══ EL DICCIONARI. Cada frase del guió, en valencià, amb la seua
    castellana per clau. Es genera a part (extrae.js + va.txt) i s'enganxa
    ací: si es toca una frase en castellà, cal tocar la seua clau. ═══ */
-Object.assign(VA, {"Modo papel": "Mode paper", "Modo pantalla": "Mode pantalla", "Repasar el caso": "Repassar el cas", " cifra.": " xifra.", " cifras.": " xifres."});
+Object.assign(VA, {"Empezar de cero": "Començar de zero", "Pulsa otra vez para borrarlo": "Prem una altra vegada per a esborrar-ho", "Modo papel": "Mode paper", "Modo pantalla": "Mode pantalla", "Repasar el caso": "Repassar el cas", " cifra.": " xifra.", " cifras.": " xifres."});
 Object.assign(VA, {
 "Liz ya ha marcado en verde dónde apareció el reloj: <b>tres cuartos</b> de paso desde la esquina. El sospechoso jura que él no pasó de <b>cinco cuartos</b>. Corta el paso como haga falta y ponme ahí su marca.": "Liz ja ha marcat en verd on va aparéixer el rellotge: <b>tres quarts</b> de pas des del cantó. El sospitós jura que ell no va passar de <b>cinc quarts</b>. Talla el pas com faça falta i posa'm ací la seua marca.",
 "Ahí lo tiene. Y fíjese: cinco cuartos es más de un paso entero, porque con cuatro cuartos ya se hace la unidad y sobra uno. Por eso su marca ha pasado de la primera farola.": "Ací el té. I fixe's: cinc quarts és més d'un pas sencer, perquè amb quatre quarts ja es fa la unitat i en sobra un. Per això la seua marca ha passat del primer fanal.",
