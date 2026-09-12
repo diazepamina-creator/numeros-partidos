@@ -688,6 +688,16 @@ html[lang^="ca"] .dique::after{content:'DIC'}
   .hilo path{stroke-dashoffset:0}.hilo circle.tendido{opacity:1;r:4}
   .cara .fogonazo,#flash{display:none}
 }
+
+/* ── EL MODO AULA ───────────────────────────────────────────────────────
+   Para la pizarra digital. Todo un tercio más grande, que es lo que se nota
+   desde el fondo de la clase. El zoom escala a la vez letra, botones y
+   dibujos, así que no hay que tocar ni un tamaño suelto.                  */
+@media (min-width:900px){
+  body[data-aula="si"] .marco{zoom:1.32;max-width:1300px}
+}
+.aulaRejilla,.colIzq,.colDer{display:contents}
+#bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}
 </style></head>
 <body data-modo="pantalla">
 <div id="flash"></div>
@@ -3672,5 +3682,46 @@ Object.assign(VA, {
 "<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: el negocio cuadra. Pero en su libro hay una columna en rojo con lo que la gente le debe, y el coche del sospechoso ha aparecido esta mañana en el desguace, con la cuenta pendiente.": "<b>Cas tancat.</b> La banca paga una vegada i mitja i es queda un quint: el negoci quadra. Però en el seu llibre hi ha una columna en roig amb el que la gent li deu, i el cotxe del sospitós ha aparegut este matí en el desballestament, amb el compte pendent.",
 "<b>Ciudad cerrada.</b> Ocho expedientes y una sola cinta, que ahora llega hasta donde llegan las deudas. Cada número de esta semana ha sido un punto de una calle: con su sitio, con su nombre, con su espejo al otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre la relojería.": "<b>Ciutat tancada.</b> Huit expedients i una sola cinta, que ara arriba fins on arriben els deutes. Cada número d'esta setmana ha sigut un punt d'un carrer: amb el seu lloc, amb el seu nom, amb el seu espill a l'altre costat del zero. Guarda la cinta, Liz. Demà torna a clarejar sobre la rellotgeria."
 });
+
+/* ── EL MODO AULA ───────────────────────────────────────────────────────
+   Se guarda en su propia llave del almacén, aparte del turno, para no tocar
+   el guardado de la app. La rejilla —cuando la hay— se monta envolviendo lo
+   que ya existe; fuera del modo aula los envoltorios son display:contents y
+   la página se lee en fila, como siempre.                                 */
+(function(){
+  const LLAVE = 'aula.v1';
+  const el = s => document.querySelector(s);
+  const IZQ = [], DER = [];
+  if(IZQ.length && DER.length){
+    const primero = el(IZQ[0]);
+    if(primero){
+      const rej = document.createElement('div'); rej.className = 'aulaRejilla';
+      const izq = document.createElement('div'); izq.className = 'colIzq';
+      const der = document.createElement('div'); der.className = 'colDer';
+      primero.parentNode.insertBefore(rej, primero);
+      rej.appendChild(izq); rej.appendChild(der);
+      IZQ.forEach(s => { const e = el(s); if(e) izq.appendChild(e); });
+      DER.forEach(s => { const e = el(s); if(e) der.appendChild(e); });
+    }
+  }
+  const b = document.createElement('button');
+  b.id = 'bAula'; b.type = 'button'; b.className = 'b'; b.setAttribute('aria-pressed', 'false');
+  const donde = el('.barra');
+  if(donde) donde.appendChild(b);
+  const pinta = () => {
+    const si = document.documentElement.dataset.aula === 'si';
+    document.body.dataset.aula = si ? 'si' : 'no';
+    b.setAttribute('aria-pressed', String(si));
+    b.textContent = si ? 'Salir del aula' : 'Aula';
+  };
+  b.addEventListener('click', () => {
+    const si = document.documentElement.dataset.aula !== 'si';
+    document.documentElement.dataset.aula = si ? 'si' : 'no';
+    try{ localStorage.setItem(LLAVE, si ? 'si' : 'no'); }catch(e){}
+    pinta();
+  });
+  try{ document.documentElement.dataset.aula = localStorage.getItem(LLAVE) === 'si' ? 'si' : 'no'; }catch(e){}
+  pinta();
+})();
 </script>
 </body></html>
