@@ -1,7 +1,7 @@
 # Licencia
 
 **LOS NÚMEROS PARTIDOS · la ciudad**
-Manipulativo de números racionales para 2.º de ESO
+Manipulativo de números racionales para 1.º y 2.º de ESO
 
 © 2026 Andrés Asensio
 
@@ -36,7 +36,7 @@ permitido por la licencia.
 ## Cómo citar
 
 > Asensio, A. (2026). *Los números partidos · la ciudad: manipulativo de
-> números racionales para 2.º de ESO* [Aplicación web]. CC BY-NC-SA 4.0.
+> números racionales para 1.º y 2.º de ESO* [Aplicación web]. CC BY-NC-SA 4.0.
 
 ## Tipografías
 
