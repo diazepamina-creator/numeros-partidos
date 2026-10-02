@@ -273,6 +273,10 @@ function montaCinta(cfg){
   for(const id of Object.keys(st.marcas))
     if(id !== cfg.activa) document.getElementById(id).classList.add('prueba');
 
+  /* mover la marca o cortar otra vez esconde el veredicto hasta que se
+     vuelva a comprobar (si el encargo ya está resuelto, se deja a la vista) */
+  const V = esc.closest('.vista');
+  const escondeVeredicto = () => { if(V && V.dataset.hecho !== 'si') V.classList.remove('visto'); };
   let cogida = false;
   function alPunto(ev){
     const r = tira.getBoundingClientRect();
@@ -281,6 +285,7 @@ function montaCinta(cfg){
     m.v = st.desde + Math.round(x / r.width * st.pasos * st.cortes) / st.cortes;
     m.medido = st.texto(m.v);   // el nombre de pila: con el corte con que se puso
     document.getElementById(cfg.activa).classList.add('arrastrando');
+    escondeVeredicto();
     pinta();
   }
   esc.addEventListener('pointerdown', ev => {
@@ -296,6 +301,7 @@ function montaCinta(cfg){
   /* los botones de corte del caso: cada vista lleva los suyos */
   document.querySelectorAll(cfg.botones).forEach(b => b.addEventListener('click', () => {
     st.cortes = +b.dataset.b;   // el punto no se toca: solo cambia su nombre
+    escondeVeredicto();
     document.querySelectorAll(cfg.botones).forEach(o =>
       o.setAttribute('aria-pressed', String(+o.dataset.b === st.cortes)));
     pintaTira(); pinta();
@@ -377,6 +383,10 @@ function montaExpediente(cfg){
   }
   function pintaEncargo(){
     const ultimo = enc === cfg.encargos.length - 1, hecho = hechos.has(enc);
+    /* el veredicto de la cinta solo se ve después de comprobar (o con el
+       encargo ya resuelto); el sumario se pliega cuando ya se ha leído */
+    R.classList.toggle('visto', hecho); R.dataset.hecho = hecho ? 'si' : 'no';
+    const sum = q('.sumario'); if(sum) sum.classList.toggle('plegado', enc > 0 || hechos.size > 0);
     elegida = hecho && cfg.encargos[enc].ops
             ? cfg.encargos[enc].ops.findIndex(o => o.ok) : null;
     pintaOpciones();
@@ -431,6 +441,7 @@ function montaExpediente(cfg){
       dice = T(bien ? e.bien : (typeof e.mal === 'function' ? e.mal() : e.mal));
     }
     inf.hidden = false;
+    R.classList.add('visto');
     /* Liz entra con la cámara y Jeff reacciona: las clases se quitan y se
        vuelven a poner en el fotograma siguiente, que si no el navegador no
        relanza la animación */

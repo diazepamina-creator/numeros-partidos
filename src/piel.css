@@ -177,3 +177,20 @@ footer a{color:inherit}
 .guia-pie button.b{min-height:36px;padding:5px 12px}
 [data-quieto="si"] .guia-foco,[data-quieto="si"] .guia-globo{transition:none}
 @media print{ .guia,.modal{display:none} }
+
+/* ── LOS CASOS, MÁS COMPACTOS: el título junto al botón de volver y el
+   sumario plegado cuando ya se ha leído; así la cinta cabe en la pantalla ── */
+.cabezaCaso{align-items:center}
+.cabezaCaso h1{font-size:19px;margin:0}
+.cabezaCaso .sub{margin:0}
+.sumario.plegado{max-height:3.2em;overflow:hidden;cursor:pointer;position:relative}
+.sumario.plegado::after{content:'▾';position:absolute;right:10px;bottom:4px;color:var(--tenue)}
+.sumario.plegado.desplegado{max-height:none}
+.sumario.plegado.desplegado::after{content:'▴'}
+.op{font-family:var(--letra);background:var(--noche);color:var(--tinta);border-color:var(--linea)}
+/* EL VEREDICTO, SOLO DESPUÉS DE COMPROBAR (en las celdas, no: allí el
+   veredicto es la propia cuenta) */
+.vista[id^="vCaso"]:not(#vCaso3):not(.visto) .veredicto{visibility:hidden}
+/* en Practicar, tampoco el nombre de la marca roja ni la lectura */
+#vPractica:not(.visto) #pMarca .val,#vPractica:not(.visto) #prLec{visibility:hidden}
+#vPractica #prMesa[hidden]{display:none}
