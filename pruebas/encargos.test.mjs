@@ -73,6 +73,12 @@ test('los códigos del README se pueden abrir', () => {
   const enl = [...md.matchAll(/j=practicar&m=(\w+)&c=([-\d/_()srmd]+)/g)];
   assert.ok(enl.length >= 9, 'el README trae los enlaces');
   for(const [, m, c] of enl){ assert.ok(PR.TIPOS[m], m); assert.equal(PR.deEnlace(m, c).c, c, m + ' ' + c); }
+  /* los de las fichas de 1.º valen también en la ruta de 1.º */
+  const uno = [...md.matchAll(/j=practicar&m=(\w+)&c=([-\d/_()srmd]+)(?:&papel)?&ruta=1eso/g)];
+  assert.ok(uno.length >= 15, 'la tabla de 1.º');
+  PR.ponRuta('1eso');
+  try{ for(const [, m, c] of uno){ const e = PR.deEnlace(m, c); assert.equal(e.c, c, '1.º: ' + m + ' ' + c); resoluble(e); } }
+  finally{ PR.ponRuta(''); }
 });
 
 test('las fracciones se escriben simplificadas y con su signo', () => {
@@ -135,4 +141,18 @@ test('sin cinta, ningún encargo pide marcas', () => {
     const e = PR.genera(pes, null, true);
     assert.doesNotMatch(e.t, /[Pp]onme|[Pp]on su marca|[Pp]on la pieza/, e.tipo + ': ' + e.t);
   }
+});
+
+test('la ruta de 1.º: sin periódicos ni negativos', () => {
+  PR.ponRuta('1eso');
+  try{
+    assert.deepEqual(PR.deLaPestana('partir'), ['repartir']);
+    for(let i = 0; i < 300; i++){
+      const e = PR.genera('juntar', 'restar');
+      assert.ok(e.desde === 0 && e.meta > 0 && e.prueba.v > 0, e.t);
+      resoluble(e);
+      for(const pes of ['cinta', 'partir', 'juntar', 'partes']){ const x = PR.genera(pes); assert.notEqual(x.tipo, 'decimal'); resoluble(x); }
+    }
+  }finally{ PR.ponRuta(''); }
+  assert.ok(PR.deLaPestana('partir').includes('decimal'), 'sin la ruta, vuelven');
 });

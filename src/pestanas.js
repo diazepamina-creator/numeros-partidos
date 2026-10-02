@@ -18,6 +18,8 @@ const PESTANAS = {
   partes: {casos: [6, 7, 9]}
 };
 const GRAPADORA = 'https://diazepamina-creator.github.io/grapadora-de-nick/';
+/* en la ruta de 1.º, cada pestaña lleva solo sus casos de 1.º */
+for(const k in PESTANAS) PESTANAS[k].casos = PESTANAS[k].casos.filter(c => ORDEN.includes(c));
 let pestana = 'cinta';
 try{ const p = localStorage.getItem('ciudad.pestana'); if(PESTANAS[p]) pestana = p; }catch(err){}
 
@@ -49,6 +51,10 @@ function pintaRuta(){
       + '<span><b>' + T('La pizzería de Nick') + '</b></span><small>' + T(hecha ? 'cumplida' : 'equivalentes, en La grapadora') + '</small></a>';
   }
   r.innerHTML = h;
+  /* en la cabecera, que se vea en qué ruta se está */
+  let rc = document.getElementById('rutaCab');
+  if(RUTA && !rc){ rc = document.createElement('div'); rc.id = 'rutaCab'; rc.className = 'sub rutaCab'; document.querySelector('.cab .sub').after(rc); }
+  if(rc) rc.textContent = T('Ruta de 1.º ESO');
 }
 document.getElementById('rutaPes').addEventListener('click', ev => {
   const b = ev.target.closest('button[data-c]');
@@ -114,6 +120,6 @@ try{
   const q = new URLSearchParams(location.search);
   if(q.get('j')){ vieneDeEnlace = true; if(PESTANAS[q.get('j')]) pestana = q.get('j');
     if(q.get('j') === 'practicar') enlacePr = {m: q.get('m'), c: q.get('c'), papel: q.has('papel')};
-    history.replaceState(null, '', location.pathname); }
+    history.replaceState(null, '', location.pathname + (RUTA ? '?ruta=' + RUTA : '')); }
 }catch(err){}
 pintaRuta();

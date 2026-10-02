@@ -95,8 +95,15 @@ const quieto = () => document.body.dataset.quieto === 'si'
    plano; el hilo, en el viewBox de 900×620, así que se convierte. Un hilo
    tirante queda muerto: cada tramo se comba un poco hacia abajo, que es lo
    que hace un hilo que cuelga entre dos chinchetas. ── */
+/* LA RUTA DE 1.º: con ?ruta=1eso se ve solo lo de 1.º, en orden. Quedan
+   fuera el caso 3 (decimales periódicos) y el 8 (la deuda: los negativos),
+   y en Practicar, sus tipos. Sin el parámetro, la ciudad entera, para 2.º. */
+const RUTA = (() => { try{ return new URLSearchParams(location.search).get('ruta') === '1eso' ? '1eso' : ''; }catch(err){ return ''; } })();
+const FUERA_1ESO = [3, 8];
 /* el orden de la historia: la sastrería (9) va entre el casino y el desguace */
-const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8];
+const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8].filter(c => !(RUTA === '1eso' && FUERA_1ESO.includes(c)));
+/* los casos cerrados de la ruta (los de fuera, si se cerraron otro día, no cuentan) */
+const cerrados = () => ORDEN.filter(c => resueltos.has(c)).length;
 const hilosTendidos = new Set();
 function pos(c){
   const st = document.querySelector('.chincheta[data-c="' + c + '"]').style;
@@ -122,18 +129,19 @@ function pintaHilo(){
 }
 function pintaMapa(){
   document.querySelectorAll('.chincheta').forEach(b => {
+    b.style.display = ORDEN.includes(+b.dataset.c) ? '' : 'none';
     b.classList.toggle('resuelto', resueltos.has(+b.dataset.c));
     const n = b.querySelector('.num');
     if(resueltos.has(+b.dataset.c) && !n.querySelector('span'))
       n.innerHTML = '<span>' + b.dataset.c + '</span>';
   });
   document.getElementById('cuenta').textContent =
-    resueltos.size === ORDEN.length ? T('ciudad cerrada')
-    : resueltos.size ? resueltos.size + T(' de 9 cerrados') : T('nueve casos abiertos');
+    cerrados() === ORDEN.length ? T('ciudad cerrada')
+    : cerrados() ? cerrados() + T(' de ') + ORDEN.length + T(' cerrados') : T(ORDEN.length === 9 ? 'nueve casos abiertos' : 'siete casos abiertos');
   pintaHilo();
   /* los siete cerrados: el sello gordo cae sobre el plano, una sola vez */
   const mapa = document.getElementById('mapa');
-  if(resueltos.size === ORDEN.length && !mapa.querySelector('.sellazo')){
+  if(cerrados() === ORDEN.length && !mapa.querySelector('.sellazo')){
     const z = document.createElement('div');
     z.className = 'sellazo golpea'; z.textContent = T('CIUDAD CERRADA');
     mapa.appendChild(z);
