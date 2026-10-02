@@ -156,3 +156,83 @@ test('la ruta de 1.º: sin periódicos ni negativos', () => {
   }finally{ PR.ponRuta(''); }
   assert.ok(PR.deLaPestana('partir').includes('decimal'), 'sin la ruta, vuelven');
 });
+
+/* ── 0.15: la cuenta se comprueba por sus números y su operación, no solo
+   por lo que da ── */
+const sinCinta = (m, c) => PR.aPapel(PR.deEnlace(m, c));
+const k = (e, cu, re) => PR.revisa(e.papel, cu, re).k;
+
+test('restar sin cinta: otros números que dan lo mismo no valen', () => {
+  const e = sinCinta('restar', '5/6_1/3');
+  assert.equal(k(e, '5/6 − 1/3', '1/2'), 'bien');
+  assert.equal(k(e, '1 − 1/2', '1/2'), 'otrosnum', 'da 1/2, pero no son los números del encargo');
+  assert.equal(k(e, '1/4 + 1/4', '1/2'), 'otrosnum');
+  assert.match(PR.revisa(e.papel, '1 − 1/2', '1/2').r, /qué tenía y qué pagó/);
+});
+
+test('restar sin cinta: el orden de la resta al revés no vale', () => {
+  const e = sinCinta('restar', '5/6_1/3');
+  assert.notEqual(k(e, '1/3 − 5/6', '1/2'), 'bien');
+  assert.notEqual(k(e, '1/3 − 5/6', '-1/2'), 'bien');
+});
+
+test('restar sin cinta: los equivalentes sí valen, sin simplificar', () => {
+  const e = sinCinta('restar', '5/6_1/3');
+  for(const cu of ['10/12 − 2/6', '5/6 − 2/6', '10/12 - 4/12', '(5/6) − (1/3)']) assert.equal(k(e, cu, '1/2'), 'bien', cu);
+  assert.equal(k(e, '5/6 − 2/6', '3/6'), 'bien', 'el resultado, sin simplificar');
+});
+
+test('lo de siempre se sigue aceptando: ·, *, x, :, 0,5 y 12.000', () => {
+  const p = sinCinta('partes', '2/3_1/2');
+  for(const cu of ['1/2 · 2/3', '1/2 * 2/3', '1/2 x 2/3', '2/3 · 1/2', '0,5 · 2/3', '2/3 : 2']) assert.equal(k(p, cu, '2/6'), 'bien', cu);
+  const s = sinCinta('sumar', '1/4_7/8');
+  assert.equal(k(s, '7/8 + 1/4', '9/8'), 'bien', 'sumar no tiene orden');
+  assert.equal(k(s, '2/8 + 7/8', '9/8'), 'bien');
+  assert.equal(k(s, '1 + 1/8', '9/8'), 'otrosnum');
+  const r = sinCinta('repartir', '10_3');
+  assert.equal(k(r, '10 : 3', '10/3'), 'bien');
+  assert.equal(k(r, '3 + 1/3', '10/3'), 'otrosnum');
+  const c = sinCinta('cantidad', '12000_3/4');
+  for(const cu of ['3/4 · 12000', '12.000 · 3/4', '12000 : 4 · 3', '12 000 · 3 : 4']) assert.equal(k(c, cu, '9.000'), 'bien', cu);
+  assert.equal(k(c, '4500 · 2', '9000'), 'otrosnum');
+});
+
+test('dividir sin cinta se escribe, no se elige: la cuenta y el resultado', () => {
+  const e = sinCinta('dividir', '3/2_1/4');
+  assert.ok(e.papel && e.papel.cuenta && !e.ops, 'sin opciones');
+  for(const cu of ['3/2 : 1/4', '3/2 · 4', '4 · 3/2', '6/4 : 2/8']) assert.equal(k(e, cu, '6'), 'bien', cu);
+  assert.equal(k(e, '3 · 2', '6'), 'otrosnum');
+  assert.notEqual(k(e, '1/4 : 3/2', '6'), 'bien');
+  assert.notEqual(k(e, '3/2 · 1/4', '6'), 'bien');
+  /* con cinta, sigue siendo de elegir */
+  assert.ok(PR.deEnlace('dividir', '3/2_1/4').ops);
+});
+
+test('sin cinta, en todos los tipos que se escriben: su cuenta vale y otra que da lo mismo, no', () => {
+  for(const tipo of ['repartir', 'sumar', 'restar', 'cantidad', 'partes', 'dividir']) for(let i = 0; i < 100; i++){
+    const e = PR.aPapel(PR.genera(null, tipo));
+    assert.ok(e.papel && e.papel.cuenta && !e.ops, tipo);
+    const res = PR.fr(e.res.n, e.res.d);
+    assert.equal(k(e, e.papel.formas[0], res), 'bien', tipo + ': ' + e.papel.formas[0]);
+    assert.equal(k(e, res + ' + 0', res), 'otrosnum', tipo + ': ' + res + ' + 0');
+  }
+});
+
+test('los encargos sobre el papel de los casos 5, 6, 7 y 9 piden sus números', () => {
+  const src = readFileSync(new URL('../src/ciudad.js', import.meta.url), 'utf8');
+  const papeles = [...src.matchAll(/papel:(\{res:.*?\}),\n/g)].map(m => Function('return ' + m[1])());
+  assert.equal(papeles.length, 4);
+  for(const p of papeles){
+    const res = PR.fr(p.res.n, p.res.d);
+    assert.equal(PR.revisa(p, p.ej, p.ver).k, 'bien', p.ej);
+    assert.equal(PR.revisa(p, res + ' + 0', res).k, 'otrosnum', p.ej);
+    assert.ok(p.pregunta, 'Liz pregunta por los números: ' + p.ej);
+  }
+  const c5 = papeles.find(p => p.ej.startsWith('2/3'));
+  assert.equal(PR.revisa(c5, '8/12 + 3/12 − 2/12', '9/12').k, 'bien', 'con los equivalentes');
+  assert.equal(PR.revisa(c5, '1/2 + 1/4', '3/4').k, 'otrosnum');
+  const c9 = papeles.find(p => p.ej.startsWith('3 :'));
+  assert.equal(PR.revisa(c9, '3 · 4/3', '4').k, 'bien', 'por el inverso');
+  const c6 = papeles.find(p => p.ej.includes('12000'));
+  assert.equal(PR.revisa(c6, '12.000 · 3/4 : 3', '3.000').k, 'bien');
+});

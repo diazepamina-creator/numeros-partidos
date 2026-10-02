@@ -6,7 +6,7 @@
 <meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.14
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.15
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -638,7 +638,7 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 .encTxt .cursor{display:inline-block;width:.55em;height:1em;vertical-align:-.15em;
   background:var(--oxido);margin-left:2px;animation:cursor .7s steps(1) infinite}
 @keyframes cursor{50%{opacity:0}}
-.escribiendo .ops,.escribiendo .fila{opacity:.25;pointer-events:none;transition:opacity .3s}
+.escribiendo .ops,.escribiendo .fila,.escribiendo ~ .responde .ops,.escribiendo ~ .responde .fila{opacity:.25;pointer-events:none;transition:opacity .3s}
 
 /* ── CASO CERRADO. El sello gordo, sobre el último encargo. ── */
 .encargo{overflow:hidden}
@@ -684,7 +684,7 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 [data-quieto="si"] .hilo circle.tendido{opacity:1;r:4}
 [data-quieto="si"] .cara .fogonazo{display:none}
 [data-quieto="si"] #flash{display:none}
-[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila{opacity:1;pointer-events:auto}
+[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila,[data-quieto="si"] .escribiendo ~ .responde .ops,[data-quieto="si"] .escribiendo ~ .responde .fila{opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
   .mapa{transform:none !important}
@@ -715,6 +715,11 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 .teja{position:absolute;top:0;height:12px;background:rgba(176,68,44,.85);border:1px solid #FFF8EC;box-sizing:border-box;border-radius:2px}
 .teja.par{background:rgba(212,120,90,.85)}
 .teja.sobra{background:repeating-linear-gradient(-45deg,rgba(176,68,44,.7) 0 3px,transparent 3px 6px);border-style:dashed;border-color:#B0442C}
+
+/* en el móvil, las respuestas y «Comprobar» van debajo de la cinta (0.15) */
+.responde{margin-top:6px}
+.responde .ops{margin-top:4px}
+.ops[hidden]{display:none}
 </style>
 <style>
 /* ══════════════════════════════════════════════════════════════════════
@@ -926,7 +931,7 @@ footer a{color:inherit}
 .papel input:focus{outline:2px solid var(--morado);outline-offset:1px}
 .papel input:disabled{opacity:.85;border-bottom-color:var(--verde)}
 .papel .nota{flex:1 1 100%;margin:0;font-size:12.5px;color:var(--tenue)}
-.vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe){display:none}
+.vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe):not(.responde){display:none}
 #prPapel[aria-pressed="true"]{border-color:var(--oro);background:var(--brillo);color:var(--oro)}
 .cab .rutaCab{color:var(--oro);font-weight:700}
 </style>
@@ -2055,7 +2060,7 @@ footer a{color:inherit}
     <div class="fila">
       <button class="b ok comprobar" id="prComprueba">Comprobar</button>
       <button class="b" id="prOtro" data-t>Otro encargo</button>
-      <button class="b" id="prPapel" aria-pressed="false" data-t>Sin cinta</button>
+      <button class="b" id="prPapel" aria-pressed="false">Sin cinta</button>
       <span class="paso" id="prCuenta"></span>
     </div>
   </div>
@@ -2094,7 +2099,7 @@ footer a{color:inherit}
 <footer>
   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
   · <a href="https://diazepamina-creator.github.io/">Materiales</a>
-  · versión 0.14
+  · versión 0.15
 </footer>
 </div><!-- .lienzo -->
 
@@ -2609,10 +2614,31 @@ function montaPapel(encargo, alEnter){
     foco(){ if(!el.hidden) (el.querySelector('.pCu').hidden ? re : cu).focus({preventScroll: true}); }
   };
 }
+/* EN EL MÓVIL, LA CINTA ANTES QUE LAS RESPUESTAS. En una pantalla
+   estrecha, el encargo, la cinta y luego las respuestas y «Comprobar»
+   (y el informe de Liz debajo): si no, se contesta sin mirar la cinta y,
+   para usarla, hay que bajar y volver a subir. En el portátil y en el aula
+   todo sigue dentro del encargo, como siempre. */
+const MOVIL = matchMedia('(max-width: 700px)');
+function ordenMovil(){
+  document.querySelectorAll('.vista').forEach(v => {
+    const enc = v.querySelector(':scope > .encargo'), inf = v.querySelector(':scope > .informe');
+    if(!enc || !v.querySelector(':scope > .escena, #prMesa')) return;
+    if(!v._resp) v._resp = {r: Object.assign(document.createElement('div'), {className: 'responde'}),
+      piezas: [...enc.querySelectorAll(':scope > .ops, :scope > .papel, :scope > .fila')]};
+    const {r, piezas} = v._resp;
+    if(MOVIL.matches){ piezas.forEach(x => r.appendChild(x)); v.appendChild(r); if(inf) v.appendChild(inf); }
+    else{ piezas.forEach(x => enc.appendChild(x)); r.remove(); if(inf) enc.after(inf); }
+  });
+}
+MOVIL.addEventListener('change', ordenMovil);
+
 /* lo que contesta Liz cuando lo escrito no está bien */
 function dicePapel(rv){
   if(rv.k === 'otra') return T('Esa cuenta da ') + '<b>' + rv.x + '</b>' + T(', y no es la del encargo: hay que volver a leerlo.');
   if(rv.k === 'trampa') return rv.r;
+  /* da lo mismo, pero con otros números: así no vale inventarse la cuenta */
+  if(rv.k === 'otrosnum') return T('Eso da lo mismo, pero no son los números del encargo') + (rv.r ? ': ' + T(rv.r) : '.');
   return T({falta: 'Falta la cuenta o el resultado: en la libreta, y aquí.',
     nocuenta: 'Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.',
     sinop: 'Eso es un número, no una cuenta: ¿con qué números y qué operación se llega a él?',
@@ -3232,7 +3258,7 @@ const ENCARGOS5 = [
     ? T('En doceavos, jefe: pulse el <b>12</b>. Es el único corte donde caben los medios, los tercios y los cuartos a la vez.')
     : T('Junte los tres: 6/12 del nivel, 4/12 del tercio y 3/12 del cuarto.')},
  {t:'Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.',
-  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4'},
+  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4', formas:['2/3 + 1/4 − 1/6'], pregunta:'¿dónde estaba el nivel, cuánto llovió y cuánto bajó?'},
   bien:'<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.',
   mal:''}
 ];
@@ -3308,7 +3334,7 @@ const ENCARGOS6 = [
   bien:'Un doceavo: 9/12 del jefe, 2/12 del chivato, y de doce queda uno.',
   mal:'Elija una de las cuatro, jefe.'},
  {t:'Una última cuenta, sobre el papel: de lo suyo, el jefe le pagó al abogado <b>un tercio</b>. ¿Cuántos dólares cobró el abogado? Escríbame la cuenta y el resultado, sin tocar la cinta.',
-  papel:{res:{n:3000, d:1}, cuenta:true, ej:'1/3 · 3/4 · 12000', ver:'3000'},
+  papel:{res:{n:3000, d:1}, cuenta:true, ej:'1/3 · 3/4 · 12000', ver:'3000', formas:['1/3 · 3/4 · 12000', '1/3 · 9000'], pregunta:'¿qué parte del botín es del jefe, y qué parte de eso cobra el abogado?'},
   bien:'<b>1/3 · 3/4 · 12 000 = 3.000 dólares.</b> Un tercio de tres cuartos es un cuarto del botín: 1/3 · 3/4 = 1/4, y 12 000 : 4 = 3 000. Si quiere, búsquelo en la cinta.',
   mal:''}
 ];
@@ -3386,7 +3412,7 @@ const ENCARGOS7 = [
   bien:'Tres por cada dos: 3/2 de lo apostado, una vez y media.',
   mal:'Elija una de las cuatro, jefe.'},
  {t:'En la mesa de al lado juegan con otras reglas: la banca se queda <b>1/4</b> del bote y, de lo que queda, el dueño se lleva <b>2/5</b>. ¿Qué parte del bote se lleva el dueño? Sobre el papel: la cuenta y el resultado.',
-  papel:{res:{n:3, d:10}, cuenta:true, ej:'2/5 · 3/4', ver:'3/10'},
+  papel:{res:{n:3, d:10}, cuenta:true, ej:'2/5 · 3/4', ver:'3/10', formas:['2/5 · 3/4', '2/5 · (1 − 1/4)'], pregunta:'¿qué deja la banca en la mesa y qué parte de eso se lleva el dueño?'},
   bien:'<b>2/5 · 3/4 = 6/20 = 3/10</b> del bote. Lo que queda son 3/4, y los 2/5 de eso se multiplican. Si quiere, compruébelo en la cinta: corte en décimos.',
   mal:''}
 ];
@@ -3619,7 +3645,7 @@ const ENCARGOS9 = [
   mal:'Elija una de las cuatro, jefe.'},
  {t:'La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.',
   prepara: tela(3, 3),
-  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4'},
+  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4', formas:['3 : 3/4'], pregunta:'¿cuánta tela hay y cuánto lleva cada pañuelo?'},
   bien:'<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.',
   mal:''}
 ];
@@ -4112,6 +4138,8 @@ Object.assign(VA, {"Situar": "Situar", "Comparar": "Comparar", "Repartir": "Repa
 Object.assign(VA, {"La cuenta": "El compte", "El resultado": "El resultat", "Hecho sobre el papel. Ahora, si se quiere, se puede comprobar en la cinta.": "Fet sobre el paper. Ara, si es vol, es pot comprovar en la cinta.", "Hecho sobre el papel.": "Fet sobre el paper.", "Sin tocar la cinta: en la libreta, y aquí la cuenta y lo que da.": "Sense tocar la cinta: en la llibreta, i ací el compte i el que dona.", "Sin tocar la cinta: en la libreta, y aquí lo que da.": "Sense tocar la cinta: en la llibreta, i ací el que dona.", "Esa cuenta da ": "Eixe compte dona ", ", y no es la del encargo: hay que volver a leerlo.": ", i no és el de l'encàrrec: cal tornar a llegir-lo.", "Falta la cuenta o el resultado: en la libreta, y aquí.": "Falta el compte o el resultat: en la llibreta, i ací.", "Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.": "Eixe compte no s'entén. S'escriu amb números i signes: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, amb parèntesis si en calen.", "Eso es un número, no una cuenta: ¿con qué números y qué operación se llega a él?": "Això és un número, no un compte: amb quins números i quina operació s'hi arriba?", "El resultado no se entiende: un número o una fracción, como 7/8.": "El resultat no s'entén: un número o una fracció, com 7/8.", "La cuenta está bien planteada, pero el resultado no. A repasarla en la libreta.": "El compte està ben plantejat, però el resultat no. A repassar-lo en la llibreta.", "Sin cinta": "Sense cinta", "sin cinta": "sense cinta", "Operaciones combinadas": "Operacions combinades", "Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.": "Sobre el paper, que el guarda no es fia de les cintes: dilluns el nivell estava en <b>2/3</b> del dic; a la nit va ploure <b>1/4</b>, i dimarts al matí van obrir la comporta i va baixar <b>1/6</b>. Escriga'm el compte i el nivell de dimarts, sense tocar el limnímetre.", "<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.": "<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Just en la línia de perill: la comporta es va obrir a temps. Si vol, pose-ho en la cinta: talle en dotzens.", "Una última cuenta, sobre el papel: de lo suyo, el jefe le pagó al abogado <b>un tercio</b>. ¿Cuántos dólares cobró el abogado? Escríbame la cuenta y el resultado, sin tocar la cinta.": "Un últim compte, sobre el paper: del que era seu, el cap li va pagar a l'advocat <b>un terç</b>. Quants dòlars va cobrar l'advocat? Escriga'm el compte i el resultat, sense tocar la cinta.", "<b>1/3 · 3/4 · 12 000 = 3.000 dólares.</b> Un tercio de tres cuartos es un cuarto del botín: 1/3 · 3/4 = 1/4, y 12 000 : 4 = 3 000. Si quiere, búsquelo en la cinta.": "<b>1/3 · 3/4 · 12 000 = 3.000 dòlars.</b> Un terç de tres quarts és un quart del botí: 1/3 · 3/4 = 1/4, i 12 000 : 4 = 3 000. Si vol, busque-ho en la cinta.", "En la mesa de al lado juegan con otras reglas: la banca se queda <b>1/4</b> del bote y, de lo que queda, el dueño se lleva <b>2/5</b>. ¿Qué parte del bote se lleva el dueño? Sobre el papel: la cuenta y el resultado.": "En la taula del costat juguen amb altres regles: la banca es queda <b>1/4</b> del pot i, del que queda, l'amo se'n porta <b>2/5</b>. Quina part del pot se'n porta l'amo? Sobre el paper: el compte i el resultat.", "<b>2/5 · 3/4 = 6/20 = 3/10</b> del bote. Lo que queda son 3/4, y los 2/5 de eso se multiplican. Si quiere, compruébelo en la cinta: corte en décimos.": "<b>2/5 · 3/4 = 6/20 = 3/10</b> del pot. El que queda són 3/4, i els 2/5 d'això es multipliquen. Si vol, comprove-ho en la cinta: talle en dècims.", "La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.": "L'últim compte del sastre, sobre el paper: queden <b>3 metres</b> de lli, i cada mocador porta <b>3/4 de metre</b>. Quants mocadors n'ixen? El compte i el resultat, sense tocar la cinta.", "<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.": "<b>3 : 3/4 = 3 · 4/3 = 4</b> mocadors. Si vol, pose-ho en la cinta: la peça en 3/4, i en caben quatre justes."});
 /* lo nuevo de la versión 0.14: la ruta de 1.º */
 Object.assign(VA, {" cerrados": " tancats", "siete casos abiertos": "set casos oberts", "Ruta: ": "Ruta: ", "1.º ESO": "1r d'ESO", "Ruta de 1.º ESO": "Ruta de 1r d'ESO"});
+/* lo nuevo de la versión 0.15: la cuenta con sus números, y el botón del modo */
+Object.assign(VA, {"Con cinta": "Amb cinta", "Eso da lo mismo, pero no son los números del encargo": "Això dona el mateix, però no són els números de l'encàrrec", "¿dónde estaba el nivel, cuánto llovió y cuánto bajó?": "on estava el nivell, quant va ploure i quant va baixar?", "¿qué parte del botín es del jefe, y qué parte de eso cobra el abogado?": "quina part del botí és del cap, i quina part d'això cobra l'advocat?", "¿qué deja la banca en la mesa y qué parte de eso se lleva el dueño?": "què deixa la banca en la taula i quina part d'això se'n porta l'amo?", "¿cuánta tela hay y cuánto lleva cada pañuelo?": "quanta tela hi ha i quant porta cada mocador?"});
 </script>
 <script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
@@ -4489,7 +4517,10 @@ const PR = (() => {
   function fichas(s){
     s = String(s || '').replace(/[−–]/g, '-').replace(/[×*x]/gi, '·').replace(/÷/g, ':').replace(/\s+/g, '');
     const out = []; let i = 0;
-    const num = () => { const m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)); if(!m) return null; i += m[0].length;
+    /* 12.000 es doce mil (el punto de los miles); 0,5 y 0.5, un medio */
+    const num = () => { const mil = /^[1-9]\d{0,2}(?:\.\d{3})+(?![\d,])/.exec(s.slice(i));
+      if(mil){ i += mil[0].length; return Q(+mil[0].replace(/\./g, ''), 1); }
+      const m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)); if(!m) return null; i += m[0].length;
       const [e, f = ''] = m[0].split(/[.,]/); return Q(+(e + f), Math.pow(10, f.length)); };
     while(i < s.length){
       const c = s[i];
@@ -4536,9 +4567,52 @@ const PR = (() => {
     while(!a.q){ a = paso(a); l.push(escribe(a)); }
     return l;
   }
+  /* LA FORMA DE UNA CUENTA: qué números lleva y con qué operaciones, para
+     que no valga cualquier cuenta que dé lo mismo. Los números se comparan
+     por su valor (10/12 es 5/6, 0,5 es 1/2). Las sumas y restas son una
+     lista de términos con su signo, y los productos y cocientes, una lista
+     de factores; en las dos, el orden no importa, pero restar no es sumar
+     (1/3 − 5/6 no es 5/6 − 1/3) y dividir entre x es multiplicar por 1/x
+     (3/2 : 1/4 y 3/2 · 4 son la misma cuenta). */
+  function forma(a){
+    if(a.q) return {q: a.q};
+    if(a.menos) return {s: [{sg: -1, f: forma(a.b)}]};
+    if(a.o === '+' || a.o === '-'){
+      const l = [], mete = (x, sg) => { const f = forma(x); if(f.s) f.s.forEach(y => l.push({sg: y.sg * sg, f: y.f})); else l.push({sg, f}); };
+      mete(a.a, 1); mete(a.b, a.o === '-' ? -1 : 1);
+      return {s: l};
+    }
+    const l = [], mete = (x, inv) => { const f = forma(x);
+      if(f.p) f.p.forEach(y => l.push(inv ? vuelta(y) : y)); else l.push(inv ? vuelta(f) : f); };
+    mete(a.a, false); mete(a.b, a.o === ':');
+    return {p: l};
+  }
+  const vuelta = f => f.q ? {q: Q(f.q.d, f.q.n)} : {inv: f};
+  /* dos listas son la misma si se pueden emparejar una a una */
+  function empareja(x, y, eq){
+    if(x.length !== y.length) return false;
+    const usado = new Array(y.length).fill(false);
+    const va = i => { if(i === x.length) return true;
+      for(let j = 0; j < y.length; j++) if(!usado[j] && eq(x[i], y[j])){ usado[j] = true; if(va(i + 1)) return true; usado[j] = false; }
+      return false; };
+    return va(0);
+  }
+  function misma(x, y){
+    if(x.q && y.q) return igual(x.q, y.q);
+    if(x.s && y.s) return empareja(x.s, y.s, (a, b) => a.sg === b.sg && misma(a.f, b.f));
+    if(x.p && y.p) return empareja(x.p, y.p, misma);
+    if(x.inv && y.inv) return misma(x.inv, y.inv);
+    return false;
+  }
+  /* ¿la cuenta escrita es una de las del encargo? */
+  const esDeLasFormas = (cu, formas) => { const a = arbol(cu); if(!a) return false; const f = forma(a);
+    return formas.some(g => misma(f, forma(arbol(g)))); };
+
   /* Revisa lo escrito sobre el papel: la cuenta (si se pide) y el resultado.
-     papel = {res, cuenta: true|false, trampas: [{q, r}]}. Devuelve {bien, k}
-     con k: falta, nocuenta, sinop, otra (con x, lo que da), nores, trampa (con r), resmal */
+     papel = {res, cuenta: true|false, formas: [cuentas que valen], pregunta,
+     trampas: [{q, r}]}. Devuelve {bien, k} con k: falta, nocuenta, sinop,
+     otra (con x, lo que da), otrosnum (con r, la pregunta), nores, trampa
+     (con r), resmal */
   function revisa(papel, cu, re){
     if(papel.cuenta){
       if(!String(cu || '').trim()) return {bien: false, k: 'falta'};
@@ -4546,6 +4620,8 @@ const PR = (() => {
       if(!v) return {bien: false, k: 'nocuenta'};
       if(!conOp(cu)) return {bien: false, k: 'sinop'};
       if(!igual(v, papel.res)) return {bien: false, k: 'otra', x: t(v)};
+      /* da lo mismo, pero ¿con los números y la operación del encargo? */
+      if(papel.formas && !esDeLasFormas(cu, papel.formas)) return {bien: false, k: 'otrosnum', r: papel.pregunta || ''};
     }
     if(!String(re || '').trim()) return {bien: false, k: 'falta'};
     const r = cuenta(re);
@@ -4599,6 +4675,7 @@ const PR = (() => {
       crea: ({n, k}) => ({t: L('Hay <b>' + n + ' metros</b> de barandilla para <b>' + k + ' tramos</b> iguales. Ponme la marca donde acaba el primer tramo.', 'Hi ha <b>' + n + ' metres</b> de barana per a <b>' + k + ' trams</b> iguals. Posa\'m la marca on acaba el primer tram.'),
         tp: L('Hay <b>' + n + ' metros</b> de barandilla para <b>' + k + ' tramos</b> iguales. ¿Cuánto mide cada tramo?', 'Hi ha <b>' + n + ' metres</b> de barana per a <b>' + k + ' trams</b> iguals. Quant mesura cada tram?'),
         pasos: Math.max(2, Math.ceil(n / k) + 1), desde: 0, prueba: null, meta: n / k, res: Q(n, k),
+        formas: [n + ' : ' + k], pregunta: L('¿cuántos metros hay y entre cuántos tramos?', 'quants metres hi ha i entre quants trams?'),
         pista: L('La cinta mide metros. Toca la cinta para llevar la marca roja.', 'La cinta mesura metres. Toca la cinta per a portar la marca roja.'),
         bien: L('Cada tramo mide ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metro. La fracción es una división.', 'Cada tram mesura ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metre. La fracció és una divisió.'),
         mal: L('Un tramo es lo que toca a cada uno al repartir ' + n + ' entre ' + k + ': corta cada metro en <b>' + k + '</b> y cuenta <b>' + n + '</b> trozos.', 'Un tram és el que toca a cadascun en repartir ' + n + ' entre ' + k + ': talla cada metre en <b>' + k + '</b> i compta <b>' + n + '</b> trossos.')})},
@@ -4627,6 +4704,7 @@ const PR = (() => {
         return {t: L('El nivel estaba en <b>' + t(a) + '</b> del dique y anoche subió <b>' + t(c) + '</b>. Ponme el nivel de esta mañana.', 'El nivell estava en <b>' + t(a) + '</b> del dic i anit va pujar <b>' + t(c) + '</b>. Posa\'m el nivell d\'este matí.'),
           tp: L('El nivel estaba en <b>' + t(a) + '</b> del dique y anoche subió <b>' + t(c) + '</b>. ¿En cuánto está esta mañana?', 'El nivell estava en <b>' + t(a) + '</b> del dic i anit va pujar <b>' + t(c) + '</b>. En quant està este matí?'),
           pasos: pasosPara(meta), desde: 0, prueba: {v: v(a), nombre: t(a)}, meta, res: sumaQ(a, c),
+          formas: [cq(a) + ' + ' + cq(c)], pregunta: L('¿dónde estaba el nivel y cuánto subió?', 'on estava el nivell i quant va pujar?'),
           pista: L('La verde es el nivel de ayer. Toca la cinta para llevar el de hoy.', 'La verda és el nivell d\'ahir. Toca la cinta per a portar el d\'hui.'),
           bien: t(a) + ' + ' + t(c) + ' = ' + na + '/' + m + ' + ' + nc + '/' + m + ' = <b>' + fr(na + nc, m) + '</b>. ' + L('Primero, los trozos del mismo tamaño.', 'Primer, els trossos de la mateixa grandària.'),
           mal: L('Corta el dique en <b>' + m + '</b>: ' + t(a) + ' son ' + na + ' trozos, y suben ' + nc + ' más.', 'Talla el dic en <b>' + m + '</b>: ' + t(a) + ' són ' + na + ' trossos, i en pugen ' + nc + ' més.')}; }},
@@ -4640,6 +4718,7 @@ const PR = (() => {
       crea: ({a, c}) => { const m = Math.max(2, mcmN(a.d, c.d)), nc = c.n * m / c.d, meta = v(a) - v(c);
         return {t: L('El sospechoso tiene <b>' + t(a) + '</b> de fajo en la banca y paga <b>' + t(c) + '</b>. ¿Cómo queda su saldo?', 'El sospitós té <b>' + t(a) + '</b> de feix en la banca i paga <b>' + t(c) + '</b>. Com queda el seu saldo?'),
           pasos: uno ? pasosPara(v(a)) : 4, desde: uno ? 0 : -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
+          formas: [cq(a) + ' − ' + cq(c)], pregunta: L('¿qué tenía y qué pagó?', 'què tenia i què va pagar?'),
           pista: uno ? L('La verde es lo que tenía. Lo que paga se cuenta hacia la izquierda.', 'La verda és el que tenia. El que paga es compta cap a l\'esquerra.')
             : L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
           bien: t(a) + ' − ' + t(c) + ' = <b>' + fr(a.n * m / a.d - nc, m) + '</b>' + (meta < 0 ? L(': ahora debe.', ': ara deu.') : '.'),
@@ -4656,7 +4735,9 @@ const PR = (() => {
           [...new Set(malos)].slice(0, 3).map(x => ({t: $$(x) + ' $', ok: false,
             r: L('No: primero se parte la saca en ' + d + ' partes iguales (' + $$(parte) + ' $ cada una) y luego se cogen ' + n + '.', 'No: primer es partix la saca en ' + d + ' parts iguals (' + $$(parte) + ' $ cadascuna) i després se n\'agafen ' + n + '.')}))));
         return {t: L('En la saca hay <b>' + $$(N) + ' dólares</b>, y a Spats le tocan <b>' + t(q) + '</b>. ¿Cuánto se lleva?', 'En la saca hi ha <b>' + $$(N) + ' dòlars</b>, i a Spats li toquen <b>' + t(q) + '</b>. Quant se\'n porta?'),
-          sinCinta: true, ops,
+          sinCinta: true, ops, res: Q(ok, 1),
+          /* 3/4 de 12 000: 3/4 · 12 000, o 12 000 : 4 · 3 */
+          formas: [cq(q) + ' · ' + N, N + ' : ' + d + ' · ' + n], pregunta: L('¿cuánto hay en la saca y qué parte le toca?', 'quant hi ha en la saca i quina part li toca?'),
           pista: L('Parte la saca en partes iguales, y coge las que le tocan.', 'Partix la saca en parts iguals, i agafa les que li toquen.'),
           bien: $$(N) + ' : ' + d + ' = ' + $$(parte) + L(', y por ', ', i per ') + n + ': <b>' + $$(ok) + ' $</b>.'}; }},
     /* la parte de una parte: c de a */
@@ -4669,6 +4750,7 @@ const PR = (() => {
         return {t: L('De cada bote, la banca deja <b>' + t(a) + '</b> sobre la mesa, y el dueño se lleva <b>' + t(c) + '</b> de eso. Ponme la marca de lo que se lleva el dueño.', 'De cada pot, la banca deixa <b>' + t(a) + '</b> sobre la taula, i l\'amo se\'n porta <b>' + t(c) + '</b> d\'això. Posa\'m la marca del que se\'n porta l\'amo.'),
           tp: L('De cada bote, la banca deja <b>' + t(a) + '</b> sobre la mesa, y el dueño se lleva <b>' + t(c) + '</b> de eso. ¿Qué parte del bote se lleva el dueño?', 'De cada pot, la banca deixa <b>' + t(a) + '</b> sobre la taula, i l\'amo se\'n porta <b>' + t(c) + '</b> d\'això. Quina part del pot se\'n porta l\'amo?'),
           pasos: 1, desde: 0, prueba: {v: v(a), nombre: t(a)}, meta: N / D, res: Q(N, D),
+          formas: [cq(c) + ' · ' + cq(a)], pregunta: L('¿qué queda en la mesa y qué parte de eso se lleva el dueño?', 'què queda en la taula i quina part d\'això se\'n porta l\'amo?'),
           pista: L('La cinta es el bote entero. La verde, lo que queda en la mesa.', 'La cinta és el pot sencer. La verda, el que queda en la taula.'),
           bien: t(c) + ' de ' + t(a) + ' = <b>' + fr(N, D) + '</b> ' + L('del bote: se corta en ' + D + ' y se cuentan ' + N + '.', 'del pot: es talla en ' + D + ' i se\'n compten ' + N + '.'),
           mal: L('Corta el bote en <b>' + D + '</b>: así cada trozo de la mesa se parte en ' + c.d + '.', 'Talla el pot en <b>' + D + '</b>: així cada tros de la taula es partix en ' + c.d + '.')}; }},
@@ -4692,6 +4774,8 @@ const PR = (() => {
         return {t: L('Al sastre le quedan <b>' + met(tt) + '</b> de tela, y cada pieza lleva <b>' + met(p) + '</b>. Pon la pieza en la cinta y dime: ¿cuántas piezas salen?', 'Al sastre li queden <b>' + met(tt) + '</b> de tela, i cada peça porta <b>' + met(p) + '</b>. Posa la peça en la cinta i digues-me: quantes peces n\'ixen?'),
           tp: L('Al sastre le quedan <b>' + met(tt) + '</b> de tela, y cada pieza lleva <b>' + met(p) + '</b>. ¿Cuántas piezas salen?', 'Al sastre li queden <b>' + met(tt) + '</b> de tela, i cada peça porta <b>' + met(p) + '</b>. Quantes peces n\'ixen?'),
           pasos: Math.max(1, Math.ceil(v(tt)), Math.floor(v(p)) + 1), desde: 0, prueba: {v: v(tt), nombre: t(tt)}, meta: v(p), tejas: true,
+          /* sin cinta, se escribe: 3/2 : 1/4, o 3/2 · 4, que es la misma */
+          res: r, formas: [cq(tt) + ' : ' + cq(p)], pregunta: L('¿cuánta tela hay y cuánto lleva cada pieza?', 'quanta tela hi ha i quant porta cada peça?'),
           ops: baraja(ops),
           pista: L('La verde es la tela, y no se toca. Lleva la roja a lo que mide la pieza: la cinta la copia una detrás de otra.', 'La verda és la tela, i no es toca. Porta la roja al que mesura la peça: la cinta la copia una darrere de l\'altra.'),
           bien: t(tt) + ' : ' + t(p) + ' = ' + t(tt) + ' · ' + t(vuelta) + ' = <b>' + t(r) + '</b>. ' + L('Dividir entre ' + t(p) + ' es multiplicar por ' + t(vuelta) + '.', 'Dividir entre ' + t(p) + ' és multiplicar per ' + t(vuelta) + '.'),
@@ -4750,9 +4834,13 @@ const PR = (() => {
   /* los tipos de una pestaña (en la ruta de 1.º, sin los periódicos) */
   const deLaPestana = pes => (PESTANAS[pes] || PESTANAS.cinta).filter(k => !(uno && k === 'decimal'));
   function aPapel(e){
-    if(e.papel || e.sinCinta) return e;
+    if(e.papel) return e;
+    /* lo que se puede escribir (sumar, restar, repartir, cantidad, partes,
+       dividir) se escribe: la cuenta, con sus números, y el resultado. Lo
+       demás (comparar, ¿exacto o periódico?) se sigue eligiendo. */
+    if(e.formas){ e.papel = {res: e.res, cuenta: true, formas: e.formas, pregunta: e.pregunta, trampas: []}; e.ops = null; }
+    else if(e.sinCinta) return e;
     e.sinCinta = true; e.meta = null; if(e.tp) e.t = e.tp;
-    if(!e.ops) e.papel = {res: e.res, cuenta: true, trampas: []};
     e.pista = L('Sin cinta: en la libreta, y aquí la cuenta y el resultado.', 'Sense cinta: en la llibreta, i ací el compte i el resultat.');
     return e;
   }
@@ -4769,7 +4857,7 @@ const PR = (() => {
     let d = null; try{ d = c ? TIPOS[m].lee(c) : null; }catch(err){ d = null; }
     return deTipo(m, d);
   }
-  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, deLaPestana, fr, conAzar: f => { azar = f; },
+  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, esDeLasFormas, deLaPestana, fr, conAzar: f => { azar = f; },
     /* para las pruebas: ponerse en la ruta de 1.º, o quitarse */
     ponRuta: r => { uno = r === '1eso'; }};
 })();
@@ -4813,6 +4901,18 @@ let prTipo = null;
 let prSinCinta = false;
 const prPp = montaPapel(vP.querySelector('.encargo'), () => document.getElementById('prComprueba').click());
 document.getElementById('prPapel').addEventListener('click', () => { prSinCinta = !prSinCinta; nuevoPr(); });
+/* El botón dice a qué modo se pasa: «Con cinta» cuando se está sin ella. El
+   modo en que se está lo dicen aria-pressed (pulsado = sin cinta) y el
+   subtítulo; el nombre accesible es siempre «Sin cinta», para que pulsado
+   o no pulsado se lea bien. */
+function pintaBotonPapel(){
+  const b = document.getElementById('prPapel');
+  b.textContent = T(prSinCinta ? 'Con cinta' : 'Sin cinta');
+  b.setAttribute('aria-label', T('Sin cinta'));
+  b.setAttribute('aria-pressed', String(prSinCinta));
+}
+document.getElementById('lengua').addEventListener('click', () => { pintaBotonPapel();
+  if(prEnc) document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre) + (prSinCinta ? ' · ' + T('sin cinta') : ''); });
 /* dividir: la tela (la verde) sobre la cinta, y la pieza (la roja) copiada
    desde el cero una detrás de otra, como en la sastrería */
 function pintaTejas(st){
@@ -4861,7 +4961,7 @@ function nuevoPr(dado){
   prElegida = null; prHecho = false; prN = Date.now();
   vP.classList.remove('visto');
   document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre) + (prSinCinta ? ' · ' + T('sin cinta') : '');
-  document.getElementById('prPapel').setAttribute('aria-pressed', String(prSinCinta));
+  pintaBotonPapel();
   prPp.limpia(); prPp.pon(prEnc.papel, false);
   document.getElementById('prTxt').innerHTML = T(prEnc.t);
   document.getElementById('prInf').hidden = true;
@@ -4931,6 +5031,9 @@ vP.querySelector('.volver').addEventListener('click', () => practicar(false));
     try{ localStorage.setItem('ciudad.pestana', id); }catch(err){} pintaRuta(); nuevoPr(); } else antes(id); }; }
 /* abrir un caso desde el plano saca de Practicar */
 document.getElementById('cAbrir').addEventListener('click', () => { if(enPractica){ enPractica = false; document.getElementById('bPracticar').setAttribute('aria-pressed', 'false'); } });
+
+/* todo montado (también el papel de Practicar): en el móvil, la cinta arriba */
+ordenMovil();
 
 /* ── EL ENLACE: ?j=practicar&m=<tipo>&c=<datos> abre Practicar con ese
    encargo (los códigos, en encargos.js y en el README). Sin m, Practicar

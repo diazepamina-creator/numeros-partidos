@@ -35,6 +35,18 @@ let prTipo = null;
 let prSinCinta = false;
 const prPp = montaPapel(vP.querySelector('.encargo'), () => document.getElementById('prComprueba').click());
 document.getElementById('prPapel').addEventListener('click', () => { prSinCinta = !prSinCinta; nuevoPr(); });
+/* El botón dice a qué modo se pasa: «Con cinta» cuando se está sin ella. El
+   modo en que se está lo dicen aria-pressed (pulsado = sin cinta) y el
+   subtítulo; el nombre accesible es siempre «Sin cinta», para que pulsado
+   o no pulsado se lea bien. */
+function pintaBotonPapel(){
+  const b = document.getElementById('prPapel');
+  b.textContent = T(prSinCinta ? 'Con cinta' : 'Sin cinta');
+  b.setAttribute('aria-label', T('Sin cinta'));
+  b.setAttribute('aria-pressed', String(prSinCinta));
+}
+document.getElementById('lengua').addEventListener('click', () => { pintaBotonPapel();
+  if(prEnc) document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre) + (prSinCinta ? ' · ' + T('sin cinta') : ''); });
 /* dividir: la tela (la verde) sobre la cinta, y la pieza (la roja) copiada
    desde el cero una detrás de otra, como en la sastrería */
 function pintaTejas(st){
@@ -83,7 +95,7 @@ function nuevoPr(dado){
   prElegida = null; prHecho = false; prN = Date.now();
   vP.classList.remove('visto');
   document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre) + (prSinCinta ? ' · ' + T('sin cinta') : '');
-  document.getElementById('prPapel').setAttribute('aria-pressed', String(prSinCinta));
+  pintaBotonPapel();
   prPp.limpia(); prPp.pon(prEnc.papel, false);
   document.getElementById('prTxt').innerHTML = T(prEnc.t);
   document.getElementById('prInf').hidden = true;
@@ -153,6 +165,9 @@ vP.querySelector('.volver').addEventListener('click', () => practicar(false));
     try{ localStorage.setItem('ciudad.pestana', id); }catch(err){} pintaRuta(); nuevoPr(); } else antes(id); }; }
 /* abrir un caso desde el plano saca de Practicar */
 document.getElementById('cAbrir').addEventListener('click', () => { if(enPractica){ enPractica = false; document.getElementById('bPracticar').setAttribute('aria-pressed', 'false'); } });
+
+/* todo montado (también el papel de Practicar): en el móvil, la cinta arriba */
+ordenMovil();
 
 /* ── EL ENLACE: ?j=practicar&m=<tipo>&c=<datos> abre Practicar con ese
    encargo (los códigos, en encargos.js y en el README). Sin m, Practicar

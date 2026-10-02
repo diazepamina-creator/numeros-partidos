@@ -207,6 +207,6 @@ footer a{color:inherit}
 .papel input:focus{outline:2px solid var(--morado);outline-offset:1px}
 .papel input:disabled{opacity:.85;border-bottom-color:var(--verde)}
 .papel .nota{flex:1 1 100%;margin:0;font-size:12.5px;color:var(--tenue)}
-.vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe){display:none}
+.vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe):not(.responde){display:none}
 #prPapel[aria-pressed="true"]{border-color:var(--oro);background:var(--brillo);color:var(--oro)}
 .cab .rutaCab{color:var(--oro);font-weight:700}
