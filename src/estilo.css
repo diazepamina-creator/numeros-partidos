@@ -1,0 +1,584 @@
+:root{
+  --noche:#0D110F; --asfalto:#1A211D; --musgo:#2A342C; --niebla:#6F7C72;
+  --tiza:#E6E9E3;  --cinta:#E9E3D2;   --tintaC:#3A3A2E;
+  --aceituna:#7D8C3F; --absenta:#A9C24E; --oxido:#B5533C; --sombra:rgba(0,0,0,.6);
+  /* el plano de la ciudad */
+  --mz:#1A211D; --cl:#232C25; --cl2:#1E2620; --bd:#2A342C;
+  --ag:#16323F; --agb:#2E5566; --agl:#3E7A93; --ag2:#1B3A47; --ag3:#22485A;
+  --pq:#1B2A1C; --halo:rgba(169,194,78,.18); --halo2:rgba(169,194,78,.12); --rot:#93A088;
+}
+[data-modo="papel"]{
+  --noche:#F5F3EC; --asfalto:#FFFFFF; --musgo:#DAD9CC; --niebla:#7A8177;
+  --tiza:#26291F;  --cinta:#EFEADB;   --tintaC:#3A3A2E;
+  --aceituna:#5E6B2F; --absenta:#7D8C3F; --oxido:#A6452F; --sombra:rgba(0,0,0,.12);
+  /* EL PLANO EN PAPEL. No es el mismo mapa aclarado: es un plano dibujado a
+     tinta. Manzanas en blanco, calles en gris claro, agua apenas teñida y los
+     halos de farola apagados. Sale limpio de la fotocopiadora y, de paso, es
+     más noir: el género vive del CONTRASTE, no de la penumbra. */
+  --mz:#FFFFFF; --cl:#D7D4C8; --cl2:#E7E4DA; --bd:#9A9A8C;
+  --ag:#CFE0E8; --agb:#7FA3B4; --agl:#9FC0CE; --ag2:#C3D8E2; --ag3:#D8E7EE;
+  --pq:#DCE6D2; --halo:transparent; --halo2:transparent; --rot:#5C6455;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--noche);color:var(--tiza);font-family:Oswald,system-ui,sans-serif}
+.marco{max-width:900px;margin:0 auto;padding:14px}
+h1{font-family:'Special Elite',monospace;font-size:22px;margin:0 0 2px}
+.sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--niebla);margin-bottom:12px}
+.b{font-family:'Special Elite',monospace;font-size:12px;padding:8px 12px;border-radius:7px;
+   border:1px solid var(--musgo);background:var(--asfalto);color:var(--tiza);cursor:pointer}
+/* el «empezar de cero», una vez armado: óxido, que aquí es el color de los
+   sellos y de lo que no tiene vuelta atrás */
+.b.armado{border-color:var(--oxido);color:var(--oxido)}
+.b.ok{background:var(--aceituna);color:#0D110F;border-color:var(--aceituna)}
+.b[aria-pressed="true"]{background:var(--aceituna);color:#0D110F;border-color:var(--aceituna)}
+.b:disabled{opacity:.45;cursor:default}
+.barra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.etq{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--niebla)}
+.vista{display:none} .vista.puesta{display:block}
+
+/* ── EL MAPA ─────────────────────────────────────────────────────────── */
+.mapa{position:relative;border:1px solid var(--musgo);border-radius:12px;overflow:hidden;
+  background:radial-gradient(ellipse 70% 60% at 30% 10%, rgba(169,194,78,.09), rgba(169,194,78,0) 60%),
+             linear-gradient(180deg,#141A16,var(--noche))}
+[data-modo="papel"] .mapa{background:var(--asfalto)}
+.mapa svg{display:block;width:100%;height:auto}
+.chincheta{position:absolute;transform:translate(-50%,-50%);cursor:pointer;text-align:center;
+  background:none;border:0;padding:0;font-family:inherit}
+.chincheta .num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Special Elite',monospace;font-size:15px;
+  background:var(--absenta);color:#0D110F;border:2px solid var(--noche);
+  box-shadow:0 0 0 3px rgba(169,194,78,.18), 0 4px 10px var(--sombra);transition:transform .18s}
+/* Los rótulos van sobre PLACA: en un plano lleno de dibujos, un texto suelto
+   se pierde o se pisa con un tejado. Con su chapita detrás se lee siempre,
+   en pantalla y en papel. */
+.chincheta .rot{display:inline-block;margin-top:6px;font-size:11.5px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--tiza);white-space:nowrap;
+  background:var(--asfalto);border:1px solid var(--musgo);border-radius:7px;
+  padding:2px 7px;box-shadow:0 2px 6px var(--sombra)}
+/* El plano se encoge con la pantalla, pero los rótulos no: en un móvil las
+   placas acababan tapando media ciudad. Aquí menguan con ella. */
+@media (max-width:620px){
+  .chincheta .num{width:25px;height:25px;font-size:12px;border-width:1.5px;
+    box-shadow:0 0 0 2px var(--halo), 0 3px 7px var(--sombra)}
+  .chincheta .rot{font-size:8.5px;letter-spacing:.6px;padding:1px 5px;margin-top:3px;
+    border-radius:5px}
+  .chincheta.resuelto .num::after{font-size:12px}
+}
+@media (max-width:400px){
+  .chincheta .num{width:21px;height:21px;font-size:10.5px}
+  .chincheta .rot{font-size:7.5px;padding:1px 4px}
+}
+.chincheta:hover .num,.chincheta:focus-visible .num{transform:scale(1.16)}
+/* LA VECINA. Hereda la colocación y los tamaños de la chincheta —incluido el
+   menguar en el móvil— y cambia solo lo que la distingue: color de la casa
+   de Nick y borde de rayas, que dice «esto no se cierra, se visita». */
+.vecina{position:absolute;transform:translate(-50%,-50%);text-align:center;
+  text-decoration:none;font-family:inherit}
+.vecina .num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Special Elite',monospace;font-size:16px;
+  background:#E2725B;color:#2A1D18;border:2px dashed rgba(13,17,15,.8);
+  box-shadow:0 0 0 3px rgba(226,114,91,.18), 0 4px 10px var(--sombra);transition:transform .18s}
+.vecina .rot{display:inline-block;margin-top:6px;font-size:11.5px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--tiza);white-space:nowrap;
+  background:var(--asfalto);border:1px solid var(--musgo);border-radius:7px;
+  padding:2px 7px;box-shadow:0 2px 6px var(--sombra)}
+.vecina:hover .num,.vecina:focus-visible .num{transform:scale(1.16)}
+.vecina:focus-visible{outline:2px solid #E2725B;outline-offset:4px;border-radius:8px}
+@media (max-width:620px){
+  .vecina .num{width:25px;height:25px;font-size:12px;border-width:1.5px}
+  .vecina .rot{font-size:8.5px;letter-spacing:.6px;padding:1px 5px;margin-top:3px}
+}
+@media (max-width:420px){
+  .vecina .num{width:21px;height:21px;font-size:10.5px}
+  .vecina .rot{font-size:7.5px;padding:1px 4px}
+}
+.chincheta.cerrado .num{background:var(--asfalto);color:var(--niebla);box-shadow:none;
+  border-color:var(--musgo)}
+.chincheta.resuelto .num{background:var(--aceituna);color:var(--cinta)}
+.chincheta.resuelto .num::after{content:'✓';font-size:15px}
+.chincheta.resuelto .num span{display:none}
+
+/* ── EL EXPEDIENTE ───────────────────────────────────────────────────── */
+.caso{position:fixed;inset:0;background:rgba(6,9,7,.86);display:none;align-items:center;
+  justify-content:center;padding:18px;z-index:9}
+.caso.abierto{display:flex}
+.carpeta{max-width:620px;width:100%;background:var(--asfalto);border:1px solid var(--musgo);
+  border-radius:10px;padding:20px;position:relative}
+.carpeta h2{font-family:'Special Elite',monospace;font-size:20px;margin:0 0 4px}
+.carpeta .cual{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--niebla)}
+.carpeta p{font-size:14px;line-height:1.55;color:var(--tiza)}
+.sello{position:absolute;right:16px;top:14px;font-family:'Special Elite',monospace;
+  color:var(--oxido);border:2px solid var(--oxido);padding:4px 8px;transform:rotate(-7deg);
+  font-size:11px;letter-spacing:2px}
+.fila{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+/* EL INTERROGATORIO. Cuando Jeff pregunta en vez de mandar, las respuestas
+   son opciones: es lo que hace un detective y, de paso, permite que Liz
+   conteste a lo que ha dicho el alumno y no un «mal» genérico. Cada opción
+   equivocada tiene su réplica, y una de ellas acierta por el motivo
+   equivocado —esa es la que más enseña—. */
+.ops{display:flex;flex-direction:column;gap:7px;margin-top:11px}
+.op{text-align:left;font-family:Oswald,system-ui,sans-serif;font-size:13.5px;line-height:1.4;
+  padding:10px 12px;border-radius:8px;border:1px solid var(--musgo);
+  background:rgba(0,0,0,.18);color:var(--tiza);cursor:pointer}
+.op:hover{border-color:var(--niebla)}
+.op[aria-pressed="true"]{border-color:var(--absenta);background:rgba(169,194,78,.12)}
+.op.fallada{opacity:.45;text-decoration:line-through;border-color:var(--musgo) !important;
+  background:rgba(0,0,0,.18) !important}
+.op.buena[aria-pressed="true"]{border-color:var(--absenta);background:rgba(169,194,78,.18)}
+.atras{padding:8px 13px;font-size:14px;line-height:1}
+
+/* ── EL CASO 1 ───────────────────────────────────────────────────────── */
+.encargo,.informe{border:1px solid var(--musgo);border-radius:9px;padding:11px 13px;
+  background:var(--asfalto);margin-bottom:12px}
+.encargo{border-left:3px solid var(--oxido);padding-left:66px}
+.informe{border-left:3px solid var(--absenta);padding-left:66px}
+/* Cada voz con su cara. Van dentro de la caja y pegadas al canto, que es
+   donde no estorban al texto ni en un móvil estrecho. */
+.encargo,.informe{position:relative}
+/* El sumario: papel mecanografiado con su sello. Da el caso antes de que
+   Jeff empiece a mandar, que si no los encargos llegan sin mundo. */
+.sumario{position:relative;border:1px solid var(--musgo);border-left:3px solid var(--niebla);
+  border-radius:9px;padding:12px 14px;padding-top:34px;background:var(--asfalto);margin-bottom:12px;
+  font-size:13.5px;line-height:1.55;color:var(--niebla)}
+.sumario b{color:var(--tiza)}
+.sumario .sello{position:absolute;right:9px;top:8px;font-size:9.5px;padding:3px 6px}
+.cara-caja{position:absolute;left:8px;top:9px;width:50px}
+.cara-caja svg{width:50px;height:auto;display:block}
+@media (max-width:380px){ .encargo,.informe{padding-left:56px}
+  .cara-caja{width:42px} .cara-caja svg{width:42px} }
+.informe.mal{border-left-color:var(--oxido)}
+.quien{font-family:'Special Elite',monospace;font-size:11px;letter-spacing:2px;color:var(--oxido)}
+.quien.liz{color:var(--absenta)}
+.encargo p,.informe p{margin:5px 0 0;font-size:14px;line-height:1.5}
+.paso{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--niebla)}
+.escena{position:relative;height:230px;border:1px solid var(--musgo);border-radius:10px;
+  overflow:hidden;touch-action:none;user-select:none;background:
+   radial-gradient(ellipse 50% 90% at 18% -10%, rgba(169,194,78,.12), rgba(169,194,78,0) 62%),
+   linear-gradient(180deg, var(--asfalto), var(--noche))}
+/* La trama de luz que cruza la escena es DECORADO: si se queda con los
+   clics, los botones que viven dentro —los de la pizarra del caso 3— dejan
+   de responder y parece que la aplicación está rota. */
+[data-modo="pantalla"] .escena::before{content:'';position:absolute;inset:0;mix-blend-mode:screen;
+  pointer-events:none;
+  background:repeating-linear-gradient(101deg, rgba(169,194,78,.06) 0 12px, rgba(169,194,78,0) 12px 44px)}
+.suelo{position:absolute;left:0;right:0;bottom:0;height:86px;
+  background:linear-gradient(180deg,rgba(111,124,114,.12),transparent)}
+/* La calle: el charco bajo la farola y la silueta de tiza del suceso.
+   Decoran sin tocar la cinta, que es lo único que se manipula. */
+.charco{position:absolute;left:6%;bottom:10px;width:44%;height:26px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(169,194,78,.14),rgba(169,194,78,0) 70%)}
+.tiza{position:absolute;right:5%;bottom:8px;width:32%;height:52px;transform:rotate(-6deg);
+  border:2px dashed rgba(230,233,227,.30);border-radius:58% 42% 52% 48%}
+[data-modo="papel"] .tiza{border-color:rgba(38,41,31,.28)}
+/* La sombra del puente es una mancha grande: en pantalla da el vuelo del
+   tablero sobre el agua, pero en papel se imprimía como un pegote gris. */
+[data-modo="papel"] .sombraPuente{opacity:.06}
+/* LAS FAROLAS. Una en cada entero, que es lo que dice el sumario: cada
+   farola marca un paso. Así la unidad se VE en la calle en vez de
+   explicarse en un rótulo, y los cortes de la cinta quedan claramente
+   dentro del tramo entre dos farolas. */
+.farolas{position:absolute;left:38px;right:38px;top:108px;height:0;pointer-events:none}
+.farola{position:absolute;bottom:0;transform:translateX(-50%);width:2px;height:56px;
+  background:linear-gradient(180deg,#55604F,#39412F)}
+.farola::before{content:'';position:absolute;top:-7px;left:-6px;width:14px;height:9px;
+  border-radius:7px 7px 3px 3px;background:var(--absenta);box-shadow:0 0 10px rgba(169,194,78,.55)}
+.farola::after{content:'';position:absolute;top:-4px;left:-27px;width:56px;height:74px;
+  background:radial-gradient(ellipse at 50% 0%, rgba(169,194,78,.16), rgba(169,194,78,0) 70%);
+  pointer-events:none}
+[data-modo="papel"] .farola{background:#8A9188}
+[data-modo="papel"] .farola::before{background:#5E6B2F;box-shadow:none}
+[data-modo="papel"] .farola::after{display:none}
+.tira{position:absolute;left:38px;right:38px;top:108px;height:32px;border-radius:3px;
+  background:linear-gradient(180deg,var(--cinta),#D9D2BC);box-shadow:0 5px 14px var(--sombra)}
+.tira .t{position:absolute;top:0;width:1px;background:var(--tintaC)}
+.tira .n{position:absolute;top:16px;font-size:12px;color:var(--tintaC);
+  transform:translateX(-50%);font-weight:600}
+/* Los de los extremos se salían de la cinta y se comían la mitad: el
+   primero se alinea por la izquierda y el último por la derecha. */
+.tira .n.izq{transform:translateX(1px)}
+.tira .n.der{transform:translateX(calc(-100% - 1px))}
+.chin{position:absolute;top:64px;transform:translateX(-50%);text-align:center;cursor:grab;z-index:3;
+  padding:0 14px}
+.chin.arrastrando{cursor:grabbing}
+.chin.arrastrando .pin{transform:scale(1.35)}
+.chin .pin{transition:transform .12s}
+.chin .val{font-family:'Special Elite',monospace;font-size:18px;color:var(--absenta);
+  text-shadow:0 2px 8px var(--sombra);white-space:nowrap}
+.chin .pal{width:3px;height:60px;margin:4px auto 0;background:var(--absenta);border-radius:2px}
+.chin .pin{width:15px;height:15px;border-radius:50%;background:var(--absenta);margin:-6px auto 0;
+  border:2px solid var(--noche)}
+.chin.dos .val{color:var(--oxido)} .chin.dos .pal,.chin.dos .pin{background:var(--oxido)}
+/* Cuando las dos marcas se juntan, sus rótulos se pisan y no se lee ninguno:
+   el de abajo sube un renglón. Mismo problema y misma solución que en la
+   palestra —allí con las cuentas flotantes—. */
+.chin.dos.subida .val{transform:translateY(-21px)}
+.chin.dos.subida .pal{height:81px;margin-top:-17px}
+.pista{margin:8px 0 0;font-size:12px;letter-spacing:.4px;color:var(--niebla)}
+.pista .v{color:var(--absenta)} .pista .r{color:var(--oxido)}
+/* la que está en la mano lleva un cerco; la otra espera apagada */
+.chin.activa .pin{box-shadow:0 0 0 3px rgba(169,194,78,.30)}
+.chin.dos.activa .pin{box-shadow:0 0 0 3px rgba(181,83,60,.32)}
+.chin:not(.activa) .pal,.chin:not(.activa) .pin{opacity:.75}
+/* la prueba lleva su rótulo y el palo a rayas: se mira, no se toca */
+.chin.prueba .pal{background:repeating-linear-gradient(180deg,var(--absenta) 0 5px,transparent 5px 9px)}
+.chin.prueba .val::after{content:'PRUEBA';display:block;font-size:9px;letter-spacing:1.6px;
+  color:var(--niebla);font-family:Oswald,sans-serif;margin-top:-3px}
+.lectura{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:14px;color:var(--niebla)}
+.lectura b{color:var(--tiza)}
+.veredicto{margin-top:8px;padding:10px 12px;border:1px solid var(--musgo);border-radius:8px;
+  background:var(--asfalto);font-size:14px}
+.veredicto.igual{border-color:var(--absenta);color:var(--absenta)}
+
+/* ── EL CASO 2: el taller ────────────────────────────────────────────── */
+/* el perno lleva su rótulo propio; hereda las rayas de «se mira, no se
+   toca» de la prueba */
+.chin.perno .val::after{content:'PERNO'}
+.banco{position:absolute;left:0;right:0;bottom:0;height:60px;
+  background:linear-gradient(180deg,#3A3126,#2A241C);border-top:3px solid #55432F}
+[data-modo="papel"] .banco{background:#E7E1D0;border-top-color:#9A8A6F}
+.aceite{position:absolute;left:9%;bottom:8px;width:32%;height:20px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(10,14,12,.6),rgba(10,14,12,0) 70%)}
+[data-modo="papel"] .aceite{background:radial-gradient(ellipse,rgba(58,58,46,.22),rgba(58,58,46,0) 70%)}
+/* la rueda recién cambiada, apoyada en el banco: es la que ata este caso
+   con el anterior */
+.neumatico{position:absolute;right:7%;bottom:12px;width:44px;height:44px;border-radius:50%;
+  border:9px solid #20262A;box-shadow:0 4px 10px var(--sombra)}
+.neumatico::after{content:'';position:absolute;inset:5px;border-radius:50%;border:2px solid #55604F}
+[data-modo="papel"] .neumatico{border-color:#5C5C50;box-shadow:none}
+[data-modo="papel"] .neumatico::after{border-color:#9A9A8C}
+
+/* marcas fijas con su rótulo propio; las rojas llevan las rayas en óxido */
+.chin.limite .val::after{content:'LÍMITE'}
+.chin.factura .val::after{content:'FACTURA'}
+.chin.dos.prueba .pal{background:repeating-linear-gradient(180deg,var(--oxido) 0 5px,transparent 5px 9px)}
+.veredicto.malo{border-color:var(--oxido);color:var(--oxido)}
+/* ── EL CASO 3: el calabozo ──────────────────────────────────────────── */
+.reja{position:absolute;right:9%;bottom:0;width:180px;height:66px;transform:skewX(-24deg);
+  background:repeating-linear-gradient(90deg, rgba(169,194,78,.15) 0 13px, transparent 13px 32px)}
+[data-modo="papel"] .reja{background:repeating-linear-gradient(90deg, rgba(58,58,46,.13) 0 13px, transparent 13px 32px)}
+/* ── LOS CASOS 4 Y 5: agua abajo ─────────────────────────────────────── */
+.aguaEsc{position:absolute;left:0;right:0;bottom:0;height:44px;
+  background:linear-gradient(180deg, rgba(62,122,147,0), rgba(22,50,63,.9))}
+[data-modo="papel"] .aguaEsc{background:linear-gradient(180deg, rgba(159,192,206,0), rgba(159,192,206,.6))}
+/* los pilares del puente, de la cinta al río */
+.pilar{position:absolute;top:140px;bottom:24px;width:14px;
+  background:linear-gradient(90deg,#55604F,#39412F);border:1px solid #141A16;border-top:0}
+[data-modo="papel"] .pilar{background:#C9BFA6;border-color:#9A9A8C}
+/* los juncos del embarcadero */
+.junco{position:absolute;bottom:36px;width:3px;height:42px;background:#4F6B45;border-radius:2px}
+.junco::before{content:'';position:absolute;top:-9px;left:-2px;width:7px;height:13px;border-radius:50%;background:#4F6B45}
+/* ── EL CASO 6: las monedas del botín ────────────────────────────────── */
+.monedas{position:absolute;left:8%;bottom:12px;width:26px;height:9px;border-radius:50%;
+  background:#D8A33F;border:1.5px solid #141A16;
+  box-shadow:0 -7px 0 -1px #C6952F, 0 -14px 0 -2px #D8A33F,
+             36px 3px 0 -1px #C6952F, 36px -4px 0 -2px #D8A33F, 18px 8px 0 -2px #C6952F}
+
+/* ── EL ACTA. Una hoja mecanografiada con las ocho conclusiones, pensada
+   para el papel: en pantalla es una vista más; impresa es la tablilla de
+   esta ciudad. Cada caso lleva su frase —lo que se averiguó, con números— y
+   debajo, en letra pequeña, el principio matemático que lo sostiene. Los
+   casos sin cerrar salen en blanco, con su raya, como en un acta de verdad. */
+.acta{background:var(--carpeta);border:1px solid var(--bd);border-radius:10px;padding:22px 24px;
+  font-family:'Special Elite',monospace;position:relative;overflow:hidden}
+[data-modo="papel"] .acta{background:#FBF8F0}
+.acta::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(230,233,227,.035) 27px 28px)}
+[data-modo="papel"] .acta::before{background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(38,41,31,.06) 27px 28px)}
+.acta .cabecera{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
+  border-bottom:2px solid var(--bd);padding-bottom:10px;margin-bottom:14px;flex-wrap:wrap}
+.acta .cabecera b{font-size:17px;letter-spacing:2px}
+.acta .cabecera span{font-size:12px;color:var(--niebla);letter-spacing:1px}
+.acta ol{list-style:none;margin:0;padding:0}
+.acta li{display:grid;grid-template-columns:34px 1fr auto;gap:6px 12px;padding:10px 0;
+  border-bottom:1px dashed var(--bd);align-items:start}
+.acta li .n{font-size:20px;color:var(--absenta)}
+.acta li .tit{font-size:11px;letter-spacing:2px;color:var(--niebla);text-transform:uppercase}
+.acta li .hecho{font-size:15px;margin:2px 0 4px;color:var(--tiza)}
+.acta li .porque{font-family:'Inter',system-ui,sans-serif;font-size:13px;color:var(--niebla);line-height:1.45}
+.acta li .cerrado{font-size:10px;letter-spacing:2px;color:var(--oxido);border:2px solid var(--oxido);
+  padding:3px 6px;border-radius:3px;transform:rotate(-6deg);align-self:center}
+.acta li.pendiente .hecho{color:var(--niebla);opacity:.55}
+.acta li.pendiente .porque,.acta li.pendiente .cerrado{visibility:hidden}
+.acta .firmas{display:flex;justify-content:space-around;margin-top:22px;font-size:12px;
+  letter-spacing:1px;color:var(--niebla);text-align:center}
+.acta .firmas b{display:block;font-size:15px;color:var(--tiza);font-style:italic;letter-spacing:0;margin-bottom:4px}
+@media (max-width:480px){.acta{padding:14px}.acta li{grid-template-columns:26px 1fr auto}.acta li .cerrado{display:none}}
+@media print{.barra,.b{display:none !important}.vista{display:none}#vActa{display:block !important}
+  .acta{border:none;padding:0}body{background:#fff}}
+
+/* els tres rètols que viuen en el CSS, en valencià */
+html[lang^="ca"] .chin.prueba .val::after{content:'PROVA'}
+html[lang^="ca"] .chin.perno .val::after{content:'PERN'}
+html[lang^="ca"] .dique::after{content:'DIC'}
+
+/* ── LOS ESCENARIOS DE LOS DEMÁS CASOS ───────────────────────────────
+   Cada caso tiene su sitio, y el sitio se nota en el suelo: el tablón del
+   puente, el agua del pantano, el tapete del casino. Decoran sin tocar la
+   cinta, que sigue siendo lo único que se manipula. */
+
+/* CASO 3 · la pizarra de la comisaría. Aquí no hay cinta: hay una división
+   larga que se hace paso a paso, y unas celdas donde van cayendo los restos. */
+.escena.pizarra{height:auto;min-height:150px;padding:14px;touch-action:auto}
+.cuenta{font-family:'Special Elite',monospace;font-size:26px;letter-spacing:1px;
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.cuenta .coc{color:var(--absenta)}
+.cuenta .periodo{border-top:2px solid var(--absenta);padding-top:1px}
+@media (max-width:420px){ .cuenta{font-size:20px} }
+.celdas{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+/* Cada resto, en su celda. Con denominador n solo hay n−1 celdas que puedan
+   estar ocupadas sin acabarse la cuenta: por eso alguna se repite. */
+.celda{min-width:34px;padding:5px 7px;border:1px solid var(--musgo);border-radius:6px;
+  background:rgba(0,0,0,.18);text-align:center;font-size:12px;color:var(--niebla)}
+.celda b{display:block;font-family:'Special Elite',monospace;font-size:16px;color:var(--tiza)}
+.celda.cero{border-color:var(--absenta);color:var(--absenta)}
+.celda.cero b{color:var(--absenta)}
+.celda.repe{border-color:var(--oxido);color:var(--oxido)}
+.celda.repe b{color:var(--oxido)}
+.mandos{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+/* La división se ve HACER. Cada paso deja tres rastros: el cero que baja
+   junto al resto (la «bajada», que aparece y se borra), la cifra nueva del
+   cociente que sube desde abajo y el resto que cae en su celda. Es el único
+   sitio de la ciudad donde la animación es también contenido: el orden en
+   que aparecen las cosas ES el algoritmo. */
+.bajada{font-family:'Special Elite',monospace;font-size:14px;color:var(--niebla);
+  margin-top:8px;min-height:20px;letter-spacing:.5px}
+.bajada b{color:var(--tiza)}
+.bajada .cero{color:var(--absenta);display:inline-block}
+.bajada.nueva .cero{animation:baja .5s cubic-bezier(.3,1.4,.5,1)}
+@keyframes baja{from{transform:translateY(-14px);opacity:0}}
+.cuenta .cifra{display:inline-block}
+.cuenta .cifra.nueva{animation:sube .45s .35s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes sube{from{transform:translateY(12px);opacity:0}}
+.celda.nueva{animation:caeCelda .5s .55s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes caeCelda{from{transform:translateY(-18px) scale(1.15);opacity:0}}
+.celda.nueva.repe,.celda.nueva.cero{animation:caeCelda .5s .55s cubic-bezier(.3,1.5,.5,1) both,
+  latido .6s 1.1s ease-in-out 2}
+@keyframes latido{50%{transform:scale(1.12)}}
+
+/* CASO 4 · el tablón del puente */
+.tablon{position:absolute;left:0;right:0;bottom:0;height:74px;
+  background:repeating-linear-gradient(90deg,#5A4636 0 46px,#6B4A32 46px 48px);opacity:.85}
+[data-modo="papel"] .tablon{background:repeating-linear-gradient(90deg,#E4DCC9 0 46px,#B9AC8E 46px 48px)}
+.baranda{position:absolute;left:0;right:0;bottom:74px;height:3px;background:#8A6A3C}
+
+/* CASO 5 · el agua del pantano. La cinta mide el NIVEL, así que el agua se
+   llena hacia la derecha: es un limnímetro tumbado. */
+.agua{position:absolute;height:44px;border-radius:2px;
+  background:linear-gradient(180deg,rgba(62,122,147,.85),rgba(22,50,63,.9));
+  box-shadow:inset 0 2px 0 rgba(159,192,206,.6);transition:width .12s}
+[data-modo="papel"] .agua{background:linear-gradient(180deg,#BBD5E1,#9FC0CE);box-shadow:none}
+.dique{position:absolute;width:4px;background:var(--niebla);border-radius:2px}
+.dique::after{content:'DIQUE';position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);
+  font-size:9px;letter-spacing:1.4px;color:var(--niebla)}
+.juncos{position:absolute;right:10px;bottom:6px;width:60px;height:34px;
+  background:repeating-linear-gradient(78deg,#4F6B45 0 2px,transparent 2px 9px)}
+
+/* CASO 8 · el desguace. El cero va en medio de la cinta y se le marca con
+   un poste, que aquí es la frontera entre tener y deber. A la izquierda,
+   pilas de chatarra; a la derecha, el garfio de la grúa. */
+.tira .n.cero{color:var(--absenta);font-weight:700}
+.poste{position:absolute;width:3px;background:var(--absenta);opacity:.55;border-radius:2px}
+.chatarra{position:absolute;left:5%;bottom:8px;width:120px;height:44px;
+  background:radial-gradient(circle at 20% 80%,#3A4438 0 14px,transparent 15px),
+             radial-gradient(circle at 50% 70%,#2C332A 0 18px,transparent 19px),
+             radial-gradient(circle at 80% 85%,#3A4438 0 12px,transparent 13px),
+             radial-gradient(circle at 38% 40%,#55604F 0 10px,transparent 11px);opacity:.9}
+[data-modo="papel"] .chatarra{opacity:.35}
+.garfio{position:absolute;right:12%;top:0;width:2px;height:70px;background:var(--niebla)}
+.garfio::after{content:'';position:absolute;left:-7px;bottom:-12px;width:14px;height:14px;
+  border:3px solid var(--niebla);border-top-color:transparent;border-radius:50%}
+.deuda{position:absolute;height:44px;border-radius:2px;
+  background:repeating-linear-gradient(90deg,rgba(170,60,40,.3) 0 6px,rgba(170,60,40,.12) 6px 12px)}
+[data-modo="papel"] .deuda{background:repeating-linear-gradient(90deg,rgba(142,58,40,.25) 0 6px,rgba(142,58,40,.08) 6px 12px)}
+
+/* CASO 6 y 7 · el tapete. Verde de mesa de juego; en papel, gris de oficina. */
+.tapete{position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 70% at 30% 0%, rgba(109,140,79,.20), rgba(109,140,79,0) 65%),
+  linear-gradient(180deg,#1D2A1C,#141C14)}
+[data-modo="papel"] .tapete{background:#EDEFE6}
+.fajo{position:absolute;bottom:10px;width:40px;height:22px;border-radius:2px;
+  background:repeating-linear-gradient(180deg,#8C8B5E 0 4px,#6E6D48 4px 6px);
+  border:1px solid #141A16;box-shadow:0 3px 8px var(--sombra)}
+.ruleta{position:absolute;right:16px;bottom:8px;width:52px;height:52px;border-radius:50%;
+  border:3px solid #C7B98F;background:conic-gradient(#1E2620 0 25%,#8E3A28 0 50%,#1E2620 0 75%,#8E3A28 0)}
+.ruleta::after{content:'';position:absolute;inset:18px;border-radius:50%;background:#C7B98F}
+
+/* ═══ LA CIUDAD SE MUEVE ═══════════════════════════════════════════════
+   Hasta la v0.4 no había un solo fotograma: la ciudad era un plano quieto.
+   Todo lo que sigue es DECORADO y obedece a dos reglas. Una: nunca toca lo
+   que se manipula —la cinta, las marcas, la pizarra—, que siguen siendo
+   geometría plana y exacta. Dos: se apaga entera en papel y para quien haya
+   pedido menos movimiento al aparato (prefers-reduced-motion); en los dos
+   casos lo que queda es la v0.4 tal cual. */
+
+/* ── EL PLANO SOBRE LA MESA. Un poco de perspectiva y el mapa deja de ser un
+   dibujo pegado: es un plano tumbado que se inclina siguiendo al puntero,
+   con las chinchetas CLAVADAS por encima (translateZ) para que al ladearse
+   se despeguen del papel como chinchetas de verdad. La inclinación es
+   mínima, ±4 grados: más y los rótulos dejan de leerse. ── */
+.escritorio{perspective:1400px}
+.mapa{transform-style:preserve-3d;
+  transform:rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg));
+  transition:transform .35s ease-out}
+.mapa.aterriza{animation:aterriza .9s cubic-bezier(.2,.8,.3,1) both}
+@keyframes aterriza{from{opacity:0;transform:rotateX(24deg) translateY(40px) scale(.94)}}
+.chincheta,.vecina{transform:translate(-50%,-50%) translateZ(26px)}
+.chincheta:hover,.chincheta:focus-visible,
+.vecina:hover,.vecina:focus-visible{transform:translate(-50%,-50%) translateZ(46px)}
+/* las chinchetas caen una a una al abrir el plano, de la más al norte a la
+   más al sur (el orden lo pone --i, en el HTML) */
+.mapa.aterriza .chincheta,.mapa.aterriza .vecina{
+  animation:clava .5s cubic-bezier(.3,1.6,.5,1) both;
+  animation-delay:calc(.55s + var(--i,0) * 90ms)}
+.mapa.aterriza .vecina{--i:8}
+@keyframes clava{from{opacity:0;transform:translate(-50%,-130%) translateZ(120px)}
+  70%{opacity:1;transform:translate(-50%,-44%) translateZ(10px)}
+  to{transform:translate(-50%,-50%) translateZ(26px)}}
+
+/* ── EL HILO ROJO. El corcho del detective: cada caso cerrado tiende un hilo
+   hasta la chincheta del siguiente, que es adonde apunta la pista con la que
+   acaba. Se dibuja solo —stroke-dashoffset— y encima va el plano de las
+   chinchetas, así que el hilo pasa por DEBAJO de ellas, como en el corcho. ── */
+.mapa svg.hilo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+  transform:translateZ(14px)}
+.hilo path{fill:none;stroke:var(--oxido);stroke-width:2.2;stroke-linecap:round;
+  stroke-dasharray:var(--l);stroke-dashoffset:var(--l);
+  filter:drop-shadow(1px 2px 1px rgba(0,0,0,.6))}
+.hilo path.tendido{animation:tiende 1.1s .2s ease-in-out forwards}
+@keyframes tiende{to{stroke-dashoffset:0}}
+.hilo circle{fill:var(--oxido);stroke:#141A16;stroke-width:1;opacity:0}
+.hilo circle.tendido{animation:pincha .35s 1.15s cubic-bezier(.3,1.8,.5,1) forwards}
+@keyframes pincha{from{opacity:0;r:9}to{opacity:1;r:4}}
+[data-modo="papel"] .hilo path{filter:none}
+
+/* ── LA CIUDAD DE NOCHE. Cosas que pasan aunque nadie las mire: el neón del
+   casino que parpadea, el humo de la central, el brillo del río y un coche
+   que cruza la carretera del sur cada medio minuto. Ninguna pide atención;
+   están para que el plano parezca vivo cuando se vuelve a él. ── */
+.neon{animation:neon 6s infinite}
+@keyframes neon{0%,88%,92%,100%{opacity:1}89%,91%{opacity:.25}}
+.humo ellipse{animation:humo 7s ease-in-out infinite}
+.humo ellipse:nth-child(2){animation-delay:-3.5s}
+@keyframes humo{0%{transform:translate(0,0) scale(1);opacity:.18}
+  60%{opacity:.09}100%{transform:translate(14px,-26px) scale(1.5);opacity:0}}
+.brillo path{animation:brillo 5s ease-in-out infinite}
+.brillo path:nth-child(2){animation-delay:-1.7s}.brillo path:nth-child(3){animation-delay:-3.4s}
+@keyframes brillo{0%,100%{transform:translateX(0);opacity:.45}50%{transform:translateX(9px);opacity:.75}}
+.faro{animation:faro 4s ease-in-out infinite}
+@keyframes faro{0%,100%{opacity:.85}50%{opacity:1}}
+
+/* ── LA CARPETA. El expediente no aparece: se ABRE, con la tapa girando sobre
+   su lomo izquierdo, y medio segundo después cae el sello encima como una
+   estampilla de goma —grande, torcido, y encoge al golpear—. ── */
+.caso{perspective:1200px}
+.caso.abierto .carpeta{animation:abre .5s cubic-bezier(.2,.9,.3,1) both;transform-origin:left center}
+@keyframes abre{from{opacity:0;transform:rotateY(-58deg) translateX(-20px)}}
+.caso.abierto .carpeta .sello{animation:sella .45s .38s cubic-bezier(.4,1.6,.5,1) both}
+@keyframes sella{from{opacity:0;transform:rotate(-24deg) scale(2.8)}
+  70%{opacity:1;transform:rotate(-5deg) scale(.92)}to{transform:rotate(-7deg) scale(1)}}
+
+/* ── EL FOGONAZO. Entre el plano y el caso hay un disparo de la cámara de
+   Liz: blanco, un cuarto de segundo, y la escena ya está puesta. ── */
+#flash{position:fixed;inset:0;background:#F5F3EC;opacity:0;pointer-events:none;z-index:20}
+#flash.dispara{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:0}8%{opacity:.95}100%{opacity:0}}
+.vista.entra{animation:entra .45s .1s ease-out both}
+@keyframes entra{from{opacity:0;transform:translateY(12px)}}
+
+/* ── LOS PERSONAJES. Jeff y Liz parpadean cada pocos segundos —a destiempo,
+   que si no parecen mellizos—, a Jeff se le mueve la ramita cuando habla y
+   Liz dispara la cámara cada vez que entrega un informe. Y responden a lo
+   que pasa: Jeff asiente cuando se acierta y niega con la cabeza cuando no;
+   Liz ladea la cabeza ante un fallo. Todo son transformaciones sobre grupos
+   del propio SVG: cabeza, ojos, ramita, cámara. ── */
+.cara .ojo{transform-box:fill-box;transform-origin:center;animation:parpadea 4.6s infinite}
+.cara-caja.liz .cara .ojo{animation-duration:5.3s;animation-delay:-2.1s}
+@keyframes parpadea{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.08)}}
+.cara .cabeza{transform-box:fill-box;transform-origin:50% 90%}
+.cara .regaliz{transform-box:fill-box;transform-origin:100% 0}
+.escribiendo .cara .regaliz{animation:regaliz .55s ease-in-out infinite}
+@keyframes regaliz{50%{transform:rotate(-9deg)}}
+.encargo.bien .cara .cabeza{animation:asiente .7s ease-in-out}
+@keyframes asiente{25%{transform:translateY(1.6px) rotate(2deg)}55%{transform:translateY(-1px)}80%{transform:translateY(1px)}}
+.encargo.mal .cara .cabeza{animation:niega .6s ease-in-out}
+@keyframes niega{20%{transform:translateX(-2px) rotate(-3deg)}50%{transform:translateX(2px) rotate(3deg)}80%{transform:translateX(-1px)}}
+.informe.mal .cara .cabeza{animation:ladea .6s ease-out forwards}
+@keyframes ladea{to{transform:rotate(-9deg) translateY(1px)}}
+.informe.nueva{animation:entra .4s ease-out both}
+.cara .camara{transform-box:fill-box;transform-origin:center}
+.informe.nueva .cara .camara{animation:dispara .5s ease-out}
+@keyframes dispara{15%{transform:scale(.9) translateY(1px)}30%{transform:scale(1.06)}}
+.cara .fogonazo{transform-box:fill-box;transform-origin:center;transform:scale(0);opacity:0}
+.informe.nueva .cara .fogonazo{animation:fogonazo .45s .08s ease-out}
+@keyframes fogonazo{0%{transform:scale(0);opacity:0}20%{transform:scale(1);opacity:.95}100%{transform:scale(2.2);opacity:0}}
+
+/* ── LA MÁQUINA DE ESCRIBIR. Los encargos de Jeff no aparecen de golpe: se
+   escriben, con su cursor. Un toque sobre el texto lo completa —que en
+   clase nadie tiene por qué esperar dos veces—, y al volver con el ◀ ya
+   están escritos. ── */
+.encTxt .cursor{display:inline-block;width:.55em;height:1em;vertical-align:-.15em;
+  background:var(--oxido);margin-left:2px;animation:cursor .7s steps(1) infinite}
+@keyframes cursor{50%{opacity:0}}
+.escribiendo .ops,.escribiendo .fila{opacity:.25;pointer-events:none;transition:opacity .3s}
+
+/* ── CASO CERRADO. El sello gordo, sobre el último encargo. ── */
+.encargo{overflow:hidden}
+.sellazo{position:absolute;right:14px;bottom:12px;font-family:'Special Elite',monospace;
+  font-size:22px;letter-spacing:4px;color:var(--oxido);border:3px solid var(--oxido);
+  padding:6px 12px;border-radius:4px;transform:rotate(-12deg);opacity:.85;pointer-events:none;
+  mix-blend-mode:multiply;text-shadow:0 0 1px var(--oxido)}
+[data-modo="pantalla"] .sellazo{mix-blend-mode:normal}
+.sellazo.golpea{animation:sella .5s .2s cubic-bezier(.4,1.6,.5,1) both}
+@media (max-width:480px){.sellazo{font-size:15px;letter-spacing:2px;right:8px;bottom:8px}}
+/* y cuando la ciudad entera está cerrada, el sello cae sobre el plano */
+.mapa .sellazo{right:auto;left:50%;bottom:auto;top:50%;font-size:44px;letter-spacing:8px;
+  transform:translate(-50%,-50%) rotate(-10deg);z-index:5;padding:14px 26px;border-width:5px;
+  background:rgba(13,17,15,.55);backdrop-filter:blur(1px)}
+.mapa .sellazo.golpea{animation:sellazoMapa .6s .3s cubic-bezier(.4,1.6,.5,1) both}
+@keyframes sellazoMapa{from{opacity:0;transform:translate(-50%,-50%) rotate(-24deg) scale(2.4)}
+  70%{opacity:.85;transform:translate(-50%,-50%) rotate(-8deg) scale(.94)}
+  to{opacity:.85;transform:translate(-50%,-50%) rotate(-10deg) scale(1)}}
+@media (max-width:620px){.mapa .sellazo{font-size:26px;letter-spacing:4px;padding:8px 14px;border-width:3px}}
+
+/* ── LAS ESCENAS. La niebla que cruza la calle del caso 1 y la lluvia sobre
+   el pantano: un ::after con un degradado que se desplaza. No reciben
+   clics. La cinta, debajo, no se entera. ── */
+.escena::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:2}
+[data-modo="pantalla"] #esc::after{
+  background:radial-gradient(ellipse 30% 40% at 20% 60%, rgba(230,233,227,.06), transparent 70%),
+             radial-gradient(ellipse 40% 30% at 70% 50%, rgba(230,233,227,.05), transparent 70%);
+  animation:niebla 14s ease-in-out infinite alternate}
+@keyframes niebla{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+[data-modo="pantalla"] #esc5::after{
+  background:repeating-linear-gradient(112deg, rgba(159,192,206,.13) 0 1px, transparent 1px 23px);
+  background-size:100% 200%;animation:lluvia .9s linear infinite}
+@keyframes lluvia{from{background-position:0 0}to{background-position:-28px 120px}}
+[data-modo="pantalla"] .farola::before{animation:faro 3s ease-in-out infinite}
+[data-modo="pantalla"] .farola:nth-child(2n)::before{animation-delay:-1.4s}
+
+/* ── LOS DOS INTERRUPTORES. Sin animaciones no se mueve nada —ni el plano se
+   inclina—, y lo mismo si el aparato pide menos movimiento. ── */
+[data-quieto="si"] *,[data-quieto="si"] *::before,[data-quieto="si"] *::after{
+  animation:none !important;transition:none !important}
+[data-quieto="si"] .mapa{transform:none}
+[data-quieto="si"] .hilo path{stroke-dashoffset:0}
+[data-quieto="si"] .hilo circle.tendido{opacity:1;r:4}
+[data-quieto="si"] .cara .fogonazo{display:none}
+[data-quieto="si"] #flash{display:none}
+[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .mapa{transform:none !important}
+  .hilo path{stroke-dashoffset:0}.hilo circle.tendido{opacity:1;r:4}
+  .cara .fogonazo,#flash{display:none}
+}
+
+/* ── EL MODO AULA ───────────────────────────────────────────────────────
+   Para la pizarra digital. Todo un tercio más grande, que es lo que se nota
+   desde el fondo de la clase. El zoom escala a la vez letra, botones y
+   dibujos, así que no hay que tocar ni un tamaño suelto.                  */
+@media (min-width:900px){
+}
+.aulaRejilla,.colIzq,.colDer{display:contents}
+#bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}
