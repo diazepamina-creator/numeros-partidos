@@ -582,3 +582,18 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 }
 .aulaRejilla,.colIzq,.colDer{display:contents}
 #bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}
+
+/* CASO 9 · la sastrería. El mostrador de madera, la tela sobre él y las
+   piezas, copiadas una detrás de otra desde el cero; la que no cabe
+   entera, rayada. */
+.escena.sastre{background:linear-gradient(180deg,#2A2420,#1E1A17)}
+[data-modo="papel"] .escena.sastre{background:linear-gradient(180deg,#F3ECDD,#E9DEC7)}
+.mostrador{position:absolute;left:0;right:0;bottom:0;height:64px;
+  background:repeating-linear-gradient(90deg,#6B4A2E 0 70px,#5E4027 70px 72px);opacity:.85}
+[data-modo="papel"] .mostrador{background:repeating-linear-gradient(90deg,#C9A57A 0 70px,#B8925F 70px 72px)}
+.tela{position:absolute;height:12px;border-radius:2px;
+  background:repeating-linear-gradient(45deg,#8C8F9A 0 4px,#7A7D88 4px 8px);box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.tejas{position:absolute;left:0;right:0;height:12px;pointer-events:none}
+.teja{position:absolute;top:0;height:12px;background:rgba(176,68,44,.85);border:1px solid #FFF8EC;box-sizing:border-box;border-radius:2px}
+.teja.par{background:rgba(212,120,90,.85)}
+.teja.sobra{background:repeating-linear-gradient(-45deg,rgba(176,68,44,.7) 0 3px,transparent 3px 6px);border-style:dashed;border-color:#B0442C}
