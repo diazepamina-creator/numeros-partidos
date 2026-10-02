@@ -183,9 +183,9 @@ footer a{color:inherit}
 .cabezaCaso{align-items:center}
 .cabezaCaso h1{font-size:19px;margin:0}
 .cabezaCaso .sub{margin:0}
-.sumario.plegado{max-height:3.2em;overflow:hidden;cursor:pointer;position:relative}
+.sumario.plegado{max-height:calc(1.55em + 22px);padding-top:10px;padding-right:130px;overflow:hidden;cursor:pointer;position:relative;white-space:nowrap;text-overflow:ellipsis}
 .sumario.plegado::after{content:'▾';position:absolute;right:10px;bottom:4px;color:var(--tenue)}
-.sumario.plegado.desplegado{max-height:none}
+.sumario.plegado.desplegado{max-height:none;padding-top:34px;padding-right:14px;white-space:normal}
 .sumario.plegado.desplegado::after{content:'▴'}
 .op{font-family:var(--letra);background:var(--noche);color:var(--tinta);border-color:var(--linea)}
 /* EL VEREDICTO, SOLO DESPUÉS DE COMPROBAR (en las celdas, no: allí el

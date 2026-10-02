@@ -99,7 +99,7 @@ document.getElementById('prOtro').addEventListener('click', nuevoPr);
 /* ── EL BOTÓN DE LA CABECERA: entra y sale de Practicar, en la pestaña en
    que se esté. Las pestañas, mientras tanto, cambian de tipo de encargo. ── */
 const NOMBRE_PES = {cinta: 'La cinta · situar y comparar', partir: 'Partir · la fracción es una división',
-  juntar: 'Juntar y quitar · sumar y restar', partes: 'Partes de partes · la fracción de una cantidad'};
+  juntar: 'Juntar y quitar · sumar y restar', partes: 'Multiplicar y dividir · partes de partes y cuántas caben'};
 let enPractica = false;
 function practicar(si){
   enPractica = si;

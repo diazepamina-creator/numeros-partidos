@@ -6,7 +6,7 @@
 <meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.10
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.11
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -700,6 +700,21 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 }
 .aulaRejilla,.colIzq,.colDer{display:contents}
 #bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}
+
+/* CASO 9 · la sastrería. El mostrador de madera, la tela sobre él y las
+   piezas, copiadas una detrás de otra desde el cero; la que no cabe
+   entera, rayada. */
+.escena.sastre{background:linear-gradient(180deg,#2A2420,#1E1A17)}
+[data-modo="papel"] .escena.sastre{background:linear-gradient(180deg,#F3ECDD,#E9DEC7)}
+.mostrador{position:absolute;left:0;right:0;bottom:0;height:64px;
+  background:repeating-linear-gradient(90deg,#6B4A2E 0 70px,#5E4027 70px 72px);opacity:.85}
+[data-modo="papel"] .mostrador{background:repeating-linear-gradient(90deg,#C9A57A 0 70px,#B8925F 70px 72px)}
+.tela{position:absolute;height:12px;border-radius:2px;
+  background:repeating-linear-gradient(45deg,#8C8F9A 0 4px,#7A7D88 4px 8px);box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.tejas{position:absolute;left:0;right:0;height:12px;pointer-events:none}
+.teja{position:absolute;top:0;height:12px;background:rgba(176,68,44,.85);border:1px solid #FFF8EC;box-sizing:border-box;border-radius:2px}
+.teja.par{background:rgba(212,120,90,.85)}
+.teja.sobra{background:repeating-linear-gradient(-45deg,rgba(176,68,44,.7) 0 3px,transparent 3px 6px);border-style:dashed;border-color:#B0442C}
 </style>
 <style>
 /* ══════════════════════════════════════════════════════════════════════
@@ -887,9 +902,9 @@ footer a{color:inherit}
 .cabezaCaso{align-items:center}
 .cabezaCaso h1{font-size:19px;margin:0}
 .cabezaCaso .sub{margin:0}
-.sumario.plegado{max-height:3.2em;overflow:hidden;cursor:pointer;position:relative}
+.sumario.plegado{max-height:calc(1.55em + 22px);padding-top:10px;padding-right:130px;overflow:hidden;cursor:pointer;position:relative;white-space:nowrap;text-overflow:ellipsis}
 .sumario.plegado::after{content:'▾';position:absolute;right:10px;bottom:4px;color:var(--tenue)}
-.sumario.plegado.desplegado{max-height:none}
+.sumario.plegado.desplegado{max-height:none;padding-top:34px;padding-right:14px;white-space:normal}
 .sumario.plegado.desplegado::after{content:'▴'}
 .op{font-family:var(--letra);background:var(--noche);color:var(--tinta);border-color:var(--linea)}
 /* EL VEREDICTO, SOLO DESPUÉS DE COMPROBAR (en las celdas, no: allí el
@@ -922,7 +937,7 @@ footer a{color:inherit}
     <button type="button" data-tab="cinta" aria-pressed="true"><b data-t>La cinta</b><small data-t>situar y comparar</small></button>
     <button type="button" data-tab="partir" aria-pressed="false"><b data-t>Partir</b><small data-t>la fracción es una división</small></button>
     <button type="button" data-tab="juntar" aria-pressed="false"><b data-t>Juntar y quitar</b><small data-t>sumar y restar</small></button>
-    <button type="button" data-tab="partes" aria-pressed="false"><b data-t>Partes de partes</b><small data-t>la fracción de una cantidad</small></button>
+    <button type="button" data-tab="partes" aria-pressed="false"><b data-t>Multiplicar y dividir</b><small data-t>partes de partes y cuántas caben</small></button>
   </div>
 </header>
 
@@ -1455,6 +1470,8 @@ footer a{color:inherit}
       <span class="num">6</span><span class="rot">El reparto</span></button>
     <button class="chincheta" style="left:12%;top:86%;--i:7" data-c="8">
       <span class="num">8</span><span class="rot">La deuda</span></button>
+    <button class="chincheta" style="left:53%;top:27%;--i:8" data-c="9">
+      <span class="num">9</span><span class="rot">La sastrería</span></button>
     <!-- La pizzería NO lleva chincheta de expediente: lleva la suya, que se
          distingue en todo —terracota en vez de absenta, borde de rayas y un
          ¾ en vez de un número— porque no se cierra, se visita. Y por eso es
@@ -1944,6 +1961,67 @@ footer a{color:inherit}
   <div class="veredicto" id="ver8"></div>
 </div>
 
+<!-- ═══ VISTA: EL CASO 9 · LA SASTRERÍA ═════════════════════════════════
+     Dividir es medir: ¿cuántas veces cabe esta pieza en aquella tela? La
+     tela es la marca verde (cambia de encargo a encargo); la pieza, la roja.
+     Desde el cero, la pieza se copia una detrás de otra hasta donde llega la
+     tela, y la que no cabe entera sale recortada: se cuentan, y se ve qué
+     sobra. -->
+<div class="vista marco" id="vCaso9">
+  <div class="barra cabezaCaso">
+    <button class="b volver">← La ciudad</button>
+    <div><h1>LAS PIEZAS</h1><div class="sub">caso 9 · la sastrería</div></div>
+  </div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El traje del dueño del casino salió de la <b>sastrería de la
+    calle 2</b>, y el sastre no apunta nombres: apunta <b>cuántas piezas</b> sacó
+    de cada tela. Liz ha tendido su cinta sobre el mostrador. La <b>verde</b> es
+    la tela que hay; la <b>roja</b>, la pieza que se corta. Dividir es contar
+    cuántas veces cabe la pieza en la tela.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el metro en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena sastre" id="esc9">
+    <div class="mostrador"></div>
+    <div class="tela" id="tela9"></div>
+    <div class="tejas" id="tejas9"></div>
+    <div class="tira" id="tira9"></div>
+    <div class="chin" id="m9t" style="left:200px"><div class="val">3/4</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m9p" style="left:60px"><div class="val">0</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca de la <b class="r">pieza</b>.
+     La <b class="v">verde</b> es la tela que hay: esa no se toca.</p>
+  <div class="lectura">
+    <span>Tela: <b id="te9">3/4</b> m</span>
+    <span>Pieza: <b id="pi9">0</b> m = <b id="dp9">0</b></span>
+  </div>
+  <div class="veredicto" id="ver9"></div>
+</div>
+
 <!-- ═══ VISTA: PRACTICAR ═════════════════════════════════════════════
      Encargos nuevos de cada pestaña, sin fin y con una sola cinta que cambia
      de tamaño, de cortes y de marcas según lo que pida Jeff. No cuentan para
@@ -1997,7 +2075,7 @@ footer a{color:inherit}
 <footer>
   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
   · <a href="https://diazepamina-creator.github.io/">Materiales</a>
-  · versión 0.10
+  · versión 0.11
 </footer>
 </div><!-- .lienzo -->
 
@@ -2152,13 +2230,15 @@ const CASOS = {
     x:'El coche del sospechoso ha acabado en el desguace, y con él el libro de la banca: una columna de deudas. Aquí la cinta sigue hacia la izquierda del cero.'},
  7:{t:'El casino de la calle 9', s:'Caso 7 · parte de una parte',
     x:'Una ruleta que paga «tres a dos», un bote que la banca corta antes de que nadie lo vea y un dueño que se lleva la mitad de lo que sobra. Aquí se toma una parte de otra parte.'},
+ 9:{t:'La sastrería', s:'Caso 9 · dividir fracciones',
+    x:'El sastre de la calle 2 no apunta nombres: apunta cuántas piezas sacó de cada tela. Dividir es contar cuántas veces cabe una pieza en la tela.'},
  6:{t:'El reparto del botín', s:'Caso 6 · fracción de cantidad',
     x:'Doce mil dólares en una saca y una nota de reparto: tres cuartos para uno, un sexto para otro y dos hombres esperando en el coche. Las cuentas no le cuadran a nadie.'}
 };
 /* Ya no hay casos por montar: los siete tienen su vista. Se deja la lista
    porque es la que decide si el botón de la carpeta abre o no, y el día que
    se añada un caso nuevo al plano hará falta otra vez. */
-const MONTADOS = new Set([1, 2, 3, 4, 5, 6, 7, 8]);
+const MONTADOS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 /* Los casos resueltos se guardan en el propio aparato —sin servidor y sin
    cuentas—, porque ocho expedientes no caben en una sesión y una tablet que
    se bloquea los borraba todos. El acta la sigue llevando el papel; esto es
@@ -2206,7 +2286,8 @@ const quieto = () => document.body.dataset.quieto === 'si'
    plano; el hilo, en el viewBox de 900×620, así que se convierte. Un hilo
    tirante queda muerto: cada tramo se comba un poco hacia abajo, que es lo
    que hace un hilo que cuelga entre dos chinchetas. ── */
-const ORDEN = [1, 2, 3, 4, 5, 6, 7, 8];
+/* el orden de la historia: la sastrería (9) va entre el casino y el desguace */
+const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8];
 const hilosTendidos = new Set();
 function pos(c){
   const st = document.querySelector('.chincheta[data-c="' + c + '"]').style;
@@ -2238,12 +2319,12 @@ function pintaMapa(){
       n.innerHTML = '<span>' + b.dataset.c + '</span>';
   });
   document.getElementById('cuenta').textContent =
-    resueltos.size === 8 ? T('ciudad cerrada')
-    : resueltos.size ? resueltos.size + T(' de 8 cerrados') : T('ocho casos abiertos');
+    resueltos.size === ORDEN.length ? T('ciudad cerrada')
+    : resueltos.size ? resueltos.size + T(' de 9 cerrados') : T('nueve casos abiertos');
   pintaHilo();
   /* los siete cerrados: el sello gordo cae sobre el plano, una sola vez */
   const mapa = document.getElementById('mapa');
-  if(resueltos.size === 8 && !mapa.querySelector('.sellazo')){
+  if(resueltos.size === ORDEN.length && !mapa.querySelector('.sellazo')){
     const z = document.createElement('div');
     z.className = 'sellazo golpea'; z.textContent = T('CIUDAD CERRADA');
     mapa.appendChild(z);
@@ -2494,8 +2575,12 @@ function montaExpediente(cfg){
       caja.appendChild(b);
     });
   }
+  let preparado = -1;
   function pintaEncargo(){
     const ultimo = enc === cfg.encargos.length - 1, hecho = hechos.has(enc);
+    /* un encargo puede montar su cinta (la tela de la sastrería cambia):
+       solo al llegar a él, no al repintar por la lengua */
+    if(enc !== preparado){ preparado = enc; if(cfg.encargos[enc].prepara) cfg.encargos[enc].prepara(); }
     /* el veredicto de la cinta solo se ve después de comprobar (o con el
        encargo ya resuelto); el sumario se pliega cuando ya se ha leído */
     R.classList.toggle('visto', hecho); R.dataset.hecho = hecho ? 'si' : 'no';
@@ -2585,7 +2670,7 @@ function montaExpediente(cfg){
   return {
     total: cfg.encargos.length,
     hechos: () => hechos.size,
-    abre(){ enc = 0; pintaEncargo(); },
+    abre(){ enc = 0; preparado = -1; pintaEncargo(); },
     repinta(){ vistos.add(enc); pintaEncargo(); },
     guarda(){ return {h:[...hechos], v:[...vistos]}; },
     carga(d){
@@ -3217,10 +3302,9 @@ const ENCARGOS7 = [
 ];
 const caso7 = montaExpediente({
   vista:'vCaso7', caso:7, encargos:ENCARGOS7,
-  cierre:'<b>Caso cerrado.</b> La banca paga una vez y media y se queda un '
-    + 'quinto: el negocio cuadra. Pero en su libro hay una columna en rojo con '
-    + 'lo que la gente le debe, y el coche del sospechoso ha aparecido esta '
-    + 'mañana en el desguace, con la cuenta pendiente.'
+  cierre:'<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: '
+    + 'el negocio cuadra. Pero el dueño no viste de confección: su traje salió de la '
+    + 'sastrería de la calle 2, y el sastre corta la tela con cinta métrica, como Liz.'
 });
 
 /* ═══ EL CASO 8 · LA DEUDA ══════════════════════════════════════════
@@ -3311,7 +3395,7 @@ const ENCARGOS8 = [
 ];
 const caso8 = montaExpediente({
   vista:'vCaso8', caso:8, encargos:ENCARGOS8,
-  cierre:'<b>Ciudad cerrada.</b> Ocho expedientes y una sola cinta, que ahora '
+  cierre:'<b>Ciudad cerrada.</b> Nueve expedientes y una sola cinta, que ahora '
     + 'llega hasta donde llegan las deudas. Cada número de esta semana ha sido '
     + 'un punto de una calle: con su sitio, con su nombre, con su espejo al '
     + 'otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre '
@@ -3321,6 +3405,136 @@ const caso8 = montaExpediente({
 /* ═══ EL ACTA ═══════════════════════════════════════════════════════
    Ocho renglones: lo que se averiguó, con sus números, y el principio que lo
    sostiene. Se pinta cada vez que se abre, con lo que haya cerrado. */
+/* ═══ EL CASO 9 · LA SASTRERÍA ═════════════════════════════════════
+   Dividir es medir: ¿cuántas veces cabe la pieza (roja) en la tela (verde)?
+   Desde el cero, la pieza se copia una detrás de otra hasta donde llega la
+   tela; la que no cabe entera sale recortada y rayada. Así se cuenta, y se
+   ve qué sobra —y que lo que sobra se mide con la pieza, no con el metro—.
+   La tela cambia de encargo a encargo (prepara). */
+let tela9 = 3/4;
+/* el nombre más corto de un punto: 1,5 → 3/2 */
+function corto(v){
+  for(let d = 1; d <= 64; d++) if(Math.abs(v * d - Math.round(v * d)) < 1e-9)
+    return (d === 1 ? String(Math.round(v)) : Math.round(v * d) + '/' + d);
+  return dec(v);
+}
+const cinta9 = montaCinta({
+  esc:'esc9', tira:'tira9', farolas:null, pasos:1, cortes:1, rozan:52,
+  botones:'#vCaso9 .b[data-b]', activa:'m9p',
+  marcas:{ m9t:{v:3/4, nombre:() => corto(tela9)}, m9p:{v:0} },
+  alCambiar(st){
+    const v = st.marcas.m9p.v;
+    te9.textContent = corto(tela9); pi9.textContent = st.texto(v); dp9.textContent = dec(v);
+    const t = document.getElementById('tira9'), an = t.getBoundingClientRect().width, x0 = t.offsetLeft;
+    const px = x => x0 + x * an / st.pasos;
+    /* la tela, sobre el mostrador */
+    const tela = document.getElementById('tela9');
+    tela.style.left = px(0) + 'px'; tela.style.width = (px(tela9) - px(0)) + 'px'; tela.style.top = (t.offsetTop - 14) + 'px';
+    /* las piezas, una detrás de otra */
+    const tj = document.getElementById('tejas9'); tj.innerHTML = '';
+    tj.style.top = (t.offsetTop - 14) + 'px';
+    const ver = document.getElementById('ver9');
+    if(v <= 1e-9){ ver.className = 'veredicto'; ver.innerHTML = T('Ponga la pieza en la cinta.'); return; }
+    const n = Math.floor(tela9 / v + 1e-9), resto = tela9 - n * v;
+    for(let k = 0; k < Math.min(n, 48); k++){
+      const d = document.createElement('div'); d.className = 'teja' + (k % 2 ? ' par' : '');
+      d.style.left = px(k * v) + 'px'; d.style.width = (px((k + 1) * v) - px(k * v)) + 'px'; tj.appendChild(d);
+    }
+    if(resto > 1e-9){
+      const d = document.createElement('div'); d.className = 'teja sobra';
+      d.style.left = px(n * v) + 'px'; d.style.width = (px(tela9) - px(n * v)) + 'px'; tj.appendChild(d);
+    }
+    ver.className = 'veredicto' + (resto > 1e-9 ? '' : ' igual');
+    ver.innerHTML = resto > 1e-9
+      ? T(n === 1 ? 'Cabe ' : 'Caben ') + '<b>' + n + '</b>' + T(n === 1 ? ' pieza entera y sobra ' : ' piezas enteras y sobra ') + '<b>' + corto(resto) + '</b>' + T(' de metro, que es ') + '<b>' + corto(resto / v) + '</b>' + T(' de pieza.')
+      : T('Caben ') + '<b>' + n + '</b>' + T(' piezas justas: ') + corto(tela9) + ' : ' + st.texto(v) + ' = <b>' + n + '</b>.';
+  }
+});
+/* monta la tela de un encargo: su largo, cuántos metros tiene la cinta, y
+   la pieza otra vez en el cero, sin cortar */
+function tela(v, pasos){
+  return () => { tela9 = v; cinta9.pasos = pasos; cinta9.cortes = 1; cinta9.marcas.m9t.v = v;
+    cinta9.marcas.m9p.v = 0; cinta9.marcas.m9p.medido = '0';
+    document.querySelectorAll('#vCaso9 .b[data-b]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    requestAnimationFrame(() => cinta9.repinta()); };
+}
+const pieza9 = () => cinta9.marcas.m9p.v;
+const corta9 = k => cinta9.cortes % k === 0;
+const ENCARGOS9 = [
+ {t:'Empecemos por lo fácil. Quedaban <b>3/4 de metro</b> de tela gris, y el sastre sacó <b>tres corbatas iguales</b> sin que sobrara nada. Póngame en la cinta lo que mide cada corbata.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/4) < 1e-9,
+  bien:'Un cuarto de metro cada una: <b>3/4 : 3 = 1/4</b>. Y mire las piezas: el cuarto cabe <b>tres veces</b> justas en la tela. Repartir entre 3 y contar cuántas veces cabe la pieza son la misma cuenta, vista de los dos lados.',
+  mal:() => !corta9(4)
+    ? T('Corte el metro en <b>cuartos</b>: así la tela son tres trozos, uno para cada corbata.')
+    : T('Cada corbata se lleva uno de los tres trozos de la tela: lleve la roja al primero.')},
+
+ {t:'Con otra tela igual, de <b>3/4 de metro</b>, hizo pajaritas. Cada pajarita lleva una tira de <b>1/8 de metro</b>. Póngame la tira en la cinta y cuente cuántas salen.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/8) < 1e-9,
+  bien:'Salen <b>6</b> pajaritas: en octavos, la tela son 6/8 y cada pieza es 1/8. <b>3/4 : 1/8 = 6</b>. Con el mismo corte, dividir es contar.',
+  mal:() => !corta9(8)
+    ? T('Corte el metro en <b>octavos</b> y lleve la marca roja al primero: esa es la tira.')
+    : T('La tira mide un octavo: lleve la roja a la primera rayita.')},
+
+ {t:'Ahora el chaleco. Para el forro había <b>2 metros</b> de seda, y cada pieza del forro mide <b>1/3 de metro</b>. Póngame la pieza y cuente con la cinta cuántas salen.',
+  prepara: tela(2, 2),
+  ok:() => Math.abs(pieza9() - 1/3) < 1e-9,
+  bien:'Salen <b>6</b>: tres tercios en cada metro, y hay dos metros. <b>2 : 1/3 = 6</b>. Fíjese: hemos dividido y ha salido <b>más</b> que 2.',
+  mal:() => !corta9(3)
+    ? T('Corte el metro en <b>tercios</b> y lleve la roja al primero.')
+    : T('La pieza mide un tercio de metro: la primera rayita después del cero.')},
+
+ {t:'El ayudante del sastre jura que eso es imposible: «dividir siempre da menos». ¿Quién tiene razón?',
+  ops:[
+   {t:'El ayudante: 2 entre algo tiene que dar menos que 2.', ok:false,
+    r:'Eso pasa al dividir entre un número mayor que 1. Aquí la pieza mide menos de un metro: cabe más de una vez en cada metro, y en dos metros caben 6.'},
+   {t:'La cinta: si la pieza mide menos de 1, cabe más veces que metros hay.', ok:true,
+    r:'Eso es. Dividir entre 1/3 es preguntar cuántos tercios caben, y en cada metro caben 3: 2 · 3 = 6.'},
+   {t:'Ninguno: 2 : 1/3 es 2/3, que es lo que mide el forro.', ok:false,
+    r:'2/3 es 2 · 1/3: eso sería multiplicar, coger un tercio dos veces. Dividir es contar cuántas piezas de 1/3 salen de los 2 metros, y la cinta enseña 6.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las tres, jefe.'},
+
+ {t:'La última pieza del libro: de una tela de <b>3/4 de metro</b> sacó solapas de <b>1/2 metro</b>. Póngame la solapa en la cinta.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/2) < 1e-9,
+  bien:'Una solapa cabe entera, y lo que sobra, <b>1/4 de metro</b>, es justo <b>media solapa</b>. Así que caben <b>una y media</b>: 3/4 : 1/2 = 3/2.',
+  mal:() => !corta9(2)
+    ? T('Corte el metro en dos y lleve la roja a la mitad.')
+    : T('La solapa mide medio metro: lleve la roja a la mitad.')},
+
+ {t:'¿Cuántas solapas salen, entonces, de 3/4 de metro? Que el sastre lo apunte bien.',
+  ops:[
+   {t:'3/2: una entera y media más.', ok:true,
+    r:'Eso es. Lo que sobra se mide con la pieza, no con el metro: 1/4 de metro es media solapa.'},
+   {t:'1/4: lo que sobra.', ok:false,
+    r:'1/4 de metro es lo que sobra, medido en metros. La pregunta es cuántas solapas: una entera, y lo que sobra es media solapa más.'},
+   {t:'3/8: tres cuartos por un medio.', ok:false,
+    r:'3/8 es la mitad de 3/4: eso es multiplicar, coger la mitad de la tela. Dividir entre 1/2 es contar cuántas medias caben, y caben una y media.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las tres, jefe.'},
+
+ {t:'Liz lo ha apuntado en su libreta: 2 : 1/3 = 6 = 2 · 3; 3/4 : 1/8 = 6 = 3/4 · 8; 3/4 : 1/2 = 3/2 = 3/4 · 2. ¿Qué regla se esconde ahí?',
+  ops:[
+   {t:'Dividir entre una fracción es multiplicar por la del divisor dada la vuelta: 1/3 → 3, 1/8 → 8, 1/2 → 2.', ok:true,
+    r:'Eso es, y ya sabe por qué: dividir entre 1/3 es contar tercios, y en cada unidad caben 3. Por eso a : (c/d) = a · (d/c).'},
+   {t:'Se divide arriba entre arriba y abajo entre abajo.', ok:false,
+    r:'Solo sale si las dos tienen el mismo corte: 6/8 : 1/8 = 6. Con 2/3 : 3/4 tendría que hacer 2 : 3 y 3 : 4, y eso no se ve en ninguna cinta. Primero el mismo corte, o dar la vuelta a la pieza.'},
+   {t:'Se da la vuelta a la primera fracción y se multiplica.', ok:false,
+    r:'Entonces 2 : 1/3 sería 1/2 · 1/3 = 1/6, y la cinta enseñó 6 piezas. Se da la vuelta a la pieza, que es la que se cuenta.'},
+   {t:'Dividir siempre da menos, así que se multiplica por algo pequeño.', ok:false,
+    r:'Ya lo vio en el forro: 2 : 1/3 = 6. Al dividir entre algo menor que 1, sale más.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las cuatro, jefe.'}
+];
+const caso9 = montaExpediente({
+  vista:'vCaso9', caso:9, encargos:ENCARGOS9,
+  cierre:'<b>Caso cerrado.</b> El libro del sastre cuadra pieza a pieza. Y en la última '
+    + 'página hay una nota: el traje del sospechoso se pagó con billetes del banco de la '
+    + 'calle 4, y su coche ha acabado esta mañana en el desguace, con una cuenta pendiente.'
+});
+
 const ACTA = [
  {c:1, t:'La cinta', h:'5/4 queda a la derecha de 3/4: el sospechoso pasó de largo. Y 10/8 es el mismo punto que 5/4.',
   p:'Una fracción es un punto de la cinta. El de más a la derecha es el mayor, y un punto puede tener varios nombres según el corte.'},
@@ -3337,7 +3551,9 @@ const ACTA = [
  {c:7, t:'La banca', h:'La mitad de 4/5 es 4/10 = 2/5; el 20 % es 1/5; «tres a dos» es 3/2.',
   p:'Parte de otra parte: cortar lo ya cortado. Un tanto por ciento es una fracción con cien debajo.'},
  {c:8, t:'La deuda', h:'−3/4 es el espejo de 3/4; −3/4 < −1/2; −3/4 + 5/4 = 1/2.',
-  p:'−x es el opuesto de x: misma distancia del cero, al otro lado, y x + (−x) = 0.'}
+  p:'−x es el opuesto de x: misma distancia del cero, al otro lado, y x + (−x) = 0.'},
+ {c:9, t:'Las piezas', h:'3/4 : 3 = 1/4; 3/4 : 1/8 = 6; 2 : 1/3 = 6; 3/4 : 1/2 = 3/2.',
+  p:'Dividir es contar cuántas veces cabe una pieza. Dividir entre c/d es multiplicar por d/c: entre algo menor que 1, sale más.'}
 ];
 function pintaActa(){
   const ol = document.getElementById('actaLista'); ol.innerHTML = '';
@@ -3783,8 +3999,8 @@ Object.assign(VA, {
 "<b>Caso cerrado.</b> Un metro de barandilla que nunca se puso, y el hueco justo por donde se cae al río. Hablando de agua: en el pantano llevan tres noches sumando lluvia y el guarda no sabe sumar fracciones.": "<b>Cas tancat.</b> Un metre de barana que mai es va posar, i el buit just per on es cau al riu. Parlant d'aigua: en el pantà porten tres nits sumant pluja i el guarda no sap sumar fraccions.",
 "<b>Caso cerrado.</b> El pantano aguantó por los pelos y el libro del guarda queda corregido. Y en la saca que apareció flotando bajo el puente había doce mil dólares del banco de la calle 4, con una nota de reparto que no le cuadra a nadie.": "<b>Cas tancat.</b> El pantà va aguantar pels pèls i el llibre del guarda queda corregit. I en la saca que va aparéixer surant davall del pont hi havia dotze mil dòlars del banc del carrer 4, amb una nota de repartiment que no li quadra a ningú.",
 "<b>Caso cerrado.</b> Los dos del coche cantaron por mil dólares. Y todos los caminos —el reloj, la rueda, la barandilla, la saca— acaban en el mismo sitio: el casino de la calle 9, donde la banca se queda su parte antes de que nadie cuente nada.": "<b>Cas tancat.</b> Els dos del cotxe van cantar per mil dòlars. I tots els camins —el rellotge, la roda, la barana, la saca— acaben en el mateix lloc: el casino del carrer 9, on la banca es queda la seua part abans que ningú compte res.",
-"<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: el negocio cuadra. Pero en su libro hay una columna en rojo con lo que la gente le debe, y el coche del sospechoso ha aparecido esta mañana en el desguace, con la cuenta pendiente.": "<b>Cas tancat.</b> La banca paga una vegada i mitja i es queda un quint: el negoci quadra. Però en el seu llibre hi ha una columna en roig amb el que la gent li deu, i el cotxe del sospitós ha aparegut este matí en el desballestament, amb el compte pendent.",
-"<b>Ciudad cerrada.</b> Ocho expedientes y una sola cinta, que ahora llega hasta donde llegan las deudas. Cada número de esta semana ha sido un punto de una calle: con su sitio, con su nombre, con su espejo al otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre la relojería.": "<b>Ciutat tancada.</b> Huit expedients i una sola cinta, que ara arriba fins on arriben els deutes. Cada número d'esta setmana ha sigut un punt d'un carrer: amb el seu lloc, amb el seu nom, amb el seu espill a l'altre costat del zero. Guarda la cinta, Liz. Demà torna a clarejar sobre la rellotgeria."
+"<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: el negocio cuadra. Pero el dueño no viste de confección: su traje salió de la sastrería de la calle 2, y el sastre corta la tela con cinta métrica, como Liz.": "<b>Cas tancat.</b> La banca paga una vegada i mitja i es queda un quint: el negoci quadra. Però l'amo no vist de confecció: el seu vestit va eixir de la sastreria del carrer 2, i el sastre talla la tela amb cinta mètrica, com Liz.",
+"<b>Ciudad cerrada.</b> Nueve expedientes y una sola cinta, que ahora llega hasta donde llegan las deudas. Cada número de esta semana ha sido un punto de una calle: con su sitio, con su nombre, con su espejo al otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre la relojería.": "<b>Ciutat tancada.</b> Nou expedients i una sola cinta, que ara arriba fins on arriben els deutes. Cada número d'esta setmana ha sigut un punt d'un carrer: amb el seu lloc, amb el seu nom, amb el seu espill a l'altre costat del zero. Guarda la cinta, Liz. Demà torna a clarejar sobre la rellotgeria."
 });
 /* lo nuevo de la versión 0.8: la cabecera, las pestañas, los ajustes y la ruta */
 Object.assign(VA, {"Los números partidos · racionales en la recta": "Els nombres partits · racionals en la recta", "Ajustes": "Ajustos", "Aula": "Aula", "Acta": "Acta", "La cinta": "La cinta", "situar y comparar": "situar i comparar", "Partir": "Partir", "la fracción es una división": "la fracció és una divisió", "Juntar y quitar": "Ajuntar i llevar", "sumar y restar": "sumar i restar", "Partes de partes": "Parts de parts", "la fracción de una cantidad": "la fracció d'una quantitat", "Tema": "Tema", "Claro": "Clar", "Oscuro": "Fosc", "Animaciones": "Animacions", "Sí": "Sí", "No": "No", "Lengua": "Llengua", "Sonido": "So", "Turno": "Torn", "Cerrar": "Tancar", "Los casos de esta pestaña": "Els casos d'esta pestanya", "cerrado": "tancat", "La pizzería de Nick": "La pizzeria de Nick", "cumplida": "complida", "equivalentes, en La grapadora": "equivalents, en La grapadora", "la cinta": "la cinta", "comparar": "comparar", "exacto o periódico": "exacte o periòdic", "los negativos": "els negatius", "parte de una parte": "part d'una part", "fracción de cantidad": "fracció de quantitat"});
@@ -3792,6 +4008,9 @@ Object.assign(VA, {"Los números partidos · racionales en la recta": "Els nombr
 Object.assign(VA, {"Guía": "Guia", "Salir": "Eixir", "Siguiente": "Següent", "Al caso": "Al cas", "El acta de la ciudad": "L'acta de la ciutat", "Lo que has hecho en este turno. Cópiala o descárgala para dársela a tu profesor.": "El que has fet en este torn. Copia-la o descarrega-la per a donar-la al teu professor.", "Tu nombre": "El teu nom", "Caso": "Cas", "Encargos": "Encàrrecs", "Fallos": "Errades", "Copiar el acta": "Copiar l'acta", "Descargar .txt": "Descarregar .txt", "Las conclusiones": "Les conclusions", "Casos cerrados": "Casos tancats", "A la primera": "A la primera", "Acierto": "Encert", "Tiempo": "Temps", "pendiente": "pendent", "Encargo a encargo": "Encàrrec a encàrrec", "Caso ": "Cas ", "bien tras ": "bé després de ", " fallo": " errada", " fallos": " errades", "bien a la primera": "bé a la primera", "sin resolver": "sense resoldre", "LA CIUDAD · acta del turno": "LA CIUTAT · acta del torn", "Nombre: ": "Nom: ", "(sin nombre)": "(sense nom)", "Fecha: ": "Data: ", "Tiempo: ": "Temps: ", "Casos cerrados: ": "Casos tancats: ", "Encargos resueltos: ": "Encàrrecs resolts: ", " a la primera": " a la primera", "Fallos: ": "Errades: ", "Acierto: ": "Encert: ", "Por caso:": "Per cas:", "fallos: ": "errades: ", "Encargo a encargo:": "Encàrrec a encàrrec:", "Copiada. Pégala donde te diga tu profesor.": "Copiada. Apega-la on et diga el teu professor.", "No se ha podido copiar: descárgala.": "No s'ha pogut copiar: descarrega-la.", "Descargada.": "Descarregada.", "Los contenidos": "Els continguts", "El plano": "El plànol", "La ruta": "La ruta", "El aula": "L'aula", "<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.": "<b>La cinta</b>: situar i comparar. <b>Partir</b>: la fracció és una divisió. <b>Ajuntar i llevar</b>: sumar i restar. <b>Parts de parts</b>: la fracció d'una quantitat. Cada pestanya té els seus casos.", "Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.": "Cada xinxeta és un <b>cas</b>. Toca-la per a obrir la seua carpeta. Els casos de la pestanya es veuen encesos; en tancar-los, el <b>fil roig</b> els va unint.", "Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.": "Els casos d'esta pestanya, en orde. En La cinta hi ha també <b>la pizzeria de Nick</b>: les fraccions equivalents es treballen allí, amb pizza.", "El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.": "El suro (clar) o l'asfalt de nit (fosc), les animacions, el <b>valencià</b>, el so i començar de zero.", "Todo más grande, para la pizarra digital.": "Tot més gran, per a la pissarra digital.", "Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.": "El que has fet en el torn, cas a cas i encàrrec a encàrrec, per a <b>entregar-ho al teu professor</b>. Jeff l'espera en l'escena del crim."});
 /* lo nuevo de la versión 0.10: Practicar */
 Object.assign(VA, {"Practicar": "Practicar", "Otro encargo": "Un altre encàrrec", "Otro encargo →": "Un altre encàrrec →", "Prueba: ": "Prova: ", "Tu marca: ": "La teua marca: ", " bien en este rato": " bé en esta estona", "Elija una respuesta, jefe.": "Trie una resposta, cap.", "La cinta · situar y comparar": "La cinta · situar i comparar", "Partir · la fracción es una división": "Partir · la fracció és una divisió", "Juntar y quitar · sumar y restar": "Ajuntar i llevar · sumar i restar", "Partes de partes · la fracción de una cantidad": "Parts de parts · la fracció d'una quantitat", "LAS CONCLUSIONES": "LES CONCLUSIONS", " bien": " bé", "Encargos <b>nuevos cada vez</b>, de la pestaña en que estés, sin fin. No cuentan para la ruta, pero sí van al acta. El nombre de tu marca no se ve hasta que compruebas.": "Encàrrecs <b>nous cada vegada</b>, de la pestanya on estigues, sense fi. No compten per a la ruta, però sí que van a l'acta. El nom de la teua marca no es veu fins que comproves."});
+/* lo nuevo de la versión 0.11: el caso 9, la sastrería */
+Object.assign(VA, {"La sastrería": "La sastreria", "Caso 9 · dividir fracciones": "Cas 9 · dividir fraccions", "El sastre de la calle 2 no apunta nombres: apunta cuántas piezas sacó de cada tela. Dividir es contar cuántas veces cabe una pieza en la tela.": "El sastre del carrer 2 no apunta noms: apunta quantes peces va traure de cada tela. Dividir és comptar quantes vegades cap una peça en la tela.", " de 9 cerrados": " de 9 tancats", "nueve casos abiertos": "nou casos oberts", "Multiplicar y dividir": "Multiplicar i dividir", "partes de partes y cuántas caben": "parts de parts i quantes en caben", "Multiplicar y dividir · partes de partes y cuántas caben": "Multiplicar i dividir · parts de parts i quantes en caben", "LAS PIEZAS": "LES PECES", "caso 9 · la sastrería": "cas 9 · la sastreria", "Las piezas": "Les peces", "<div class=\"sello\">CONFIDENCIAL</div> <b>SUMARIO.</b> El traje del dueño del casino salió de la <b>sastrería de la calle 2</b>, y el sastre no apunta nombres: apunta <b>cuántas piezas</b> sacó de cada tela. Liz ha tendido su cinta sobre el mostrador. La <b>verde</b> es la tela que hay; la <b>roja</b>, la pieza que se corta. Dividir es contar cuántas veces cabe la pieza en la tela.": "<div class=\"sello\">CONFIDENCIAL</div> <b>SUMARI.</b> El vestit de l'amo del casino va eixir de la <b>sastreria del carrer 2</b>, i el sastre no apunta noms: apunta <b>quantes peces</b> va traure de cada tela. Liz ha estés la seua cinta sobre el taulell. La <b>verda</b> és la tela que hi ha; la <b>roja</b>, la peça que es talla. Dividir és comptar quantes vegades cap la peça en la tela.", "cortar el metro en": "tallar el metre en", "Toca la cinta para llevar la marca de la <b class=\"r\">pieza</b>. La <b class=\"v\">verde</b> es la tela que hay: esa no se toca.": "Toca la cinta per a portar la marca de la <b class=\"r\">peça</b>. La <b class=\"v\">verda</b> és la tela que hi ha: eixa no es toca.", "Tela: <b id=\"te9\">3/4</b> m": "Tela: <b id=\"te9\">3/4</b> m", "Pieza: <b id=\"pi9\">0</b> m = <b id=\"dp9\">0</b>": "Peça: <b id=\"pi9\">0</b> m = <b id=\"dp9\">0</b>", "Ponga la pieza en la cinta.": "Pose la peça en la cinta.", "Caben ": "Hi caben ", " piezas enteras y sobra ": " peces senceres i sobra ", " de metro, que es ": " de metre, que és ", " de pieza.": " de peça.", " piezas justas: ": " peces justes: ", "Empecemos por lo fácil. Quedaban <b>3/4 de metro</b> de tela gris, y el sastre sacó <b>tres corbatas iguales</b> sin que sobrara nada. Póngame en la cinta lo que mide cada corbata.": "Comencem pel fàcil. Quedaven <b>3/4 de metre</b> de tela grisa, i el sastre va traure <b>tres corbates iguals</b> sense que en sobrara res. Pose'm en la cinta el que mesura cada corbata.", "Un cuarto de metro cada una: <b>3/4 : 3 = 1/4</b>. Y mire las piezas: el cuarto cabe <b>tres veces</b> justas en la tela. Repartir entre 3 y contar cuántas veces cabe la pieza son la misma cuenta, vista de los dos lados.": "Un quart de metre cadascuna: <b>3/4 : 3 = 1/4</b>. I mire les peces: el quart cap <b>tres vegades</b> justes en la tela. Repartir entre 3 i comptar quantes vegades cap la peça són el mateix compte, vist dels dos costats.", "Corte el metro en <b>cuartos</b>: así la tela son tres trozos, uno para cada corbata.": "Talle el metre en <b>quarts</b>: així la tela són tres trossos, un per a cada corbata.", "Cada corbata se lleva uno de los tres trozos de la tela: lleve la roja al primero.": "Cada corbata s'emporta un dels tres trossos de la tela: porte la roja al primer.", "Con otra tela igual, de <b>3/4 de metro</b>, hizo pajaritas. Cada pajarita lleva una tira de <b>1/8 de metro</b>. Póngame la tira en la cinta y cuente cuántas salen.": "Amb una altra tela igual, de <b>3/4 de metre</b>, va fer corbates de llacet. Cada llacet porta una tira d'<b>1/8 de metre</b>. Pose'm la tira en la cinta i compte quantes n'ixen.", "Salen <b>6</b> pajaritas: en octavos, la tela son 6/8 y cada pieza es 1/8. <b>3/4 : 1/8 = 6</b>. Con el mismo corte, dividir es contar.": "N'ixen <b>6</b> llacets: en octaus, la tela són 6/8 i cada peça és 1/8. <b>3/4 : 1/8 = 6</b>. Amb el mateix tall, dividir és comptar.", "Corte el metro en <b>octavos</b> y lleve la marca roja al primero: esa es la tira.": "Talle el metre en <b>octaus</b> i porte la marca roja al primer: eixa és la tira.", "La tira mide un octavo: lleve la roja a la primera rayita.": "La tira mesura un octau: porte la roja a la primera ratlleta.", "Ahora el chaleco. Para el forro había <b>2 metros</b> de seda, y cada pieza del forro mide <b>1/3 de metro</b>. Póngame la pieza y cuente con la cinta cuántas salen.": "Ara l'armilla. Per al folre hi havia <b>2 metres</b> de seda, i cada peça del folre mesura <b>1/3 de metre</b>. Pose'm la peça i compte amb la cinta quantes n'ixen.", "Salen <b>6</b>: tres tercios en cada metro, y hay dos metros. <b>2 : 1/3 = 6</b>. Fíjese: hemos dividido y ha salido <b>más</b> que 2.": "N'ixen <b>6</b>: tres terços en cada metre, i hi ha dos metres. <b>2 : 1/3 = 6</b>. Fixe-s'hi: hem dividit i ha eixit <b>més</b> que 2.", "Corte el metro en <b>tercios</b> y lleve la roja al primero.": "Talle el metre en <b>terços</b> i porte la roja al primer.", "La pieza mide un tercio de metro: la primera rayita después del cero.": "La peça mesura un terç de metre: la primera ratlleta després del zero.", "El ayudante del sastre jura que eso es imposible: «dividir siempre da menos». ¿Quién tiene razón?": "L'ajudant del sastre jura que això és impossible: «dividir sempre dona menys». Qui té raó?", "El ayudante: 2 entre algo tiene que dar menos que 2.": "L'ajudant: 2 entre alguna cosa ha de donar menys que 2.", "Eso pasa al dividir entre un número mayor que 1. Aquí la pieza mide menos de un metro: cabe más de una vez en cada metro, y en dos metros caben 6.": "Això passa en dividir entre un nombre major que 1. Ací la peça mesura menys d'un metre: cap més d'una vegada en cada metre, i en dos metres en caben 6.", "La cinta: si la pieza mide menos de 1, cabe más veces que metros hay.": "La cinta: si la peça mesura menys d'1, cap més vegades que metres hi ha.", "Eso es. Dividir entre 1/3 es preguntar cuántos tercios caben, y en cada metro caben 3: 2 · 3 = 6.": "Això és. Dividir entre 1/3 és preguntar quants terços hi caben, i en cada metre en caben 3: 2 · 3 = 6.", "Ninguno: 2 : 1/3 es 2/3, que es lo que mide el forro.": "Cap: 2 : 1/3 és 2/3, que és el que mesura el folre.", "2/3 es 2 · 1/3: eso sería multiplicar, coger un tercio dos veces. Dividir es contar cuántas piezas de 1/3 salen de los 2 metros, y la cinta enseña 6.": "2/3 és 2 · 1/3: això seria multiplicar, agafar un terç dues vegades. Dividir és comptar quantes peces d'1/3 ixen dels 2 metres, i la cinta n'ensenya 6.", "Eso es.": "Això és.", "Elija una de las tres, jefe.": "Trie'n una de les tres, cap.", "Elija una de las cuatro, jefe.": "Trie'n una de les quatre, cap.", "La última pieza del libro: de una tela de <b>3/4 de metro</b> sacó solapas de <b>1/2 metro</b>. Póngame la solapa en la cinta.": "L'última peça del llibre: d'una tela de <b>3/4 de metre</b> va traure solapes de <b>1/2 metre</b>. Pose'm la solapa en la cinta.", "Una solapa cabe entera, y lo que sobra, <b>1/4 de metro</b>, es justo <b>media solapa</b>. Así que caben <b>una y media</b>: 3/4 : 1/2 = 3/2.": "Una solapa cap sencera, i el que sobra, <b>1/4 de metre</b>, és justament <b>mitja solapa</b>. Així que en caben <b>una i mitja</b>: 3/4 : 1/2 = 3/2.", "Corte el metro en dos y lleve la roja a la mitad.": "Talle el metre en dos i porte la roja a la meitat.", "La solapa mide medio metro: lleve la roja a la mitad.": "La solapa mesura mig metre: porte la roja a la meitat.", "¿Cuántas solapas salen, entonces, de 3/4 de metro? Que el sastre lo apunte bien.": "Quantes solapes ixen, doncs, de 3/4 de metre? Que el sastre ho apunte bé.", "3/2: una entera y media más.": "3/2: una sencera i mitja més.", "Eso es. Lo que sobra se mide con la pieza, no con el metro: 1/4 de metro es media solapa.": "Això és. El que sobra es mesura amb la peça, no amb el metre: 1/4 de metre és mitja solapa.", "1/4: lo que sobra.": "1/4: el que sobra.", "1/4 de metro es lo que sobra, medido en metros. La pregunta es cuántas solapas: una entera, y lo que sobra es media solapa más.": "1/4 de metre és el que sobra, mesurat en metres. La pregunta és quantes solapes: una sencera, i el que sobra és mitja solapa més.", "3/8: tres cuartos por un medio.": "3/8: tres quarts per un mig.", "3/8 es la mitad de 3/4: eso es multiplicar, coger la mitad de la tela. Dividir entre 1/2 es contar cuántas medias caben, y caben una y media.": "3/8 és la meitat de 3/4: això és multiplicar, agafar la meitat de la tela. Dividir entre 1/2 és comptar quantes mitges hi caben, i en caben una i mitja.", "Liz lo ha apuntado en su libreta: 2 : 1/3 = 6 = 2 · 3; 3/4 : 1/8 = 6 = 3/4 · 8; 3/4 : 1/2 = 3/2 = 3/4 · 2. ¿Qué regla se esconde ahí?": "Liz ho ha apuntat en la seua llibreta: 2 : 1/3 = 6 = 2 · 3; 3/4 : 1/8 = 6 = 3/4 · 8; 3/4 : 1/2 = 3/2 = 3/4 · 2. Quina regla s'amaga ací?", "Dividir entre una fracción es multiplicar por la del divisor dada la vuelta: 1/3 → 3, 1/8 → 8, 1/2 → 2.": "Dividir entre una fracció és multiplicar per la del divisor girada: 1/3 → 3, 1/8 → 8, 1/2 → 2.", "Eso es, y ya sabe por qué: dividir entre 1/3 es contar tercios, y en cada unidad caben 3. Por eso a : (c/d) = a · (d/c).": "Això és, i ja sap per què: dividir entre 1/3 és comptar terços, i en cada unitat en caben 3. Per això a : (c/d) = a · (d/c).", "Se divide arriba entre arriba y abajo entre abajo.": "Es dividix dalt entre dalt i baix entre baix.", "Solo sale si las dos tienen el mismo corte: 6/8 : 1/8 = 6. Con 2/3 : 3/4 tendría que hacer 2 : 3 y 3 : 4, y eso no se ve en ninguna cinta. Primero el mismo corte, o dar la vuelta a la pieza.": "Només ix si les dues tenen el mateix tall: 6/8 : 1/8 = 6. Amb 2/3 : 3/4 hauria de fer 2 : 3 i 3 : 4, i això no es veu en cap cinta. Primer el mateix tall, o girar la peça.", "Se da la vuelta a la primera fracción y se multiplica.": "Es gira la primera fracció i es multiplica.", "Entonces 2 : 1/3 sería 1/2 · 1/3 = 1/6, y la cinta enseñó 6 piezas. Se da la vuelta a la pieza, que es la que se cuenta.": "Llavors 2 : 1/3 seria 1/2 · 1/3 = 1/6, i la cinta va ensenyar 6 peces. Es gira la peça, que és la que es compta.", "Dividir siempre da menos, así que se multiplica por algo pequeño.": "Dividir sempre dona menys, així que es multiplica per alguna cosa xicoteta.", "Ya lo vio en el forro: 2 : 1/3 = 6. Al dividir entre algo menor que 1, sale más.": "Ja ho va veure en el folre: 2 : 1/3 = 6. En dividir entre alguna cosa menor que 1, ix més.", "<b>Caso cerrado.</b> El libro del sastre cuadra pieza a pieza. Y en la última página hay una nota: el traje del sospechoso se pagó con billetes del banco de la calle 4, y su coche ha acabado esta mañana en el desguace, con una cuenta pendiente.": "<b>Cas tancat.</b> El llibre del sastre quadra peça a peça. I en l'última pàgina hi ha una nota: el vestit del sospitós es va pagar amb bitllets del banc del carrer 4, i el seu cotxe ha acabat este matí en el desballestament, amb un compte pendent.", "3/4 : 3 = 1/4; 3/4 : 1/8 = 6; 2 : 1/3 = 6; 3/4 : 1/2 = 3/2.": "3/4 : 3 = 1/4; 3/4 : 1/8 = 6; 2 : 1/3 = 6; 3/4 : 1/2 = 3/2.", "Dividir es contar cuántas veces cabe una pieza. Dividir entre c/d es multiplicar por d/c: entre algo menor que 1, sale más.": "Dividir és comptar quantes vegades cap una peça. Dividir entre c/d és multiplicar per d/c: entre alguna cosa menor que 1, ix més."});
+Object.assign(VA, {"Cabe ": "Hi cap ", " pieza entera y sobra ": " peça sencera i sobra "});
 </script>
 <script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
@@ -3863,7 +4082,8 @@ const ABRE = {
   5(){ caso5.abre(); vista('vCaso5'); cinta5.repinta(); },
   6(){ caso6.abre(); vista('vCaso6'); cinta6.repinta(); },
   7(){ caso7.abre(); vista('vCaso7'); cinta7.repinta(); },
-  8(){ caso8.abre(); vista('vCaso8'); cinta8.repinta(); }
+  8(){ caso8.abre(); vista('vCaso8'); cinta8.repinta(); },
+  9(){ caso9.abre(); vista('vCaso9'); cinta9.repinta(); }
 };
 document.querySelectorAll('.chincheta').forEach(b => b.addEventListener('click', () => {
   abierto = +b.dataset.c;
@@ -3899,9 +4119,9 @@ document.getElementById('lengua').addEventListener('click', () => {
   const b = document.getElementById('lengua');
   b.textContent = idioma === 'es' ? 'Valencià' : 'Castellano'; b.lang = idioma === 'es' ? 'ca' : 'es';
   traduce();
-  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
+  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
   div3.repinta();
-  [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
+  [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8, caso9].forEach(c => c.repinta());
   const so = document.getElementById('sonido');
   so.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
   pintaMapa(); pintaActa(); pintaCero(); guardaTurno();
@@ -3939,7 +4159,7 @@ let pintaCero = () => {};
       horas, la ciudad se abre con sus casos cerrados, su hilo rojo tendido
       y sus ajustes puestos. Se entra por el PLANO, que es donde se entra
       siempre: los expedientes se abren desde su chincheta. ── */
-EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
+EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8, 9:caso9};
 {
   const d = leeTurno();
   if(d){
@@ -3959,8 +4179,8 @@ EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
 }
 
 traduce();
-[cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
-[caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
+[cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
+[caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8, caso9].forEach(c => c.repinta());
 pintaMapa(); pintaCero();
 
 
@@ -3977,7 +4197,7 @@ document.querySelectorAll('.sumario').forEach(s => s.addEventListener('click', (
      La cinta          situar y comparar          casos 1 y 2, y la pizzería
      Partir            la fracción es una división casos 3 y 4
      Juntar y quitar   sumar y restar              casos 5 y 8
-     Partes de partes  la fracción de una cantidad casos 6 y 7
+     Multiplicar y dividir  partes de partes y cuántas caben  casos 6, 7 y 9
    En el plano, lo que no es de la pestaña queda en segundo plano; debajo,
    su ruta. La pizzería es una misión más de La cinta: la equivalencia se
    trabaja con pizza en La grapadora de Nick, y como las dos apps viven en el
@@ -3987,7 +4207,7 @@ const PESTANAS = {
   cinta:  {casos: [1, 2], pizzeria: true},
   partir: {casos: [3, 4]},
   juntar: {casos: [5, 8]},
-  partes: {casos: [6, 7]}
+  partes: {casos: [6, 7, 9]}
 };
 const GRAPADORA = 'https://diazepamina-creator.github.io/grapadora-de-nick/';
 let pestana = 'cinta';
@@ -4059,7 +4279,7 @@ function aplicaAjustes(){
   /* el coche del plano anda con SMIL, que no hace caso al CSS: se le para a mano */
   const plano = document.querySelector('#mapa svg[aria-label]');
   if(plano) quieto() ? plano.pauseAnimations() : plano.unpauseAnimations();
-  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
+  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
   div3.repinta();
 }
 function guardaAjustes(){ try{ localStorage.setItem(AJUSTES, JSON.stringify(aj)); }catch(err){} }
@@ -4311,7 +4531,7 @@ document.getElementById('prOtro').addEventListener('click', nuevoPr);
 /* ── EL BOTÓN DE LA CABECERA: entra y sale de Practicar, en la pestaña en
    que se esté. Las pestañas, mientras tanto, cambian de tipo de encargo. ── */
 const NOMBRE_PES = {cinta: 'La cinta · situar y comparar', partir: 'Partir · la fracción es una división',
-  juntar: 'Juntar y quitar · sumar y restar', partes: 'Partes de partes · la fracción de una cantidad'};
+  juntar: 'Juntar y quitar · sumar y restar', partes: 'Multiplicar y dividir · partes de partes y cuántas caben'};
 let enPractica = false;
 function practicar(si){
   enPractica = si;
@@ -4378,7 +4598,7 @@ function cuentas(){
 const $a = id => document.getElementById(id);
 function pintaActaM(){
   const k = cuentas(), dato = (n, v) => '<div><span class="etq">' + T(n) + '</span><b>' + v + '</b></div>';
-  $a('acDatos').innerHTML = dato('Casos cerrados', resueltos.size + ' / 8') + dato('Encargos', k.bien)
+  $a('acDatos').innerHTML = dato('Casos cerrados', resueltos.size + ' / ' + ORDEN.length) + dato('Encargos', k.bien)
     + dato('A la primera', k.primera) + dato('Fallos', k.fallos) + dato('Acierto', k.acierto + '%')
     + dato('Tiempo', reloj(Date.now() - acta.t0).replace(' min ', ':').replace(' s', ''));
   $a('acFilas').innerHTML = ORDEN.map(c => {
@@ -4401,7 +4621,7 @@ function actaEnTexto(){
   t += T('Nombre: ') + (acta.nombre || T('(sin nombre)')) + '\n';
   t += T('Fecha: ') + dos(f.getDate()) + '/' + dos(f.getMonth() + 1) + '/' + f.getFullYear() + '  ' + hora(+f) + '\n';
   t += T('Tiempo: ') + reloj(Date.now() - acta.t0) + '\n';
-  t += T('Casos cerrados: ') + resueltos.size + ' / 8   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
+  t += T('Casos cerrados: ') + resueltos.size + ' / ' + ORDEN.length + '   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
     + T('Fallos: ') + k.fallos + '   ' + T('Acierto: ') + k.acierto + '%\n';
   t += T('Por caso:') + '\n';
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);

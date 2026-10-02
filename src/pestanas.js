@@ -5,7 +5,7 @@
      La cinta          situar y comparar          casos 1 y 2, y la pizzería
      Partir            la fracción es una división casos 3 y 4
      Juntar y quitar   sumar y restar              casos 5 y 8
-     Partes de partes  la fracción de una cantidad casos 6 y 7
+     Multiplicar y dividir  partes de partes y cuántas caben  casos 6, 7 y 9
    En el plano, lo que no es de la pestaña queda en segundo plano; debajo,
    su ruta. La pizzería es una misión más de La cinta: la equivalencia se
    trabaja con pizza en La grapadora de Nick, y como las dos apps viven en el
@@ -15,7 +15,7 @@ const PESTANAS = {
   cinta:  {casos: [1, 2], pizzeria: true},
   partir: {casos: [3, 4]},
   juntar: {casos: [5, 8]},
-  partes: {casos: [6, 7]}
+  partes: {casos: [6, 7, 9]}
 };
 const GRAPADORA = 'https://diazepamina-creator.github.io/grapadora-de-nick/';
 let pestana = 'cinta';
@@ -87,7 +87,7 @@ function aplicaAjustes(){
   /* el coche del plano anda con SMIL, que no hace caso al CSS: se le para a mano */
   const plano = document.querySelector('#mapa svg[aria-label]');
   if(plano) quieto() ? plano.pauseAnimations() : plano.unpauseAnimations();
-  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
+  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
   div3.repinta();
 }
 function guardaAjustes(){ try{ localStorage.setItem(AJUSTES, JSON.stringify(aj)); }catch(err){} }

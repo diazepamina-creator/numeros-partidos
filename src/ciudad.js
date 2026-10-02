@@ -39,13 +39,15 @@ const CASOS = {
     x:'El coche del sospechoso ha acabado en el desguace, y con él el libro de la banca: una columna de deudas. Aquí la cinta sigue hacia la izquierda del cero.'},
  7:{t:'El casino de la calle 9', s:'Caso 7 · parte de una parte',
     x:'Una ruleta que paga «tres a dos», un bote que la banca corta antes de que nadie lo vea y un dueño que se lleva la mitad de lo que sobra. Aquí se toma una parte de otra parte.'},
+ 9:{t:'La sastrería', s:'Caso 9 · dividir fracciones',
+    x:'El sastre de la calle 2 no apunta nombres: apunta cuántas piezas sacó de cada tela. Dividir es contar cuántas veces cabe una pieza en la tela.'},
  6:{t:'El reparto del botín', s:'Caso 6 · fracción de cantidad',
     x:'Doce mil dólares en una saca y una nota de reparto: tres cuartos para uno, un sexto para otro y dos hombres esperando en el coche. Las cuentas no le cuadran a nadie.'}
 };
 /* Ya no hay casos por montar: los siete tienen su vista. Se deja la lista
    porque es la que decide si el botón de la carpeta abre o no, y el día que
    se añada un caso nuevo al plano hará falta otra vez. */
-const MONTADOS = new Set([1, 2, 3, 4, 5, 6, 7, 8]);
+const MONTADOS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 /* Los casos resueltos se guardan en el propio aparato —sin servidor y sin
    cuentas—, porque ocho expedientes no caben en una sesión y una tablet que
    se bloquea los borraba todos. El acta la sigue llevando el papel; esto es
@@ -93,7 +95,8 @@ const quieto = () => document.body.dataset.quieto === 'si'
    plano; el hilo, en el viewBox de 900×620, así que se convierte. Un hilo
    tirante queda muerto: cada tramo se comba un poco hacia abajo, que es lo
    que hace un hilo que cuelga entre dos chinchetas. ── */
-const ORDEN = [1, 2, 3, 4, 5, 6, 7, 8];
+/* el orden de la historia: la sastrería (9) va entre el casino y el desguace */
+const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8];
 const hilosTendidos = new Set();
 function pos(c){
   const st = document.querySelector('.chincheta[data-c="' + c + '"]').style;
@@ -125,12 +128,12 @@ function pintaMapa(){
       n.innerHTML = '<span>' + b.dataset.c + '</span>';
   });
   document.getElementById('cuenta').textContent =
-    resueltos.size === 8 ? T('ciudad cerrada')
-    : resueltos.size ? resueltos.size + T(' de 8 cerrados') : T('ocho casos abiertos');
+    resueltos.size === ORDEN.length ? T('ciudad cerrada')
+    : resueltos.size ? resueltos.size + T(' de 9 cerrados') : T('nueve casos abiertos');
   pintaHilo();
   /* los siete cerrados: el sello gordo cae sobre el plano, una sola vez */
   const mapa = document.getElementById('mapa');
-  if(resueltos.size === 8 && !mapa.querySelector('.sellazo')){
+  if(resueltos.size === ORDEN.length && !mapa.querySelector('.sellazo')){
     const z = document.createElement('div');
     z.className = 'sellazo golpea'; z.textContent = T('CIUDAD CERRADA');
     mapa.appendChild(z);
@@ -381,8 +384,12 @@ function montaExpediente(cfg){
       caja.appendChild(b);
     });
   }
+  let preparado = -1;
   function pintaEncargo(){
     const ultimo = enc === cfg.encargos.length - 1, hecho = hechos.has(enc);
+    /* un encargo puede montar su cinta (la tela de la sastrería cambia):
+       solo al llegar a él, no al repintar por la lengua */
+    if(enc !== preparado){ preparado = enc; if(cfg.encargos[enc].prepara) cfg.encargos[enc].prepara(); }
     /* el veredicto de la cinta solo se ve después de comprobar (o con el
        encargo ya resuelto); el sumario se pliega cuando ya se ha leído */
     R.classList.toggle('visto', hecho); R.dataset.hecho = hecho ? 'si' : 'no';
@@ -472,7 +479,7 @@ function montaExpediente(cfg){
   return {
     total: cfg.encargos.length,
     hechos: () => hechos.size,
-    abre(){ enc = 0; pintaEncargo(); },
+    abre(){ enc = 0; preparado = -1; pintaEncargo(); },
     repinta(){ vistos.add(enc); pintaEncargo(); },
     guarda(){ return {h:[...hechos], v:[...vistos]}; },
     carga(d){
@@ -1104,10 +1111,9 @@ const ENCARGOS7 = [
 ];
 const caso7 = montaExpediente({
   vista:'vCaso7', caso:7, encargos:ENCARGOS7,
-  cierre:'<b>Caso cerrado.</b> La banca paga una vez y media y se queda un '
-    + 'quinto: el negocio cuadra. Pero en su libro hay una columna en rojo con '
-    + 'lo que la gente le debe, y el coche del sospechoso ha aparecido esta '
-    + 'mañana en el desguace, con la cuenta pendiente.'
+  cierre:'<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: '
+    + 'el negocio cuadra. Pero el dueño no viste de confección: su traje salió de la '
+    + 'sastrería de la calle 2, y el sastre corta la tela con cinta métrica, como Liz.'
 });
 
 /* ═══ EL CASO 8 · LA DEUDA ══════════════════════════════════════════
@@ -1198,7 +1204,7 @@ const ENCARGOS8 = [
 ];
 const caso8 = montaExpediente({
   vista:'vCaso8', caso:8, encargos:ENCARGOS8,
-  cierre:'<b>Ciudad cerrada.</b> Ocho expedientes y una sola cinta, que ahora '
+  cierre:'<b>Ciudad cerrada.</b> Nueve expedientes y una sola cinta, que ahora '
     + 'llega hasta donde llegan las deudas. Cada número de esta semana ha sido '
     + 'un punto de una calle: con su sitio, con su nombre, con su espejo al '
     + 'otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre '
@@ -1208,6 +1214,136 @@ const caso8 = montaExpediente({
 /* ═══ EL ACTA ═══════════════════════════════════════════════════════
    Ocho renglones: lo que se averiguó, con sus números, y el principio que lo
    sostiene. Se pinta cada vez que se abre, con lo que haya cerrado. */
+/* ═══ EL CASO 9 · LA SASTRERÍA ═════════════════════════════════════
+   Dividir es medir: ¿cuántas veces cabe la pieza (roja) en la tela (verde)?
+   Desde el cero, la pieza se copia una detrás de otra hasta donde llega la
+   tela; la que no cabe entera sale recortada y rayada. Así se cuenta, y se
+   ve qué sobra —y que lo que sobra se mide con la pieza, no con el metro—.
+   La tela cambia de encargo a encargo (prepara). */
+let tela9 = 3/4;
+/* el nombre más corto de un punto: 1,5 → 3/2 */
+function corto(v){
+  for(let d = 1; d <= 64; d++) if(Math.abs(v * d - Math.round(v * d)) < 1e-9)
+    return (d === 1 ? String(Math.round(v)) : Math.round(v * d) + '/' + d);
+  return dec(v);
+}
+const cinta9 = montaCinta({
+  esc:'esc9', tira:'tira9', farolas:null, pasos:1, cortes:1, rozan:52,
+  botones:'#vCaso9 .b[data-b]', activa:'m9p',
+  marcas:{ m9t:{v:3/4, nombre:() => corto(tela9)}, m9p:{v:0} },
+  alCambiar(st){
+    const v = st.marcas.m9p.v;
+    te9.textContent = corto(tela9); pi9.textContent = st.texto(v); dp9.textContent = dec(v);
+    const t = document.getElementById('tira9'), an = t.getBoundingClientRect().width, x0 = t.offsetLeft;
+    const px = x => x0 + x * an / st.pasos;
+    /* la tela, sobre el mostrador */
+    const tela = document.getElementById('tela9');
+    tela.style.left = px(0) + 'px'; tela.style.width = (px(tela9) - px(0)) + 'px'; tela.style.top = (t.offsetTop - 14) + 'px';
+    /* las piezas, una detrás de otra */
+    const tj = document.getElementById('tejas9'); tj.innerHTML = '';
+    tj.style.top = (t.offsetTop - 14) + 'px';
+    const ver = document.getElementById('ver9');
+    if(v <= 1e-9){ ver.className = 'veredicto'; ver.innerHTML = T('Ponga la pieza en la cinta.'); return; }
+    const n = Math.floor(tela9 / v + 1e-9), resto = tela9 - n * v;
+    for(let k = 0; k < Math.min(n, 48); k++){
+      const d = document.createElement('div'); d.className = 'teja' + (k % 2 ? ' par' : '');
+      d.style.left = px(k * v) + 'px'; d.style.width = (px((k + 1) * v) - px(k * v)) + 'px'; tj.appendChild(d);
+    }
+    if(resto > 1e-9){
+      const d = document.createElement('div'); d.className = 'teja sobra';
+      d.style.left = px(n * v) + 'px'; d.style.width = (px(tela9) - px(n * v)) + 'px'; tj.appendChild(d);
+    }
+    ver.className = 'veredicto' + (resto > 1e-9 ? '' : ' igual');
+    ver.innerHTML = resto > 1e-9
+      ? T(n === 1 ? 'Cabe ' : 'Caben ') + '<b>' + n + '</b>' + T(n === 1 ? ' pieza entera y sobra ' : ' piezas enteras y sobra ') + '<b>' + corto(resto) + '</b>' + T(' de metro, que es ') + '<b>' + corto(resto / v) + '</b>' + T(' de pieza.')
+      : T('Caben ') + '<b>' + n + '</b>' + T(' piezas justas: ') + corto(tela9) + ' : ' + st.texto(v) + ' = <b>' + n + '</b>.';
+  }
+});
+/* monta la tela de un encargo: su largo, cuántos metros tiene la cinta, y
+   la pieza otra vez en el cero, sin cortar */
+function tela(v, pasos){
+  return () => { tela9 = v; cinta9.pasos = pasos; cinta9.cortes = 1; cinta9.marcas.m9t.v = v;
+    cinta9.marcas.m9p.v = 0; cinta9.marcas.m9p.medido = '0';
+    document.querySelectorAll('#vCaso9 .b[data-b]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    requestAnimationFrame(() => cinta9.repinta()); };
+}
+const pieza9 = () => cinta9.marcas.m9p.v;
+const corta9 = k => cinta9.cortes % k === 0;
+const ENCARGOS9 = [
+ {t:'Empecemos por lo fácil. Quedaban <b>3/4 de metro</b> de tela gris, y el sastre sacó <b>tres corbatas iguales</b> sin que sobrara nada. Póngame en la cinta lo que mide cada corbata.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/4) < 1e-9,
+  bien:'Un cuarto de metro cada una: <b>3/4 : 3 = 1/4</b>. Y mire las piezas: el cuarto cabe <b>tres veces</b> justas en la tela. Repartir entre 3 y contar cuántas veces cabe la pieza son la misma cuenta, vista de los dos lados.',
+  mal:() => !corta9(4)
+    ? T('Corte el metro en <b>cuartos</b>: así la tela son tres trozos, uno para cada corbata.')
+    : T('Cada corbata se lleva uno de los tres trozos de la tela: lleve la roja al primero.')},
+
+ {t:'Con otra tela igual, de <b>3/4 de metro</b>, hizo pajaritas. Cada pajarita lleva una tira de <b>1/8 de metro</b>. Póngame la tira en la cinta y cuente cuántas salen.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/8) < 1e-9,
+  bien:'Salen <b>6</b> pajaritas: en octavos, la tela son 6/8 y cada pieza es 1/8. <b>3/4 : 1/8 = 6</b>. Con el mismo corte, dividir es contar.',
+  mal:() => !corta9(8)
+    ? T('Corte el metro en <b>octavos</b> y lleve la marca roja al primero: esa es la tira.')
+    : T('La tira mide un octavo: lleve la roja a la primera rayita.')},
+
+ {t:'Ahora el chaleco. Para el forro había <b>2 metros</b> de seda, y cada pieza del forro mide <b>1/3 de metro</b>. Póngame la pieza y cuente con la cinta cuántas salen.',
+  prepara: tela(2, 2),
+  ok:() => Math.abs(pieza9() - 1/3) < 1e-9,
+  bien:'Salen <b>6</b>: tres tercios en cada metro, y hay dos metros. <b>2 : 1/3 = 6</b>. Fíjese: hemos dividido y ha salido <b>más</b> que 2.',
+  mal:() => !corta9(3)
+    ? T('Corte el metro en <b>tercios</b> y lleve la roja al primero.')
+    : T('La pieza mide un tercio de metro: la primera rayita después del cero.')},
+
+ {t:'El ayudante del sastre jura que eso es imposible: «dividir siempre da menos». ¿Quién tiene razón?',
+  ops:[
+   {t:'El ayudante: 2 entre algo tiene que dar menos que 2.', ok:false,
+    r:'Eso pasa al dividir entre un número mayor que 1. Aquí la pieza mide menos de un metro: cabe más de una vez en cada metro, y en dos metros caben 6.'},
+   {t:'La cinta: si la pieza mide menos de 1, cabe más veces que metros hay.', ok:true,
+    r:'Eso es. Dividir entre 1/3 es preguntar cuántos tercios caben, y en cada metro caben 3: 2 · 3 = 6.'},
+   {t:'Ninguno: 2 : 1/3 es 2/3, que es lo que mide el forro.', ok:false,
+    r:'2/3 es 2 · 1/3: eso sería multiplicar, coger un tercio dos veces. Dividir es contar cuántas piezas de 1/3 salen de los 2 metros, y la cinta enseña 6.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las tres, jefe.'},
+
+ {t:'La última pieza del libro: de una tela de <b>3/4 de metro</b> sacó solapas de <b>1/2 metro</b>. Póngame la solapa en la cinta.',
+  prepara: tela(3/4, 1),
+  ok:() => Math.abs(pieza9() - 1/2) < 1e-9,
+  bien:'Una solapa cabe entera, y lo que sobra, <b>1/4 de metro</b>, es justo <b>media solapa</b>. Así que caben <b>una y media</b>: 3/4 : 1/2 = 3/2.',
+  mal:() => !corta9(2)
+    ? T('Corte el metro en dos y lleve la roja a la mitad.')
+    : T('La solapa mide medio metro: lleve la roja a la mitad.')},
+
+ {t:'¿Cuántas solapas salen, entonces, de 3/4 de metro? Que el sastre lo apunte bien.',
+  ops:[
+   {t:'3/2: una entera y media más.', ok:true,
+    r:'Eso es. Lo que sobra se mide con la pieza, no con el metro: 1/4 de metro es media solapa.'},
+   {t:'1/4: lo que sobra.', ok:false,
+    r:'1/4 de metro es lo que sobra, medido en metros. La pregunta es cuántas solapas: una entera, y lo que sobra es media solapa más.'},
+   {t:'3/8: tres cuartos por un medio.', ok:false,
+    r:'3/8 es la mitad de 3/4: eso es multiplicar, coger la mitad de la tela. Dividir entre 1/2 es contar cuántas medias caben, y caben una y media.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las tres, jefe.'},
+
+ {t:'Liz lo ha apuntado en su libreta: 2 : 1/3 = 6 = 2 · 3; 3/4 : 1/8 = 6 = 3/4 · 8; 3/4 : 1/2 = 3/2 = 3/4 · 2. ¿Qué regla se esconde ahí?',
+  ops:[
+   {t:'Dividir entre una fracción es multiplicar por la del divisor dada la vuelta: 1/3 → 3, 1/8 → 8, 1/2 → 2.', ok:true,
+    r:'Eso es, y ya sabe por qué: dividir entre 1/3 es contar tercios, y en cada unidad caben 3. Por eso a : (c/d) = a · (d/c).'},
+   {t:'Se divide arriba entre arriba y abajo entre abajo.', ok:false,
+    r:'Solo sale si las dos tienen el mismo corte: 6/8 : 1/8 = 6. Con 2/3 : 3/4 tendría que hacer 2 : 3 y 3 : 4, y eso no se ve en ninguna cinta. Primero el mismo corte, o dar la vuelta a la pieza.'},
+   {t:'Se da la vuelta a la primera fracción y se multiplica.', ok:false,
+    r:'Entonces 2 : 1/3 sería 1/2 · 1/3 = 1/6, y la cinta enseñó 6 piezas. Se da la vuelta a la pieza, que es la que se cuenta.'},
+   {t:'Dividir siempre da menos, así que se multiplica por algo pequeño.', ok:false,
+    r:'Ya lo vio en el forro: 2 : 1/3 = 6. Al dividir entre algo menor que 1, sale más.'}],
+  bien:'Eso es.',
+  mal:'Elija una de las cuatro, jefe.'}
+];
+const caso9 = montaExpediente({
+  vista:'vCaso9', caso:9, encargos:ENCARGOS9,
+  cierre:'<b>Caso cerrado.</b> El libro del sastre cuadra pieza a pieza. Y en la última '
+    + 'página hay una nota: el traje del sospechoso se pagó con billetes del banco de la '
+    + 'calle 4, y su coche ha acabado esta mañana en el desguace, con una cuenta pendiente.'
+});
+
 const ACTA = [
  {c:1, t:'La cinta', h:'5/4 queda a la derecha de 3/4: el sospechoso pasó de largo. Y 10/8 es el mismo punto que 5/4.',
   p:'Una fracción es un punto de la cinta. El de más a la derecha es el mayor, y un punto puede tener varios nombres según el corte.'},
@@ -1224,7 +1360,9 @@ const ACTA = [
  {c:7, t:'La banca', h:'La mitad de 4/5 es 4/10 = 2/5; el 20 % es 1/5; «tres a dos» es 3/2.',
   p:'Parte de otra parte: cortar lo ya cortado. Un tanto por ciento es una fracción con cien debajo.'},
  {c:8, t:'La deuda', h:'−3/4 es el espejo de 3/4; −3/4 < −1/2; −3/4 + 5/4 = 1/2.',
-  p:'−x es el opuesto de x: misma distancia del cero, al otro lado, y x + (−x) = 0.'}
+  p:'−x es el opuesto de x: misma distancia del cero, al otro lado, y x + (−x) = 0.'},
+ {c:9, t:'Las piezas', h:'3/4 : 3 = 1/4; 3/4 : 1/8 = 6; 2 : 1/3 = 6; 3/4 : 1/2 = 3/2.',
+  p:'Dividir es contar cuántas veces cabe una pieza. Dividir entre c/d es multiplicar por d/c: entre algo menor que 1, sale más.'}
 ];
 function pintaActa(){
   const ol = document.getElementById('actaLista'); ol.innerHTML = '';

@@ -139,7 +139,7 @@
     <button type="button" data-tab="cinta" aria-pressed="true"><b data-t>La cinta</b><small data-t>situar y comparar</small></button>
     <button type="button" data-tab="partir" aria-pressed="false"><b data-t>Partir</b><small data-t>la fracción es una división</small></button>
     <button type="button" data-tab="juntar" aria-pressed="false"><b data-t>Juntar y quitar</b><small data-t>sumar y restar</small></button>
-    <button type="button" data-tab="partes" aria-pressed="false"><b data-t>Partes de partes</b><small data-t>la fracción de una cantidad</small></button>
+    <button type="button" data-tab="partes" aria-pressed="false"><b data-t>Multiplicar y dividir</b><small data-t>partes de partes y cuántas caben</small></button>
   </div>
 </header>
 
@@ -672,6 +672,8 @@
       <span class="num">6</span><span class="rot">El reparto</span></button>
     <button class="chincheta" style="left:12%;top:86%;--i:7" data-c="8">
       <span class="num">8</span><span class="rot">La deuda</span></button>
+    <button class="chincheta" style="left:53%;top:27%;--i:8" data-c="9">
+      <span class="num">9</span><span class="rot">La sastrería</span></button>
     <!-- La pizzería NO lleva chincheta de expediente: lleva la suya, que se
          distingue en todo —terracota en vez de absenta, borde de rayas y un
          ¾ en vez de un número— porque no se cierra, se visita. Y por eso es
@@ -1159,6 +1161,67 @@
     <span>Saldo: <b id="sa8">0</b> = <b id="ds8">0</b></span>
   </div>
   <div class="veredicto" id="ver8"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 9 · LA SASTRERÍA ═════════════════════════════════
+     Dividir es medir: ¿cuántas veces cabe esta pieza en aquella tela? La
+     tela es la marca verde (cambia de encargo a encargo); la pieza, la roja.
+     Desde el cero, la pieza se copia una detrás de otra hasta donde llega la
+     tela, y la que no cabe entera sale recortada: se cuentan, y se ve qué
+     sobra. -->
+<div class="vista marco" id="vCaso9">
+  <div class="barra cabezaCaso">
+    <button class="b volver">← La ciudad</button>
+    <div><h1>LAS PIEZAS</h1><div class="sub">caso 9 · la sastrería</div></div>
+  </div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El traje del dueño del casino salió de la <b>sastrería de la
+    calle 2</b>, y el sastre no apunta nombres: apunta <b>cuántas piezas</b> sacó
+    de cada tela. Liz ha tendido su cinta sobre el mostrador. La <b>verde</b> es
+    la tela que hay; la <b>roja</b>, la pieza que se corta. Dividir es contar
+    cuántas veces cabe la pieza en la tela.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el metro en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena sastre" id="esc9">
+    <div class="mostrador"></div>
+    <div class="tela" id="tela9"></div>
+    <div class="tejas" id="tejas9"></div>
+    <div class="tira" id="tira9"></div>
+    <div class="chin" id="m9t" style="left:200px"><div class="val">3/4</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m9p" style="left:60px"><div class="val">0</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca de la <b class="r">pieza</b>.
+     La <b class="v">verde</b> es la tela que hay: esa no se toca.</p>
+  <div class="lectura">
+    <span>Tela: <b id="te9">3/4</b> m</span>
+    <span>Pieza: <b id="pi9">0</b> m = <b id="dp9">0</b></span>
+  </div>
+  <div class="veredicto" id="ver9"></div>
 </div>
 
 <!-- ═══ VISTA: PRACTICAR ═════════════════════════════════════════════

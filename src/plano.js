@@ -8,7 +8,8 @@ const ABRE = {
   5(){ caso5.abre(); vista('vCaso5'); cinta5.repinta(); },
   6(){ caso6.abre(); vista('vCaso6'); cinta6.repinta(); },
   7(){ caso7.abre(); vista('vCaso7'); cinta7.repinta(); },
-  8(){ caso8.abre(); vista('vCaso8'); cinta8.repinta(); }
+  8(){ caso8.abre(); vista('vCaso8'); cinta8.repinta(); },
+  9(){ caso9.abre(); vista('vCaso9'); cinta9.repinta(); }
 };
 document.querySelectorAll('.chincheta').forEach(b => b.addEventListener('click', () => {
   abierto = +b.dataset.c;
@@ -44,9 +45,9 @@ document.getElementById('lengua').addEventListener('click', () => {
   const b = document.getElementById('lengua');
   b.textContent = idioma === 'es' ? 'Valencià' : 'Castellano'; b.lang = idioma === 'es' ? 'ca' : 'es';
   traduce();
-  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
+  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
   div3.repinta();
-  [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
+  [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8, caso9].forEach(c => c.repinta());
   const so = document.getElementById('sonido');
   so.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
   pintaMapa(); pintaActa(); pintaCero(); guardaTurno();
@@ -84,7 +85,7 @@ let pintaCero = () => {};
       horas, la ciudad se abre con sus casos cerrados, su hilo rojo tendido
       y sus ajustes puestos. Se entra por el PLANO, que es donde se entra
       siempre: los expedientes se abren desde su chincheta. ── */
-EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
+EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8, 9:caso9};
 {
   const d = leeTurno();
   if(d){
@@ -104,8 +105,8 @@ EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
 }
 
 traduce();
-[cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
-[caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
+[cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8, cinta9].forEach(c => c.repinta());
+[caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8, caso9].forEach(c => c.repinta());
 pintaMapa(); pintaCero();
 
 
