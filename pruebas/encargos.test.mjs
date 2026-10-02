@@ -236,3 +236,31 @@ test('los encargos sobre el papel de los casos 5, 6, 7 y 9 piden sus números', 
   const c6 = papeles.find(p => p.ej.includes('12000'));
   assert.equal(PR.revisa(c6, '12.000 · 3/4 : 3', '3.000').k, 'bien');
 });
+
+/* ── 0.16: «de» como multiplicación, y la cuenta al revés ── */
+test('«2/3 de 3/4» se lee como 2/3 · 3/4', () => {
+  assert.deepEqual(PR.cuenta('2/3 de 3/4'), PR.cuenta('2/3 · 3/4'));
+  assert.deepEqual(PR.cuenta('3/4 DE 12000'), {n: 9000, d: 1});
+  const p = sinCinta('partes', '3/4_2/3');
+  assert.equal(k(p, '2/3 de 3/4', '1/2'), 'bien');
+  const c = sinCinta('cantidad', '12000_3/4');
+  assert.equal(k(c, '3/4 de 12000', '9000'), 'bien');
+  /* sin tocar lo demás: la x de multiplicar y las combinadas con letras */
+  assert.deepEqual(PR.cuenta('1/2 x 2/3'), {n: 1, d: 3});
+  assert.equal(PR.deEnlace('combinadas', '1/2s1/4m2/3').c, '1/2s1/4m2/3');
+});
+
+test('la cuenta al revés: Liz dice qué ha pasado', () => {
+  const d = sinCinta('dividir', '3/2_1/4'), rd = PR.revisa(d.papel, '1/4 : 3/2', '6');
+  assert.equal(rd.k, 'reves');
+  assert.match(rd.r, /la tela entre lo que lleva cada pieza/);
+  assert.equal(k(sinCinta('restar', '5/6_1/3'), '1/3 − 5/6', '1/2'), 'reves');
+  assert.equal(k(sinCinta('repartir', '10_3'), '3 : 10', '10/3'), 'reves');
+  assert.equal(k(d, '4 : 3/2', '6'), 'otra', 'otros números, al revés o no, siguen siendo otra cuenta');
+  /* sumar y multiplicar no tienen revés: el orden da igual */
+  assert.equal(k(sinCinta('sumar', '1/4_7/8'), '7/8 + 1/4', '9/8'), 'bien');
+  const src = readFileSync(new URL('../src/ciudad.js', import.meta.url), 'utf8');
+  const c9 = [...src.matchAll(/papel:(\{res:.*?\}),\n/g)].map(m => Function('return ' + m[1])()).find(p => p.ej.startsWith('3 :'));
+  assert.equal(PR.revisa(c9, '3/4 : 3', '4').k, 'reves');
+  assert.match(c9.reves, /pañuelo/);
+});
