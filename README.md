@@ -21,7 +21,7 @@ La app es **un solo `index.html`**: se genera con `node construye.mjs` a partir 
 
 - `src/pagina.html` — la cabecera, los ajustes, el plano, los ocho expedientes, el acta y el pie.
 - `src/estilo.css` — el plano, las escenas, la cinta y los expedientes. `src/piel.css` — el formato de Miut: el corcho (claro) y el asfalto de noche (oscuro), la cabecera, las pestañas, las hojas, los ajustes y el pie.
-- `src/ciudad.js` — la cinta, los expedientes y los ocho casos. `src/plano.js` — el plano y las carpetas, la lengua, empezar de cero y la apertura. `src/pestanas.js` — las pestañas, la ruta, la misión de la pizzería y los ajustes. `src/valenciano.js` — el diccionario. `src/sonido.js` — los ruidos del despacho, sintetizados. `src/aula.js` — el modo aula.
+- `src/ciudad.js` — la cinta, los expedientes y los ocho casos. `src/plano.js` — el plano y las carpetas, la lengua, empezar de cero y la apertura. `src/pestanas.js` — las pestañas, la ruta, la misión de la pizzería y los ajustes. `src/acta.js` — el acta del turno y la guía. `src/valenciano.js` — el diccionario. `src/sonido.js` — los ruidos del despacho, sintetizados. `src/aula.js` — el modo aula.
 - `pruebas/` — `node --test pruebas/*.test.mjs`: que `index.html` esté construido.
 
 ## Historial
@@ -29,9 +29,10 @@ La app es **un solo `index.html`**: se genera con `node construye.mjs` a partir 
 1. ✅ Versiones 0.1 a 0.7: el plano, los ocho casos, el valenciano, el modo papel, el acta de conclusiones y la pizzería en el plano.
 2. ✅ Versión 0.8: el formato de Las piezas de Miut. La app pasa a `src/` con `construye.mjs`. Dos temas, elegidos por Andrés: claro, el corcho del detective con Special Elite; oscuro, el asfalto mojado de noche con Bebas Neue; el texto en IBM Plex Sans. La cabecera con Ajustes · Aula · Acta y las cuatro pestañas por contenidos, con su ruta bajo el plano (también para el móvil). La pizzería pasa a ser una misión de La cinta que abre La grapadora de Nick y se marca cumplida al terminar su ruta de Servir. El plano cabe entero en la pantalla, también en el aula. Ajustes: tema, animaciones, lengua, sonido y empezar de cero. Y el pie.
 
+3. ✅ Versión 0.9: la Guía y el acta de verdad. La Guía pone un foco sobre cada parte (las pestañas, el plano, la ruta, los ajustes, el aula y el acta) y se abre sola la primera vez. El acta apunta cada intento: el nombre, el tiempo, los casos cerrados, los encargos resueltos (y cuántos a la primera), los fallos y el porcentaje de acierto; caso a caso, y encargo a encargo con lo que se contestó mal en los interrogatorios. Se copia o se descarga en .txt, caduca con el turno y la borra «Empezar de cero». Las ocho conclusiones de la semana siguen a un botón, dentro del acta.
+
 ## Pendiente
 
-- La Guía y el acta de verdad (nombre, tiempo, aciertos y fallos, ejercicio a ejercicio).
 - Practicar: encargos nuevos de cada tipo. El veredicto de la cinta, solo después de comprobar.
 
 © 2026 Andrés Asensio · [CC BY-NC-ND 4.0](LICENSE.md)

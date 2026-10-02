@@ -75,7 +75,7 @@ function leeTurno(){
     return d;
   }catch(e){ return null; }
 }
-function borraTurno(){ try{ localStorage.removeItem(GUARDADO); }catch(e){} }
+function borraTurno(){ try{ localStorage.removeItem(GUARDADO); localStorage.removeItem('ciudad.acta.v1'); }catch(e){} }
 
 /* Las caras, clonadas de sus plantillas: cada carpeta pide la suya. */
 document.querySelectorAll('.cara-caja[data-cara]').forEach(c =>
@@ -444,6 +444,8 @@ function montaExpediente(cfg){
     if(!quieto()) Ruido.obturador();
     bien ? Ruido.bien() : Ruido.mal();
     q('.infTxt').innerHTML = dice;
+    /* al acta: cada intento, con lo que se dijo si era un interrogatorio */
+    if(typeof anotaActa === 'function' && !(e.ops && elegida === null)) anotaActa(cfg.caso, enc, bien, e.ops && elegida !== null ? e.ops[elegida].t : null);
     if(bien){
       hechos.add(enc);
       if(enc === cfg.encargos.length - 1){ resueltos.add(cfg.caso); pintaMapa(); }
@@ -457,6 +459,8 @@ function montaExpediente(cfg){
      puesto y no se teclea otra vez—. El encargo abierto no se guarda porque
      abre() siempre entra por el primero, que es como funcionaba ya. */
   return {
+    total: cfg.encargos.length,
+    hechos: () => hechos.size,
     abre(){ enc = 0; pintaEncargo(); },
     repinta(){ vistos.add(enc); pintaEncargo(); },
     guarda(){ return {h:[...hechos], v:[...vistos]}; },

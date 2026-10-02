@@ -108,8 +108,9 @@ aplicaAjustes();
 
 /* ── UN ENLACE: ?j=cinta|partir|juntar|partes abre esa pestaña (los QR de
    las fichas). La dirección se limpia. ── */
+let vieneDeEnlace = false;
 try{
   const q = new URLSearchParams(location.search);
-  if(q.get('j')){ if(PESTANAS[q.get('j')]) pestana = q.get('j'); history.replaceState(null, '', location.pathname); }
+  if(q.get('j')){ vieneDeEnlace = true; if(PESTANAS[q.get('j')]) pestana = q.get('j'); history.replaceState(null, '', location.pathname); }
 }catch(err){}
 pintaRuta();
