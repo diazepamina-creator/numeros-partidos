@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!--
+  LOS NÚMEROS PARTIDOS · la ciudad
+  Manipulativo de números racionales para 1.º y 2.º de ESO · prototipo v0.7
+  © Andrés Asensio · CC BY-NC-ND 4.0
+
+  v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
+  aplicaciones separadas y así se quedan —el modelo de pizza es auxiliar y la
+  cinta es primaria, y esa jerarquía solo se ve si viven en archivos
+  distintos—, pero comparten mundo: ahora Nick tiene su local dibujado al
+  este del reparto, con su toldo terracota, y una chincheta propia que lo
+  abre en otra pestaña. No es un expediente y se nota en todo: color de la
+  casa de Nick, borde de rayas y un ¾ en vez de número, clase aparte
+  («vecina») para que ningún recuento la confunda con un caso, y enlace en
+  vez de botón, así que los casos resueltos no se pierden al visitarla.
+  Se clava con las demás al abrir el plano, la última, y se ladea con él.
+
+  v0.6 · TODO LO QUE FALTABA. Seis frentes, todos probados de punta a punta
+  en las dos lenguas:
+    · CASO 8 · LA DEUDA (el desguace): los negativos a lo Wu. La cinta aprende
+      a arrancar en −2 («desde») y el cero cae en medio, con su poste; −x es el
+      punto espejo de x, comparar sigue siendo mirar quién queda a la
+      izquierda, sumar sigue siendo moverse, doblar una deuda son dos pasos
+      hacia la izquierda, y x + (−x) = 0 cierra la ciudad. La franja roja de
+      la deuda va de la marca al cero. El caso 7 ya no cierra: manda al
+      desguace, y el hilo rojo llega hasta allí.
+    · EL ACTA: hoja mecanografiada con las ocho conclusiones —el hecho con
+      números y el principio debajo—, que se rellena con lo cerrado, con botón
+      de imprimir y hoja de estilo @media print. Es la tablilla de la ciudad.
+    · El VIGILANTE (3/8) tiene por fin su encargo en la comisaría: seis
+      encargos, y la pista de los doses queda plantada antes del final.
+    · La DIVISIÓN SE VE HACER: el cero que baja junto al resto, la cifra que
+      sube al cociente y el resto que cae en su celda, paso a paso. «Hasta el
+      final» va de golpe, que catorce animaciones seguidas marean.
+    · SONIDO de despacho sintetizado con WebAudio, sin archivos: tecla y
+      retorno de la máquina, obturador de Liz, golpe de sello, chincheta, y
+      dos avisos (acierto/fallo). Botón para apagarlo; nada suena en papel.
+    · VALENCIANO. Todo texto que se pinta pasa por T(); los estáticos se
+      traducen por su HTML normalizado. El diccionario (429 frases) se genera
+      aparte y va al final del archivo. Jeff tutea a Liz; Liz trata a Jeff de
+      vosté y le dice «cap». Los rótulos del plano y los tres del CSS también.
+    · De paso: las marcas fuera de corte se leen con su nombre más corto y el
+      signo menos sale como guion largo (−) en toda la ciudad.
+
+  v0.5 · LA CIUDAD SE MUEVE. Hasta aquí no había un solo fotograma. Ahora:
+    · El plano aterriza sobre la mesa al abrir, con perspectiva, y se ladea
+      siguiendo al ratón; las chinchetas están clavadas por encima (translateZ)
+      y caen una a una de norte a sur. En el móvil el plano no se ladea.
+    · EL HILO ROJO del corcho: cada caso cerrado tiende un hilo hasta la
+      chincheta del siguiente —que es adonde apunta la pista con que acaba—.
+      El orden de la historia se ve sin obligar a nadie a seguirlo. Con los
+      siete cerrados cae el sello de CIUDAD CERRADA sobre el plano.
+    · La ciudad de noche: neón que parpadea, humo de la central, brillo del
+      río y un coche que cruza la carretera del sur cada medio minuto (SMIL,
+      que se para a mano en papel).
+    · La carpeta se ABRE girando sobre el lomo, y el sello cae encima medio
+      segundo después. Entre el plano y el caso, el fogonazo de la cámara.
+    · Jeff escribe sus encargos a máquina, con cursor; un toque lo remata y al
+      volver con el ◀ ya están escritos. Mientras escribe, los botones esperan.
+    · Los personajes viven: parpadean a destiempo, a Jeff se le mueve la ramita
+      al hablar, Liz dispara la cámara con cada informe; Jeff asiente o niega
+      según se acierte, Liz ladea la cabeza ante un fallo.
+    · CASO CERRADO cae sobre el último encargo. Niebla en la calle del caso 1,
+      lluvia sobre el pantano, farolas que respiran.
+    · Nada de esto toca la cinta ni la pizarra. Todo se apaga en papel y con
+      prefers-reduced-motion; lo que queda es la v0.4.
+    · Dos arreglos de paso: la marca del sospechoso empezaba en 5/4 —se podía
+      resolver el primer encargo sin tocar nada— y ahora arranca en la primera
+      farola; y la lectura de una marca fuera de corte ya no miente («1» por
+      1,25): se lee con su nombre más corto.
+
+  v0.4 · La ciudad entera. Se estrenan los CASOS 3 al 7 y con ellos el arco
+  completo de los racionales, siempre sobre el mismo hilo: una fracción es un
+  PUNTO de una recta, y todo lo demás sale de ahí.
+    · 3 · las celdas · decimal exacto o periódico. Único caso sin cinta: una
+      división larga paso a paso. Los restos caen en celdas y se ve el
+      argumento entero —con denominador n solo hay n−1 restos posibles, así
+      que alguno se repite por fuerza y desde ahí la cuenta se muerde la cola—.
+      Cierra con la regla de los doses y los cincos, que son los que fabrican
+      el diez.
+    · 4 · la barandilla · la fracción ES una división. Diez metros en tres
+      tramos: al mismo punto se llega cortando el metro en tercios y contando
+      diez, o partiendo los diez metros en tres. Y 10 = 3·3 + 1 dice de
+      antemano entre qué enteros cae.
+    · 5 · el nivel · sumar es JUNTAR tramos, y por eso solo se cuentan juntos
+      los trozos del mismo tamaño. El limnímetro es una cinta tumbada con el
+      agua llenándose hasta la marca. Acaba en 13/12, que se pasa del dique.
+    · 6 · el reparto · fracción de cantidad sin regla nueva: la unidad de la
+      cinta pasa a ser el botín, se corta y se cuenta. Debajo, los dólares.
+    · 7 · la banca · parte de otra parte: la mitad de 4/5 se ve partiendo cada
+      quinto en dos. De ahí sale la regla de multiplicar, no al revés. Y el
+      tanto por ciento como lo que es, una fracción con cien debajo.
+  EL PUENTE, redibujado. El plano es oblicuo —suelo en planta, alturas en
+  vertical—, y el puente ahora obedece esa regla: tablero tumbado y pretiles
+  levantados sobre sus cantos, con el del sureste delante porque es el que
+  está más cerca. Se cuentan en su comentario los dos intentos descartados.
+  Y dos chinches menos: la trama de luz de las escenas se quedaba con los
+  clics (los botones de la pizarra no respondían), y al acertar un
+  interrogatorio el «bien» genérico pisaba la réplica buena de Liz.
+
+  v0.3 · Se estrena EL CASO 2 (el taller de Nick): comparar 5/16, 3/8 y 1/2
+  poniéndolas en la MISMA sucesión de dieciseisavos, que es como se comparan
+  fracciones de verdad —dos puntos de la misma cinta—. Para que quepan más
+  casos sin copiar código, la cinta y el expediente pasan a ser piezas de
+  encargo (montaCinta / montaExpediente) y las caras de Jeff y Liz viven en
+  plantillas. De paso: el plano pierde 13 KB de restos de iteraciones
+  anteriores (siete copias de las vías, seis rótulos huérfanos de PARQUE y
+  siete cierres de grupo sin abrir), y al acertar un interrogatorio ya no se
+  pisa la réplica buena de Liz con el «bien» genérico.
+-->
+<title>Los números partidos · la ciudad</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/estilo.css">
+</head>
+<body data-modo="pantalla">
+<div id="flash"></div>
+
+<!-- ═══ VISTA: EL MAPA ═══════════════════════════════════════════════ -->
+<div class="vista puesta marco" id="vMapa">
+  <h1>LA CIUDAD · MAPA DE CASOS</h1>
+  <div class="sub">Los números partidos · <span id="cuenta"></span></div>
+  <div class="escritorio"><div class="mapa aterriza" id="mapa">
+<svg viewBox="0 0 900 620" aria-label="Mapa de la ciudad">
+      <defs>
+        <filter id="tinta"><feTurbulence baseFrequency="0.9" numOctaves="2" seed="7"/>
+          <feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+      </defs>
+      <!-- el río y el pantano -->
+      <!-- EL RÍO. Es una FRANJA de agua, no medio mapa inundado: al sur hay
+           tierra, y por eso el puente lleva a alguna parte. -->
+      <path d="M-20 470 C160 430 260 510 420 460 C560 418 660 460 920 420
+               L920 486 C660 526 560 484 420 526 C260 576 160 496 -20 536 Z"
+            fill="var(--ag)" stroke="var(--agb)" stroke-width="2"/>
+      <path d="M-20 470 C160 430 260 510 420 460 C560 418 660 460 920 420"
+            fill="none" stroke="var(--agl)" stroke-width="3" opacity=".85"/>
+      <g class="brillo" stroke="var(--agl)" stroke-width="1.4" fill="none" opacity=".45">
+        <path d="M60 500 Q100 490 140 500"/><path d="M300 512 Q340 502 380 512"/>
+        <path d="M620 476 Q660 466 700 476"/>
+      </g>
+      <ellipse cx="795" cy="545" rx="120" ry="52" fill="var(--ag2)" stroke="var(--agb)" stroke-width="2"/>
+      <ellipse cx="795" cy="545" rx="96" ry="38" fill="var(--ag3)" opacity=".7"/>
+      <g stroke="var(--agl)" stroke-width="1.6" fill="none" opacity=".6">
+        <path d="M700 534 Q724 528 748 534"/><path d="M842 556 Q866 550 890 556"/>
+      </g>
+      <!-- las calles -->
+      <!-- LAS CALLES. Una ciudad no es una cuadrícula perfecta: hay una
+           avenida en diagonal que la cruza, una calle que se curva siguiendo
+           el río, callejones estrechos entre manzanas y una plaza redonda con
+           su monumento. Eso es lo que la hace mirable. -->
+      <g stroke="var(--cl)" stroke-width="9" stroke-linecap="round" filter="url(#tinta)">
+        <path d="M40 90 L860 70"/><path d="M40 230 L860 210"/>
+        <path d="M40 360 Q300 372 520 344 T860 336"/>
+        <path d="M120 40 L140 470"/><path d="M330 40 L342 436"/>
+        <path d="M545 40 L556 460"/><path d="M745 40 L752 440"/>
+      </g>
+      <g stroke="var(--cl2)" stroke-width="4" stroke-linecap="round" opacity=".9">
+        <path d="M232 92 L240 356"/><path d="M436 84 L446 348"/><path d="M648 78 L656 344"/>
+        <path d="M150 152 L855 138"/><path d="M148 296 L852 280"/>
+      </g>
+
+      <!-- las manzanas -->
+      <g fill="var(--mz)" stroke="var(--bd)" stroke-width="1.6" filter="url(#tinta)">
+        <rect x="152" y="86" width="164" height="132" rx="3"/>
+        <rect x="358" y="82" width="176" height="136" rx="3"/>
+        <rect x="568" y="78" width="164" height="140" rx="3"/>
+        <rect x="150" y="242" width="180" height="106" rx="3"/>
+        <rect x="360" y="238" width="180" height="108" rx="3"/>
+        <rect x="572" y="234" width="164" height="104" rx="3"/>
+      </g>
+      <!-- LA AVENIDA. Va en diagonal y CORTA las manzanas: se dibuja después
+           que ellas, que si no queda enterrada. Es lo que rompe la
+           cuadrícula y hace que el plano se mire. -->
+      <path d="M56 456 Q212 300 336 36" stroke="var(--cl)" stroke-width="12" fill="none"
+            stroke-linecap="round" filter="url(#tinta)"/>
+      <path d="M56 456 Q212 300 336 36" stroke="#2E3A31" stroke-width="2" fill="none" opacity=".7"/>
+      <!-- la plaza, donde se cruzan la avenida y la calle mayor -->
+      <g>
+        <circle cx="243" cy="215" r="34" fill="var(--cl2)" stroke="var(--bd)" stroke-width="2"/>
+        <circle cx="243" cy="215" r="20" fill="var(--cl)"/>
+        <path d="M243 226 L243 202" stroke="#7C8B72" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="243" cy="199" r="4.2" fill="#A9C24E" opacity=".9"/>
+        <circle cx="243" cy="199" r="12" fill="#A9C24E" opacity=".12"/>
+        <ellipse cx="243" cy="228" rx="13" ry="3.4" fill="var(--bd)"/>
+      </g>
+
+      <!-- el puente sobre el río -->
+      <!-- ═══ LA CIUDAD QUE NO TIENE CASO ═══════════════════════════════
+           Sitios sin misión: están para que la ciudad parezca una ciudad y
+           para que el día de mañana haya dónde meter un caso nuevo. -->
+
+      <!-- LA ESTACIÓN. Con sus vías, el andén y la marquesina: en los años
+           treinta la ciudad entra y sale por el tren. -->
+      <g>
+        <path d="M-20 372 L120 366 M-20 380 L120 374" stroke="#55604F" stroke-width="2.6"/>
+        <g stroke="#5A4636" stroke-width="3">
+          <path d="M-14 366 L-14 382"/><path d="M6 365 L6 381"/><path d="M26 364 L26 380"/>
+          <path d="M46 364 L46 380"/><path d="M66 363 L66 379"/><path d="M86 362 L86 378"/>
+          <path d="M106 361 L106 377"/>
+        </g>
+      </g>
+      <g transform="translate(28 286)">
+        <ellipse cx="52" cy="74" rx="58" ry="7" fill="#080B09" opacity=".5"/>
+        <path d="M0 30 L50 8 L100 30 L100 36 L0 36 Z" fill="#8E3A28" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="6" y="36" width="76" height="38" fill="#C6BB9C" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M82 36 L100 30 L100 68 L82 74 Z" fill="#9A9078" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="14" y="46" width="14" height="12" fill="#F2C75B" stroke="#141A16" stroke-width="1.1"/>
+        <rect x="36" y="46" width="14" height="12" fill="#F2C75B" stroke="#141A16" stroke-width="1.1"/>
+        <rect x="58" y="46" width="14" height="12" fill="#3A4438" stroke="#141A16" stroke-width="1.1"/>
+        <rect x="34" y="60" width="18" height="14" fill="#3A4438" stroke="#141A16" stroke-width="1.2"/>
+        <rect x="40" y="14" width="9" height="16" fill="#6D7A85" stroke="#141A16" stroke-width="1.2"/>
+        <rect x="0" y="-17" width="66" height="15" rx="4" fill="var(--mz)" stroke="var(--bd)" stroke-width="1"/><text x="4" y="-6" fill="var(--rot)" font-family="Special Elite,monospace" font-size="11" data-t>ESTACIÓN</text>
+        <path d="M-6 76 L104 74" stroke="#8E9784" stroke-width="3"/>
+      </g>
+
+      <!-- EL CASINO, art déco. El anterior parecía un local de hoy: fachada
+           plana y rótulo horizontal. Los años treinta van por otro lado —
+           remate escalonado en zigurat, acanaladuras verticales, marquesina
+           curva de bombillas y el neón EN VERTICAL, que es la seña del
+           déco—. La ruleta se queda, que dice a qué se juega. -->
+      <g transform="translate(768 84)">
+        <ellipse cx="52" cy="94" rx="60" ry="7" fill="#080B09" opacity=".5"/>
+        <!-- remate escalonado -->
+        <rect x="34" y="0" width="24" height="12" fill="#C9BE9E" stroke="#141A16" stroke-width="1.3"/>
+        <rect x="24" y="10" width="44" height="12" fill="#C9BE9E" stroke="#141A16" stroke-width="1.3"/>
+        <rect x="12" y="20" width="68" height="12" fill="#D8CFB8" stroke="#141A16" stroke-width="1.3"/>
+        <!-- cuerpo con acanaladuras -->
+        <rect x="8" y="30" width="72" height="64" fill="#C6BB9C" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M80 30 L96 24 L96 86 L80 94 Z" fill="#9A9078" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M12 20 L28 14 L96 14 L80 20 Z" fill="#B4A98E" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+        <g stroke="#B4A98E" stroke-width="2.6">
+          <path d="M16 34 V94"/><path d="M22 34 V94"/><path d="M66 34 V94"/><path d="M72 34 V94"/>
+        </g>
+        <!-- el neón vertical -->
+        <!-- el neón vertical, volado sobre la esquina derecha: en el déco
+             los rótulos SOBRESALEN del edificio, y así no lo tapa nada -->
+        <rect x="82" y="4" width="15" height="60" rx="2" fill="#141A16" stroke="#E0653F" stroke-width="1.5"/>
+        <g class="neon" fill="#E0653F" font-family="Special Elite,monospace" font-size="8" text-anchor="middle">
+          <text x="89.5" y="14">C</text><text x="89.5" y="24">A</text><text x="89.5" y="34">S</text>
+          <text x="89.5" y="44">I</text><text x="89.5" y="54">N</text><text x="89.5" y="63">O</text>
+        </g>
+        <g fill="#F2C75B" opacity=".9">
+          <circle cx="89.5" cy="1" r="1.8"/><circle cx="89.5" cy="67" r="1.8"/>
+        </g>
+        <!-- marquesina curva con bombillas -->
+        <path d="M10 72 Q40 62 78 72 L78 79 Q40 69 10 79 Z" fill="#8E3A28" stroke="#141A16" stroke-width="1.3"/>
+        <g fill="#F2C75B">
+          <circle cx="16" cy="77" r="1.8"/><circle cx="27" cy="74.6" r="1.8"/><circle cx="38" cy="73.2" r="1.8"/>
+          <circle cx="49" cy="73.2" r="1.8"/><circle cx="60" cy="74.6" r="1.8"/><circle cx="71" cy="77" r="1.8"/>
+        </g>
+        <!-- puerta en arco y ruleta -->
+        <path d="M36 94 V86 Q44 78 52 86 V94 Z" fill="#3A4438" stroke="#141A16" stroke-width="1.2"/>
+        <circle cx="62" cy="52" r="9" fill="#1E2620" stroke="#C7B98F" stroke-width="1.4"/>
+        <g stroke="#C7B98F" stroke-width="1"><path d="M62 43 V61 M53 52 H71 M55.6 45.6 L68.4 58.4 M68.4 45.6 L55.6 58.4"/></g>
+        <circle cx="62" cy="52" r="2.2" fill="#E0653F"/>
+      </g>
+
+      <!-- LA ZONA RESIDENCIAL. Casitas con su jardín, apiñadas: la ciudad
+           donde vive la gente, no solo donde pasan cosas. -->
+      <g transform="translate(64 92)">
+        <rect x="-4" y="-14" width="88" height="15" rx="4" fill="var(--mz)" stroke="var(--bd)" stroke-width="1"/>
+        <text x="0" y="-3" fill="var(--rot)" font-family="Special Elite,monospace" font-size="11" data-t>RESIDENCIAL</text>
+        <g>
+          <ellipse cx="22" cy="50" rx="24" ry="5" fill="#080B09" opacity=".45"/>
+          <path d="M2 24 L22 12 L42 24 L42 27 L2 27 Z" fill="#8E3A28" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="5" y="27" width="28" height="23" fill="#C6BB9C" stroke="#141A16" stroke-width="1.3"/>
+          <path d="M33 27 L42 24 L42 47 L33 50 Z" fill="#9A9078" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="9" y="32" width="8" height="7" fill="#F2C75B" stroke="#141A16" stroke-width="1"/>
+          <rect x="21" y="38" width="8" height="12" fill="#5A4636" stroke="#141A16" stroke-width="1"/>
+        </g>
+        <g transform="translate(46 8)">
+          <ellipse cx="22" cy="46" rx="22" ry="5" fill="#080B09" opacity=".45"/>
+          <path d="M2 22 L22 11 L42 22 L42 25 L2 25 Z" fill="#3E6274" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="5" y="25" width="26" height="21" fill="#B9AE90" stroke="#141A16" stroke-width="1.3"/>
+          <path d="M31 25 L42 22 L42 43 L31 46 Z" fill="#8F866E" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="9" y="30" width="7" height="6" fill="#F2C75B" stroke="#141A16" stroke-width="1"/>
+          <rect x="20" y="35" width="7" height="11" fill="#5A4636" stroke="#141A16" stroke-width="1"/>
+        </g>
+        <g transform="translate(96 2)">
+          <ellipse cx="20" cy="48" rx="21" ry="5" fill="#080B09" opacity=".45"/>
+          <path d="M2 24 L20 13 L38 24 L38 27 L2 27 Z" fill="#6E7F4A" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="5" y="27" width="24" height="21" fill="#C6BB9C" stroke="#141A16" stroke-width="1.3"/>
+          <path d="M29 27 L38 24 L38 45 L29 48 Z" fill="#9A9078" stroke="#141A16" stroke-width="1.3"/>
+          <rect x="9" y="32" width="7" height="6" fill="#3A4438" stroke="#141A16" stroke-width="1"/>
+          <rect x="19" y="37" width="7" height="11" fill="#5A4636" stroke="#141A16" stroke-width="1"/>
+        </g>
+        <g stroke="#4F6B45" stroke-width="2" fill="none">
+          <path d="M40 52 Q46 44 52 52"/><path d="M92 50 Q98 42 104 50"/>
+        </g>
+      </g>
+
+      <!-- EL AYUNTAMIENTO, con su torre del reloj -->
+      <g transform="translate(392 116)">
+        <ellipse cx="42" cy="72" rx="48" ry="6" fill="#080B09" opacity=".5"/>
+        <rect x="30" y="0" width="26" height="34" fill="#B9AE90" stroke="#141A16" stroke-width="1.4"/>
+        <path d="M28 0 L43 -12 L58 0 Z" fill="#7E5C86" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <circle cx="43" cy="16" r="7" fill="#EDEAE0" stroke="#141A16" stroke-width="1.3"/>
+        <path d="M43 16 V11 M43 16 L46 19" stroke="#141A16" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M2 40 L42 26 L82 40 L82 44 L2 44 Z" fill="#7E5C86" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <rect x="2" y="44" width="66" height="28" fill="#C6BB9C" stroke="#141A16" stroke-width="1.4"/>
+        <path d="M68 44 L82 40 L82 68 L68 72 Z" fill="#9A9078" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M10 48 V72 M22 48 V72 M34 48 V72 M46 48 V72 M58 48 V72" stroke="#AFA487" stroke-width="4"/>
+        <rect x="30" y="58" width="14" height="14" fill="#3A4438" stroke="#141A16" stroke-width="1.1"/>
+      </g>
+
+      <!-- LA CENTRAL ELÉCTRICA, con sus chimeneas y su humo -->
+      <g transform="translate(776 352)">
+        <ellipse cx="48" cy="96" rx="54" ry="7" fill="#080B09" opacity=".5"/>
+        <path d="M12 30 Q6 60 4 96 L34 96 Q32 60 26 30 Z" fill="#6D7A85" stroke="#141A16" stroke-width="1.4"/>
+        <path d="M46 22 Q40 58 38 96 L68 96 Q66 58 60 22 Z" fill="#8592A0" stroke="#141A16" stroke-width="1.4"/>
+        <rect x="4" y="24" width="22" height="7" rx="2" fill="#A6452F" stroke="#141A16" stroke-width="1.2"/>
+        <rect x="38" y="16" width="22" height="7" rx="2" fill="#A6452F" stroke="#141A16" stroke-width="1.2"/>
+        <g class="humo" fill="#C9D2D8" opacity=".18">
+          <ellipse cx="16" cy="12" rx="13" ry="8"/><ellipse cx="50" cy="2" rx="15" ry="9"/>
+        </g>
+        <rect x="66" y="62" width="30" height="34" fill="#5A6552" stroke="#141A16" stroke-width="1.3"/>
+        <g fill="#F2C75B" opacity=".75">
+          <rect x="70" y="68" width="7" height="7"/><rect x="82" y="68" width="7" height="7"/>
+          <rect x="70" y="80" width="7" height="7"/><rect x="82" y="80" width="7" height="7"/>
+        </g>
+        <g stroke="#55604F" stroke-width="1.6" fill="none">
+          <path d="M-6 46 L-6 96 M-14 52 L-6 46 L2 52"/>
+        </g>
+      </g>
+
+      <!-- EL DESGUACE, con sus pilas de neumáticos y su grúa -->
+      <g transform="translate(96 520)">
+        <ellipse cx="60" cy="52" rx="66" ry="7" fill="#080B09" opacity=".45"/>
+        <g fill="var(--bd)" stroke="#141A16" stroke-width="1.2">
+          <ellipse cx="18" cy="44" rx="13" ry="5"/><ellipse cx="18" cy="37" rx="13" ry="5"/>
+          <ellipse cx="18" cy="30" rx="13" ry="5"/>
+          <ellipse cx="48" cy="46" rx="12" ry="4.6"/><ellipse cx="48" cy="40" rx="12" ry="4.6"/>
+        </g>
+        <g fill="#5A4636" stroke="#141A16" stroke-width="1.2">
+          <rect x="72" y="30" width="26" height="16" rx="2"/>
+          <rect x="78" y="20" width="16" height="11" rx="2" fill="#6B4A32"/>
+        </g>
+        <circle cx="79" cy="47" r="4" fill="#141A16" stroke="#8E9784" stroke-width="1.2"/>
+        <circle cx="93" cy="47" r="4" fill="#141A16" stroke="#8E9784" stroke-width="1.2"/>
+        <g stroke="#7C8B72" stroke-width="2.6" fill="none" stroke-linecap="round">
+          <path d="M112 48 L112 8 L138 14"/><path d="M138 14 L138 26"/>
+        </g>
+        <circle cx="138" cy="30" r="5" fill="#3A4438" stroke="#141A16" stroke-width="1.2"/>
+        <rect x="0" y="-3" width="70" height="15" rx="4" fill="var(--mz)" stroke="var(--bd)" stroke-width="1"/><text x="4" y="8" fill="var(--rot)" font-family="Special Elite,monospace" font-size="11" data-t>DESGUACE</text>
+      </g>
+
+      <!-- LA ARBOLEDA. Antes era un rectángulo con árboles dentro, y parecía
+           una foto del parque pegada en el plano. Ahora son los ÁRBOLES los
+           que dibujan el parque: copas en alzado, de tamaños distintos, con
+           su sombra en el suelo y un camino entre ellas. -->
+      <g transform="translate(372 246)">
+        <path d="M2 96 Q60 66 176 88 Q120 108 2 96 Z" fill="#24331F" opacity=".55"/>
+        <path d="M10 92 Q70 70 170 86" stroke="#4A5A3C" stroke-width="5" fill="none" opacity=".8"/>
+        <g>
+          <ellipse cx="30" cy="94" rx="16" ry="4" fill="#080B09" opacity=".45"/>
+          <path d="M30 92 V72" stroke="#5A4636" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="30" cy="58" r="17" fill="#47703F" stroke="#141A16" stroke-width="1.4"/>
+          <circle cx="24" cy="52" r="9" fill="#54804A" opacity=".75"/>
+        </g>
+        <g>
+          <ellipse cx="86" cy="90" rx="19" ry="4.6" fill="#080B09" opacity=".45"/>
+          <path d="M86 88 V62" stroke="#5A4636" stroke-width="5.5" stroke-linecap="round"/>
+          <circle cx="86" cy="46" r="21" fill="#3E6238" stroke="#141A16" stroke-width="1.4"/>
+          <circle cx="79" cy="39" r="10" fill="#4C7443" opacity=".7"/>
+        </g>
+        <g>
+          <ellipse cx="140" cy="92" rx="14" ry="3.6" fill="#080B09" opacity=".45"/>
+          <path d="M140 90 V74" stroke="#5A4636" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="140" cy="62" r="14" fill="#47703F" stroke="#141A16" stroke-width="1.4"/>
+        </g>
+        <g>
+          <ellipse cx="168" cy="96" rx="11" ry="3" fill="#080B09" opacity=".4"/>
+          <path d="M168 94 V82" stroke="#5A4636" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="168" cy="73" r="11" fill="#3E6238" stroke="#141A16" stroke-width="1.3"/>
+        </g>
+        <g stroke="#8A6A3C" stroke-width="2.4" stroke-linecap="round">
+          <path d="M52 96 L70 94"/><path d="M54 100 L54 104"/><path d="M68 98 L68 102"/>
+        </g>
+        <path d="M114 96 V78" stroke="#55604F" stroke-width="2"/>
+        <circle cx="114" cy="75" r="3" fill="#F2C75B"/>
+        <circle cx="114" cy="75" r="9" fill="#F2C75B" opacity=".14"/>
+        <rect x="-2" y="-14" width="58" height="15" rx="4" fill="var(--mz)" stroke="var(--bd)" stroke-width="1"/>
+        <text x="2" y="-3" fill="var(--rot)" font-family="Special Elite,monospace" font-size="11" data-t>PARQUE</text>
+      </g>
+
+      <!-- LA PIZZERÍA DE NICK. No es un expediente: es la OTRA APLICACIÓN,
+           que vive en esta misma ciudad y se abre aparte. Por eso se dibuja
+           como se dibuja todo lo demás —volumen de costado, alzado de
+           frente— pero se queda con el terracota, que es el color que tiene
+           en la portada de materiales y no lo usa nadie más en el plano: el
+           toldo se ve antes de leer el rótulo.
+           (Y sí: el taller del caso 2 también es de Nick. Un hombre con un
+           taller y una pizzería en la misma ciudad es exactamente la clase
+           de detalle que ata un barrio.) -->
+      <g transform="translate(700 300)">
+        <ellipse cx="46" cy="66" rx="52" ry="8" fill="#080B09" opacity=".5"/>
+        <!-- el costado, en sombra -->
+        <path d="M78 20 L96 28 L96 64 L78 64 Z" fill="#9A8E72" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <!-- la fachada -->
+        <rect x="4" y="20" width="74" height="44" fill="#CFC3A4" stroke="#141A16" stroke-width="1.5"/>
+        <!-- el toldo a rayas: tomate y crema, como el de la app -->
+        <path d="M0 20 L82 20 L88 34 L-6 34 Z" fill="#E2725B" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <g fill="#EDE3CE">
+          <path d="M12 20 L23 20 L27 34 L15 34 Z"/><path d="M34 20 L45 20 L51 34 L39 34 Z"/>
+          <path d="M56 20 L67 20 L75 34 L63 34 Z"/>
+        </g>
+        <!-- escaparate encendido y puerta -->
+        <rect x="12" y="40" width="26" height="17" rx="1.5" fill="#F2C75B" stroke="#141A16" stroke-width="1.3" opacity=".9"/>
+        <rect x="48" y="40" width="18" height="24" rx="1.5" fill="#3A4438" stroke="#141A16" stroke-width="1.3"/>
+        <circle cx="52" cy="52" r="1.4" fill="#EDE3CE"/>
+        <!-- el rótulo del local, en vertical sobre el costado -->
+        <rect x="82" y="-4" width="12" height="26" rx="2" fill="#E2725B" stroke="#141A16" stroke-width="1.2"/>
+        <text x="88" y="14" fill="#2A1D18" font-family="Special Elite,monospace" font-size="9"
+              text-anchor="middle" transform="rotate(90 88 9)">PIZZA</text>
+      </g>
+
+      <!-- LA OTRA ORILLA Y LOS ACCESOS. Un puente que no lleva a ninguna parte
+           no es un puente: al sur del río corre su carretera —hacia el
+           desguace por un lado y hacia el pantano por el otro—, y las dos
+           orillas empalman con el tablero por su extremo, con una curva
+           suave, no de frente. Se dibujan ANTES que el puente, para que sean
+           los estribos los que se vean encima y no al revés. -->
+      <path d="M60 592 Q300 568 520 580 T880 566" stroke="var(--cl)" stroke-width="11"
+            fill="none" stroke-linecap="round" filter="url(#tinta)"/>
+      <path d="M640 578 Q700 556 742 540" stroke="var(--cl)" stroke-width="7"
+            fill="none" stroke-linecap="round"/>
+
+      <!-- EL PUENTE VIEJO. El plano es OBLICUO: el suelo se ve desde arriba
+           pero lo que tiene altura se levanta en VERTICAL —así están hechos
+           todos los edificios de la ciudad—. El puente sigue esa misma regla,
+           y de ahí le viene el volumen: el tablero es un paralelogramo
+           tumbado en el suelo, cruzando el agua en diagonal, y sobre sus dos
+           cantos se levantan los pretiles, rectos hacia arriba.
+           LA PROFUNDIDAD ESTÁ EN CUÁL VA DELANTE: en esta proyección, lo que
+           baja por la pantalla es lo que está más CERCA. Así que el pretil
+           del sureste se dibuja el último —piedra clara, farolas encendidas,
+           tapando su parte de tablero— y el del noroeste queda detrás,
+           apagado y con simples postes. Ese orden es toda la perspectiva que
+           hace falta; no hay escorzo ni punto de fuga.
+           Lo que lo hace puente y no muelle: que el tablero es CALLE —mismo
+           gris que las demás, con su eje discontinuo—, que se apoya en dos
+           pilas dentro del agua y que lleva su sombra debajo. Y las farolas
+           son las de la cinta del caso 1: en esta ciudad cada farola marca un
+           paso.
+           (Descartados: un alzado de celosía girado seis grados —para cruzar
+           una franja horizontal pedía un vano larguísimo y quedaba tumbado a
+           lo largo del río—, dos cerchas verticales completas —a esta
+           pendiente los montantes se leían como peldaños de escalera— y una
+           tabla en planta, honrada pero sin volumen ninguno.) -->
+      <g>
+        <path d="M332.9 456.6 L290.9 574.6 L321.1 585.4 L363.1 467.4 Z" fill="#080B09" opacity=".28" class="sombraPuente"/>
+        <g fill="#6E6656" stroke="#141A16" stroke-width="1.2"><g transform="rotate(19.6 324.9 492.5)"><rect x="304.9" y="487.5" width="40.0" height="10" rx="2"/></g><g transform="rotate(19.6 311.4 530.2)"><rect x="291.4" y="525.2" width="40.0" height="10" rx="2"/></g></g>
+        <g stroke="var(--agl)" stroke-width="1.3" fill="none" opacity=".45"><path d="M288.6 484.8 Q297.6 480.8 306.6 484.8"/><path d="M343.2 504.2 Q352.2 500.2 361.2 504.2"/><path d="M275.1 522.5 Q284.1 518.5 293.1 522.5"/><path d="M329.8 542.0 Q338.8 538.0 347.8 542.0"/></g>
+        <path d="M324.9 444.6 L282.9 562.6 L282.9 555.6 L324.9 437.6 Z" fill="#6E6656" stroke="#141A16" stroke-width="1.3"/><path d="M324.9 437.6 L282.9 555.6 L282.9 552.6 L324.9 434.6 Z" fill="#8A8271" stroke="#141A16" stroke-width="1.3"/>
+        <path d="M317.9 455.3 L317.9 448.3" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="317.9" cy="448.3" r="1.8" fill="#3A4438" stroke="#141A16" stroke-width=".9"/><path d="M303.9 494.6 L303.9 487.6" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="303.9" cy="487.6" r="1.8" fill="#3A4438" stroke="#141A16" stroke-width=".9"/><path d="M289.9 534.0 L289.9 527.0" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="289.9" cy="527.0" r="1.8" fill="#3A4438" stroke="#141A16" stroke-width=".9"/>
+        <path d="M324.9 444.6 L282.9 562.6 L313.1 573.4 L355.1 455.4 Z" fill="var(--cl)" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <g stroke="var(--bd)" stroke-width="1" opacity=".38"><path d="M351.6 465.2 L321.4 454.5"/><path d="M348.1 475.0 L317.9 464.3"/><path d="M344.6 484.9 L314.4 474.1"/><path d="M341.1 494.7 L310.9 484.0"/><path d="M337.6 504.5 L307.4 493.8"/><path d="M334.1 514.4 L303.9 503.6"/><path d="M330.6 524.2 L300.4 513.5"/><path d="M327.1 534.0 L296.9 523.3"/><path d="M323.6 543.9 L293.4 533.1"/><path d="M320.1 553.7 L289.9 543.0"/><path d="M316.6 563.5 L286.4 552.8"/></g>
+        <path d="M337.9 455.9 L300.1 562.1" stroke="var(--tiza)" stroke-width="2.2" opacity=".55" stroke-dasharray="9 8" fill="none"/>
+        <path d="M355.1 455.4 L313.1 573.4 L313.1 566.4 L355.1 448.4 Z" fill="#B9AE90" stroke="#141A16" stroke-width="1.3"/><path d="M355.1 448.4 L313.1 566.4 L313.1 563.4 L355.1 445.4 Z" fill="#D8CFB8" stroke="#141A16" stroke-width="1.3"/>
+        <path d="M348.1 466.0 L348.1 453.0" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="348.1" cy="453.0" r="2.6" fill="#F2C75B"/><circle cx="348.1" cy="453.0" r="9" fill="#F2C75B" opacity=".15"/><path d="M334.1 505.4 L334.1 492.4" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="334.1" cy="492.4" r="2.6" fill="#F2C75B"/><circle cx="334.1" cy="492.4" r="9" fill="#F2C75B" opacity=".15"/><path d="M320.1 544.7 L320.1 531.7" stroke="#55604F" stroke-width="1.8" stroke-linecap="round"/><circle cx="320.1" cy="531.7" r="2.6" fill="#F2C75B"/><circle cx="320.1" cy="531.7" r="9" fill="#F2C75B" opacity=".15"/>
+      </g>
+
+
+      <!-- ═══ LOS EDIFICIOS ═══════════════════════════════════════════
+           Volumen sin perspectiva, como en los mapas dibujados a mano: cada
+           casa tiene su cara de frente, un costado en sombra, el tejado en
+           color y las ventanas encendidas. La ciudad es de noche: lo que da
+           vida no son los muros, son las luces. -->
+
+      <!-- LA RELOJERÍA · caso 1 -->
+      <g transform="translate(250 92)">
+        <ellipse cx="46" cy="62" rx="52" ry="7" fill="#080B09" opacity=".55"/>
+        <path d="M6 22 L46 4 L86 22 L86 28 L6 28 Z" fill="#A6452F" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="6" y="28" width="66" height="34" fill="#B9A98A" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M72 28 L86 22 L86 56 L72 62 Z" fill="#7E7159" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="12" y="36" width="20" height="14" fill="#F2C75B" stroke="#141A16" stroke-width="1.2"/>
+        <rect x="38" y="36" width="12" height="14" fill="#3A4438" stroke="#141A16" stroke-width="1.2"/>
+        <circle cx="60" cy="43" r="8" fill="#EDEAE0" stroke="#141A16" stroke-width="1.4"/>
+        <path d="M60 43 V37 M60 43 L64 46" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+        <rect x="14" y="52" width="14" height="10" fill="#5A4636" stroke="#141A16" stroke-width="1.2"/>
+      </g>
+
+      <!-- EL TALLER DE NICK · caso 2 -->
+      <g transform="translate(600 96)">
+        <ellipse cx="54" cy="74" rx="60" ry="8" fill="#080B09" opacity=".55"/>
+        <path d="M4 26 L52 4 L100 26 L100 32 L4 32 Z" fill="#6E7F4A" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="4" y="32" width="80" height="42" fill="#9AA8B4" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M84 32 L100 26 L100 68 L84 74 Z" fill="#6D7A85" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="10" y="44" width="34" height="30" fill="#3A4438" stroke="#141A16" stroke-width="1.3"/>
+        <path d="M12 50 H42 M12 58 H42 M12 66 H42" stroke="#5A6A76" stroke-width="1.4"/>
+        <rect x="50" y="40" width="30" height="14" rx="2" fill="#141A16" stroke="#F2C75B" stroke-width="1.4"/>
+        <text x="53" y="51" fill="#F2C75B" font-family="Special Elite,monospace" font-size="9">NICK</text>
+        <g transform="translate(56 62) rotate(-22)" stroke="#C9D2D8" stroke-width="3.2" fill="none">
+          <path d="M0 0 L18 0" stroke-linecap="round"/>
+          <path d="M-4 -4 L-4 4" stroke-width="7" stroke-linecap="round"/>
+        </g>
+      </g>
+
+      <!-- LA COMISARÍA · caso 3. Un edificio con columnas no dice comisaría:
+           lo dicen el FAROL AZUL sobre la puerta —la lámpara de policía de
+           toda la vida—, la escalinata, la bandera, el rótulo y el coche
+           patrulla aparcado en la puerta con su luz encendida. -->
+      <g transform="translate(150 250)">
+        <ellipse cx="48" cy="76" rx="58" ry="7" fill="#080B09" opacity=".5"/>
+        <!-- la bandera -->
+        <path d="M78 -6 V22" stroke="#8E9784" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M78 -5 L96 0 L78 5 Z" fill="#A6452F" stroke="#141A16" stroke-width="1"/>
+        <!-- el cuerpo -->
+        <path d="M2 26 L46 8 L90 26 L90 32 L2 32 Z" fill="#3E6274" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="2" y="32" width="72" height="40" fill="#AEB6A4" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M74 32 L90 26 L90 66 L74 72 Z" fill="#79806F" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- ventanas con rejas -->
+        <g>
+          <rect x="8" y="38" width="13" height="11" fill="#F2C75B" stroke="#141A16" stroke-width="1"/>
+          <path d="M12 38 V49 M16.5 38 V49" stroke="#141A16" stroke-width=".9"/>
+          <rect x="57" y="38" width="13" height="11" fill="#F2C75B" stroke="#141A16" stroke-width="1"/>
+          <path d="M61 38 V49 M65.5 38 V49" stroke="#141A16" stroke-width=".9"/>
+          <rect x="8" y="55" width="13" height="11" fill="#3A4438" stroke="#141A16" stroke-width="1"/>
+          <path d="M12 55 V66 M16.5 55 V66" stroke="#141A16" stroke-width=".9"/>
+        </g>
+        <!-- puerta y escalinata -->
+        <rect x="30" y="48" width="19" height="24" fill="#2A3A44" stroke="#141A16" stroke-width="1.2"/>
+        <path d="M27 72 H52 M25 76 H54" stroke="#8E9784" stroke-width="3" stroke-linecap="round"/>
+        <!-- el rótulo -->
+        <rect x="26" y="40" width="27" height="7" rx="1.5" fill="#141A16" stroke="#8E9784" stroke-width="1"/>
+        <text x="28" y="46" fill="#C9D2D8" font-family="Special Elite,monospace" font-size="6" data-t>POLICÍA</text>
+        <!-- el farol azul -->
+        <circle cx="39.5" cy="34" r="4.4" fill="#4FA3D8" stroke="#141A16" stroke-width="1.1"/>
+        <circle cx="39.5" cy="34" r="11" fill="#4FA3D8" opacity=".22"/>
+        <path d="M39.5 38 V41" stroke="#141A16" stroke-width="1.4"/>
+        <!-- el coche patrulla, en la puerta -->
+        <g transform="translate(56 78)">
+          <ellipse cx="24" cy="12" rx="26" ry="4" fill="#080B09" opacity=".45"/>
+          <rect x="2" y="0" width="44" height="10" rx="3.4" fill="#20262A" stroke="#141A16" stroke-width="1.3"/>
+          <path d="M12 0 Q17 -7 25 -7 Q33 -7 35 0 Z" fill="#2A343A" stroke="#141A16" stroke-width="1.2"/>
+          <rect x="14" y="2" width="20" height="5" rx="1" fill="#C9D2D8" opacity=".9"/>
+          <circle cx="24" cy="-8.5" r="2.6" fill="#4FA3D8"/>
+          <circle cx="24" cy="-8.5" r="7" fill="#4FA3D8" opacity=".2"/>
+          <circle cx="12" cy="11" r="4.4" fill="#141A16" stroke="#8E9784" stroke-width="1.2"/>
+          <circle cx="36" cy="11" r="4.4" fill="#141A16" stroke="#8E9784" stroke-width="1.2"/>
+        </g>
+      </g>
+
+      <!-- EL BANCO · caso 6 -->
+      <g transform="translate(596 244)">
+        <ellipse cx="48" cy="66" rx="56" ry="7" fill="#080B09" opacity=".55"/>
+        <path d="M-2 22 L46 2 L94 22 Z" fill="#C7B98F" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="4" y="22" width="72" height="44" fill="#D8CFB8" stroke="#141A16" stroke-width="1.5"/>
+        <path d="M76 22 L94 22 L94 60 L76 66 Z" fill="#A79C86" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M14 26 V66 M30 26 V66 M46 26 V66 M62 26 V66" stroke="#B4A98E" stroke-width="6"/>
+        <rect x="34" y="46" width="16" height="20" fill="#3A4438" stroke="#141A16" stroke-width="1.2"/>
+      </g>
+
+      <!-- UN COCHE DE ÉPOCA. Capó largo, cabina alta y estrecha, guardabarros
+           redondos sobre las ruedas, estribo, rueda de repuesto atrás y faros
+           de farol: la silueta de los años treinta. -->
+      <!-- Y ahora se mueve: cruza la carretera del sur de este a oeste, con el
+           morro por delante, y vuelve a empezar cada medio minuto. El
+           animateMotion pone su transform ANTES de este, así que el grupo
+           interior solo centra el dibujo en el eje del coche. Y como el
+           coche está dibujado mirando a la IZQUIERDA, el giro es
+           auto-reverse: con auto, al ir hacia el oeste daba la vuelta
+           entera y cruzaba la ciudad con las ruedas al aire. -->
+      <g class="coche">
+        <animateMotion dur="34s" repeatCount="indefinite" rotate="auto-reverse"
+          path="M900 566 Q740 592 520 580 Q300 568 40 592"/>
+      <g transform="translate(-33 -20)">
+        <ellipse cx="34" cy="30" rx="36" ry="5" fill="#080B09" opacity=".5"/>
+        <path d="M52 12 L60 12 L62 20 L52 20 Z" fill="#5A1F18" stroke="#141A16" stroke-width="1.2"/>
+        <circle cx="61" cy="16" r="5.5" fill="#3A4438" stroke="#141A16" stroke-width="1.3"/>
+        <path d="M4 22 L4 16 Q4 12 9 12 L26 12 Q30 2 40 2 L46 2 Q52 2 53 12 L58 12 Q62 12 62 17 L62 22 Z"
+              fill="#8E3A28" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M30 11 Q32 4 39 4 L45 4 Q50 4 51 11 Z" fill="#C9D2D8" opacity=".55"/>
+        <path d="M40 4 L40 11" stroke="#141A16" stroke-width="1"/>
+        <path d="M6 14 H24" stroke="#5A1F18" stroke-width="1.6"/>
+        <rect x="6" y="22" width="52" height="3.4" rx="1.4" fill="#3A4438" stroke="#141A16" stroke-width="1"/>
+        <path d="M8 22 Q14 12 22 22 Z" fill="#6B2A20" stroke="#141A16" stroke-width="1.2"/>
+        <path d="M40 22 Q46 12 54 22 Z" fill="#6B2A20" stroke="#141A16" stroke-width="1.2"/>
+        <g>
+          <circle cx="15" cy="24" r="6.4" fill="#141A16"/>
+          <circle cx="15" cy="24" r="4.2" fill="#D8D2C4"/>
+          <circle cx="15" cy="24" r="1.7" fill="#6D7A85" stroke="#141A16" stroke-width=".8"/>
+          <g stroke="#8E9784" stroke-width=".7">
+            <path d="M15 20 V28 M11 24 H19 M12.2 21.2 L17.8 26.8 M17.8 21.2 L12.2 26.8"/>
+          </g>
+        </g>
+        <g>
+          <circle cx="47" cy="24" r="6.4" fill="#141A16"/>
+          <circle cx="47" cy="24" r="4.2" fill="#D8D2C4"/>
+          <circle cx="47" cy="24" r="1.7" fill="#6D7A85" stroke="#141A16" stroke-width=".8"/>
+          <g stroke="#8E9784" stroke-width=".7">
+            <path d="M47 20 V28 M43 24 H51 M44.2 21.2 L49.8 26.8 M49.8 21.2 L44.2 26.8"/>
+          </g>
+        </g>
+        <circle class="faro" cx="3" cy="15" r="3.2" fill="#F2C75B"/>
+        <path d="M3 15 L-9 11 L-9 19 Z" fill="#F2C75B" opacity=".22"/>
+      </g></g>
+
+      <!-- EL PANTANO · caso 5: juncos, un bote y el farol del embarcadero -->
+      <g transform="translate(700 494)">
+        <path d="M10 52 Q34 44 62 50" stroke="#3E5240" stroke-width="2" fill="none" opacity=".8"/>
+        <g stroke="#4F6B45" stroke-width="2.4" stroke-linecap="round">
+          <path d="M6 46 L4 30"/><path d="M13 47 L14 28"/><path d="M20 46 L24 32"/>
+          <path d="M86 48 L88 32"/><path d="M93 47 L92 30"/>
+        </g>
+        <g fill="#4F6B45"><ellipse cx="4" cy="28" rx="2.2" ry="4"/><ellipse cx="14" cy="26" rx="2.2" ry="4"/>
+          <ellipse cx="88" cy="30" rx="2.2" ry="4"/><ellipse cx="92" cy="28" rx="2.2" ry="4"/></g>
+        <path d="M34 44 L70 44 L64 54 L40 54 Z" fill="#6B4A32" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M38 46 H66" stroke="#8A6A3C" stroke-width="2"/>
+        <path d="M52 44 L52 30" stroke="#8A6A3C" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="52" cy="28" r="3.4" fill="#F2C75B"/>
+        <circle cx="52" cy="28" r="9" fill="#F2C75B" opacity=".16"/>
+      </g>
+
+      <!-- casas de fondo, sin caso: dan ciudad sin robar atención -->
+
+            <text x="330" y="602" fill="#55604F" font-family="Special Elite,monospace"
+            font-size="13" opacity=".85" transform="rotate(-4 376 598)" data-t>EL PUENTE VIEJO</text>
+    </svg>
+<button class="chincheta" style="left:26%;top:22%;--i:2" data-c="1">
+      <span class="num">1</span><span class="rot">La escena</span></button>
+    <button class="chincheta" style="left:60%;top:20%;--i:1" data-c="2">
+      <span class="num">2</span><span class="rot">El taller</span></button>
+    <button class="chincheta" style="left:17%;top:52%;--i:4" data-c="3">
+      <span class="num">3</span><span class="rot">La comisaría</span></button>
+    <button class="chincheta" style="left:24%;top:81%;--i:5" data-c="4">
+      <span class="num">4</span><span class="rot">El puente</span></button>
+    <button class="chincheta" style="left:86%;top:84%;--i:6" data-c="5">
+      <span class="num">5</span><span class="rot">El pantano</span></button>
+    <button class="chincheta" style="left:80%;top:14%;--i:0" data-c="7">
+      <span class="num">7</span><span class="rot">El casino</span></button>
+    <button class="chincheta" style="left:83%;top:45%;--i:3" data-c="6">
+      <span class="num">6</span><span class="rot">El reparto</span></button>
+    <button class="chincheta" style="left:12%;top:86%;--i:7" data-c="8">
+      <span class="num">8</span><span class="rot">La deuda</span></button>
+    <!-- La pizzería NO lleva chincheta de expediente: lleva la suya, que se
+         distingue en todo —terracota en vez de absenta, borde de rayas y un
+         ¾ en vez de un número— porque no se cierra, se visita. Y por eso es
+         un enlace y no un botón: abre la otra aplicación en otra pestaña,
+         sin perder los casos que se lleven resueltos. Clase propia
+         («vecina»), que así ningún recuento de la ciudad la confunde con un
+         caso. -->
+    <a class="vecina" style="left:73.5%;top:56%" target="_blank" rel="noopener"
+       href="https://diazepamina-creator.github.io/pizzeria-de-nick/">
+      <span class="num">¾</span><span class="rot" data-t>La pizzería</span></a>
+    <!-- el hilo rojo del corcho: lo dibuja pintaMapa según qué casos estén cerrados -->
+    <svg class="hilo" id="hilo" viewBox="0 0 900 620" preserveAspectRatio="none" aria-hidden="true"></svg>
+  </div></div>
+  <div class="barra" style="margin-top:12px">
+    <button class="b" id="lengua" lang="ca">Valencià</button>
+  <button class="b" id="sonido">Sonido: sí</button>
+  <button class="b" id="verActa">El acta</button>
+  <button class="b modo">Modo papel</button>
+  <button class="b" id="cero" hidden>Empezar de cero</button>
+  </div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 1 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso1">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LA CINTA</h1>
+  <div class="sub">caso 1 · la escena del crimen</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> De la relojería de la esquina ha desaparecido un reloj de
+    bolsillo. El sospechoso jura que no pasó de la primera farola. Liz ya ha
+    tendido la cinta por la acera: <b>la esquina es el cero</b> y cada farola
+    marca <b>un paso entero</b>. Lo que se mida en esa cinta va al informe.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el paso en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="5">5</button>
+    <button class="b" data-b="6">6</button><button class="b" data-b="8">8</button>
+  </div>
+
+  <div class="escena" id="esc">
+    <div class="suelo"></div>
+    <div class="charco"></div>
+    <div class="tiza"></div>
+    <div class="farolas" id="farolas"></div>
+    <div class="tira" id="tira"></div>
+    <div class="chin" id="c1" style="left:120px"><div class="val">3/4</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="c2" style="left:260px"><div class="val">1</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca del <b class="r">sospechoso</b>.
+     La <b class="v">verde</b> es la prueba que midió Liz: esa no se toca.</p>
+  <div class="lectura">
+    <span>Marca de Liz: <b id="l1">3/4</b> = <b id="d1">0,75</b></span>
+    <span>Marca del sospechoso: <b id="l2">5/4</b> = <b id="d2">1,25</b></span>
+  </div>
+  <div class="veredicto" id="ver"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 2 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso2">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LA LLAVE</h1>
+  <div class="sub">caso 2 · el taller de Nick</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El coche del sospechoso pasó por el taller la noche del robo,
+    a cambiar una rueda. En el banco de Nick la cinta no mide pasos:
+    <b>mide pulgadas</b> — de 0 a 1 hay una pulgada entera, y las llaves van en
+    partes de pulgada. Liz ya midió el perno de esa rueda: <b>3/8</b>, marcado
+    en verde. De las tres llaves del banco —5/16, 3/8 y 1/2— solo una lo abre.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar la pulgada en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="8">8</button>
+    <button class="b" data-b="12">12</button><button class="b" data-b="16">16</button>
+  </div>
+
+  <div class="escena" id="esc2">
+    <div class="suelo"></div>
+    <div class="banco"></div>
+    <div class="aceite"></div>
+    <div class="neumatico"></div>
+    <div class="tira" id="tira2"></div>
+    <div class="chin perno" id="m2p" style="left:150px"><div class="val">3/8</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m2l" style="left:300px"><div class="val">1/2</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca de la <b class="r">llave</b>.
+     El <b class="v">perno</b> lo midió Liz: ese no se toca.</p>
+  <div class="lectura">
+    <span>Perno: <b id="pn2">3/8</b> = <b id="dp2">0,375</b></span>
+    <span>Llave: <b id="ll2">1/2</b> = <b id="dl2">0,5</b></span>
+  </div>
+  <div class="veredicto" id="ver2"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 3 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso3">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LAS CELDAS</h1>
+  <div class="sub">caso 3 · la comisaría</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> Cuatro coartadas, cuatro trozos de hora: la portera dice
+    <b>1/4</b>, el vigilante <b>3/8</b>, el taxista <b>5/6</b> y el sereno
+    <b>1/7</b>. Los cuatro las entregaron escritas en decimal y firmadas. Aquí
+    no hay cinta que valga: hay que <b>dividir</b> y ver qué sale. En la
+    pizarra de la comisaría, los restos van cayendo en celdas.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">la coartada de</span>
+    <button class="b" data-fr="1/4">portera · 1/4</button>
+    <button class="b" data-fr="3/8">vigilante · 3/8</button>
+    <button class="b" data-fr="5/6">taxista · 5/6</button>
+    <button class="b" data-fr="1/7">sereno · 1/7</button>
+  </div>
+
+  <div class="escena pizarra" id="esc3">
+    <div class="cuenta">
+      <span id="d3n">1</span><span>÷</span><span id="d3d">4</span><span>=</span>
+      <span class="coc" id="d3c">0,</span>
+    </div>
+    <div class="bajada" id="d3bajada"></div>
+    <div class="celdas" id="d3celdas"></div>
+    <div class="mandos">
+      <button class="b ok" id="d3paso">Otro paso</button>
+      <button class="b" id="d3todo">Hasta el final</button>
+      <button class="b" id="d3otra">Empezar de nuevo</button>
+    </div>
+  </div>
+  <p class="pista">Cada celda guarda el <b class="v">resto</b> de un paso. Si sale
+     un <b class="v">cero</b>, la cuenta se acaba; si vuelve a salir un resto
+     <b class="r">que ya estaba</b>, la cuenta se repite para siempre.</p>
+  <div class="veredicto" id="ver3"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 4 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso4">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LA BARANDILLA</h1>
+  <div class="sub">caso 4 · el puente viejo</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El ayuntamiento pagó <b>diez metros</b> de barandilla para
+    el puente, repartidos en <b>tres tramos iguales</b> entre pilar y pilar. El
+    contratista facturó tres tramos de tres metros justos —la marca
+    <b>verde</b> de la factura— y se fue silbando. La cinta de Liz mide metros:
+    de 0 a 1 hay un metro.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el metro en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena" id="esc4">
+    <div class="tablon"></div>
+    <div class="baranda"></div>
+    <div class="tira" id="tira4"></div>
+    <div class="chin" id="m4f" style="left:200px"><div class="val">3</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m4t" style="left:120px"><div class="val">2</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca del <b class="r">tramo</b>.
+     La <b class="v">verde</b> es lo que dice la factura: esa no se toca.</p>
+  <div class="lectura">
+    <span>Factura: <b id="fa4">3</b> m</span>
+    <span>Tramo medido: <b id="tr4">2</b> m = <b id="dt4">2</b></span>
+  </div>
+  <div class="veredicto" id="ver4"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 5 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso5">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>EL NIVEL</h1>
+  <div class="sub">caso 5 · el pantano</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El limnímetro del pantano es una cinta tumbada: de 0 a 1 va
+    el <b>dique entero</b>, y el agua se llena hacia la derecha. La
+    <b>línea de peligro</b> —marca verde— está en <b>3/4</b>. Si el nivel la
+    pasa, se moja el barrio bajo; si pasa del 1, se moja la ciudad. Sumar aquí
+    es <b>juntar</b> tramos de agua uno detrás de otro.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el dique en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena" id="esc5">
+    <div class="agua" id="agua5"></div>
+    <div class="dique" id="dique5"></div>
+    <div class="juncos"></div>
+    <div class="tira" id="tira5"></div>
+    <div class="chin" id="m5p" style="left:300px"><div class="val">3/4</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m5n" style="left:200px"><div class="val">1/2</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar el <b class="r">nivel del agua</b>.
+     La <b class="v">verde</b> es la línea de peligro: esa no se toca.</p>
+  <div class="lectura">
+    <span>Peligro: <b>3/4</b></span>
+    <span>Nivel: <b id="nv5">1/2</b> = <b id="dn5">0,5</b></span>
+  </div>
+  <div class="veredicto" id="ver5"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 6 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso6">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>EL REPARTO</h1>
+  <div class="sub">caso 6 · el banco de la calle 4</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> Del banco de la calle 4 salieron <b>12.000 dólares</b> en
+    una saca. Aquí la cinta no mide pasos ni pulgadas: <b>de 0 a 1 está el
+    botín entero</b>. Cortar el botín en partes iguales y contarlas es
+    exactamente lo que hace una fracción de una cantidad.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el botín en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena" id="esc6">
+    <div class="tapete"></div>
+    <div class="fajo" style="left:8%"></div>
+    <div class="fajo" style="left:20%;bottom:16px"></div>
+    <div class="fajo" style="left:32%"></div>
+    <div class="tira" id="tira6"></div>
+    <div class="chin dos" id="m6" style="left:200px"><div class="val">1/2</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca de <b class="r">la parte</b>
+     que se está repartiendo. Debajo, lo que vale en dólares.</p>
+  <div class="lectura">
+    <span>Parte: <b id="pa6">1/2</b> del botín</span>
+    <span>En dinero: <b id="di6">6.000</b> $</span>
+  </div>
+  <div class="veredicto" id="ver6"></div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 7 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso7">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LA BANCA</h1>
+  <div class="sub">caso 7 · el casino de la calle 9</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> Último expediente. En la cinta, de 0 a 1 está <b>el bote</b>
+    de la noche. La banca se queda su parte antes de repartir, el dueño se lleva
+    la mitad de lo que sobra, y en la puerta un cartel promete que la ruleta
+    paga <b>«tres a dos»</b>. Aquí se toma una parte <b>de otra parte</b>: hay
+    que cortar lo ya cortado.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el bote en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="4">4</button>
+    <button class="b" data-b="5">5</button><button class="b" data-b="8">8</button>
+    <button class="b" data-b="10">10</button><button class="b" data-b="20">20</button>
+  </div>
+
+  <div class="escena" id="esc7">
+    <div class="tapete"></div>
+    <div class="ruleta"></div>
+    <div class="fajo" style="left:8%"></div>
+    <div class="fajo" style="left:22%;bottom:18px"></div>
+    <div class="tira" id="tira7"></div>
+    <div class="chin dos" id="m7" style="left:200px"><div class="val">1/2</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar la marca de <b class="r">la parte
+     del bote</b> de la que se esté hablando.</p>
+  <div class="lectura">
+    <span>Parte del bote: <b id="pa7">1/2</b></span>
+    <span>En decimal: <b id="de7">0,5</b></span>
+  </div>
+  <div class="veredicto" id="ver7"></div>
+</div>
+
+<!-- ═══ VISTA: EL ACTA ═══════════════════════════════════════════════ -->
+<div class="vista marco" id="vActa">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b" id="imprimeActa">Imprimir</button>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>EL ACTA</h1>
+  <div class="sub">lo que se averiguó, caso por caso</div>
+  <div class="acta">
+    <div class="cabecera"><b>ACTA DE LA SEMANA</b><span>Los números partidos · Jeff Azzo &amp; Liz Stillo</span></div>
+    <ol id="actaLista"></ol>
+    <div class="firmas">
+      <div><b>Jeff Azzo</b>detective</div>
+      <div><b>Liz Stillo</b>fotógrafa y medidora</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VISTA: EL CASO 8 ═════════════════════════════════════════════ -->
+<div class="vista marco" id="vCaso8">
+  <div class="barra">
+    <button class="b volver">← La ciudad</button>
+    <span style="flex:1"></span>
+    <button class="b modo">Modo papel</button>
+  </div>
+  <h1>LA DEUDA</h1>
+  <div class="sub">caso 8 · el desguace</div>
+
+  <div class="sumario">
+    <div class="sello">CONFIDENCIAL</div>
+    <b>SUMARIO.</b> El coche del sospechoso ha acabado en el desguace, y con
+    él, el libro de cuentas de la banca. En esta cinta <b>de 0 a 1 hay un fajo</b>
+    de mil dólares: a la derecha del cero, lo que uno tiene; a la
+    <b>izquierda</b>, lo que debe. Liz ha marcado en verde lo que cobró el
+    sospechoso la semana pasada: <b>3/4</b> de fajo. Lo que debe hoy es la
+    misma cantidad… pero del otro lado.
+  </div>
+
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt"></p>
+    <div class="ops" hidden></div>
+    <div class="fila">
+      <button class="b atras" aria-label="Encargo anterior">◀</button>
+      <button class="b ok comprobar">Comprobar</button>
+      <span class="paso cualEnc"></span>
+    </div>
+  </div>
+  <div class="informe" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt"></p>
+  </div>
+
+  <div class="barra">
+    <span class="etq">cortar el fajo en</span>
+    <button class="b" data-b="2">2</button><button class="b" data-b="3">3</button>
+    <button class="b" data-b="4">4</button><button class="b" data-b="6">6</button>
+    <button class="b" data-b="8">8</button><button class="b" data-b="12">12</button>
+  </div>
+
+  <div class="escena" id="esc8">
+    <div class="chatarra"></div>
+    <div class="garfio"></div>
+    <div class="deuda" id="deuda8"></div>
+    <div class="poste" id="poste8"></div>
+    <div class="tira" id="tira8"></div>
+    <div class="chin" id="m8c" style="left:70%"><div class="val">3/4</div><div class="pal"></div><div class="pin"></div></div>
+    <div class="chin dos" id="m8s" style="left:50%"><div class="val">0</div><div class="pal"></div><div class="pin"></div></div>
+  </div>
+  <p class="pista">Toca la cinta para llevar el <b class="r">saldo</b> del
+     sospechoso. La <b class="v">verde</b> es lo que cobró: esa no se toca.</p>
+  <div class="lectura">
+    <span>Cobró: <b>3/4</b> de fajo</span>
+    <span>Saldo: <b id="sa8">0</b> = <b id="ds8">0</b></span>
+  </div>
+  <div class="veredicto" id="ver8"></div>
+</div>
+
+<div class="caso" id="caso">
+  <div class="carpeta">
+    <div class="sello">CONFIDENCIAL</div>
+    <div class="cual" id="cCual"></div>
+    <h2 id="cTit"></h2>
+    <p id="cTxt"></p>
+    <div class="fila">
+      <button class="b ok" id="cAbrir">Abrir el caso</button>
+      <button class="b" id="cCerrar">Volver al mapa</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Las caras, UNA sola vez. Antes iban cosidas dentro del caso 1; con más
+     casos en marcha, cada carpeta las clona de aquí y no se repite ni un
+     trazo. -->
+<template id="tplJeff"><svg viewBox="0 0 60 62" class="cara">
+  <!-- JEFF AZZO · dinosaurio verde, gabardina, sombrero de ala ancha,
+       gafas redondas y una ramita de regaliz en la boca. -->
+  <path d="M6 62 Q7 46 18 43 L40 43 Q52 46 53 62 Z" fill="#6E7F4A" stroke="#141A16" stroke-width="1.6"/>
+  <path d="M22 43 L29 55 L36 43" fill="#5B6B3D" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M24 44 L29 53 L34 44" fill="#C9C3AE"/>
+  <g class="cabeza">
+  <circle cx="30" cy="27" r="14" fill="#7FA35C" stroke="#141A16" stroke-width="1.7"/>
+  <path d="M17 29 L5 29 Q1 29 1 33.5 Q1 38 5 38 L18 38 Z" fill="#7FA35C" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+  <rect x="15" y="29.5" width="6" height="9" fill="#7FA35C"/>
+  <circle cx="4.6" cy="32.4" r="1.1" fill="#141A16"/>
+  <path d="M3.6 36.4 H17" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- la ramita de regaliz -->
+  <g class="regaliz">
+  <path d="M9 37 L1 41.5" stroke="#141A16" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M9 37 L1.6 41.1" stroke="#6B3A2E" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+  <!-- el sombrero -->
+  <path d="M8 20 Q30 12 52 20 Q52 23 30 23.5 Q8 23 8 20 Z" fill="#2C332A" stroke="#141A16" stroke-width="1.5"/>
+  <path d="M15 20 Q16 7 30 6.5 Q44 7 45 20 Z" fill="#39412F" stroke="#141A16" stroke-width="1.5"/>
+  <path d="M15 18.6 Q30 15.5 45 18.6" stroke="#141A16" stroke-width="2.4" fill="none"/>
+  <!-- las gafas -->
+  <circle cx="24" cy="27" r="5.6" fill="#EDEAE0" stroke="#141A16" stroke-width="1.7"/>
+  <circle cx="37.5" cy="26.6" r="5.6" fill="#EDEAE0" stroke="#141A16" stroke-width="1.7"/>
+  <path d="M29.7 26.8 H31.8" stroke="#141A16" stroke-width="1.7"/>
+  <circle class="ojo" cx="24.5" cy="27.2" r="2.2" fill="#141A16"/><circle class="ojo" cx="38" cy="26.8" r="2.2" fill="#141A16"/>
+  </g>
+  <path d="M42 46 L48 62" stroke="#5B6B3D" stroke-width="1.6" fill="none"/>
+</svg></template>
+<template id="tplLiz"><svg viewBox="0 0 60 62" class="cara">
+  <!-- LIZ STILLO · pájara azul, gorra de prensa con su tarjeta y cámara
+       de fuelle colgada. Mira hacia su texto. -->
+  <path d="M8 62 Q9 47 20 44 L40 44 Q51 47 52 62 Z" fill="#4E7E96" stroke="#141A16" stroke-width="1.6"/>
+  <g class="cabeza">
+  <circle cx="30" cy="29" r="13" fill="#5FA0BE" stroke="#141A16" stroke-width="1.7"/>
+  <!-- EL PELO. Asoma bajo el ala del sombrero, a los lados y por detrás: dos
+       ondas y un rizo suelto en la mejilla. Es un pájaro, sí, pero en este
+       mundo los pájaros llevan peinado —y a los trece años eso es justo lo
+       que hace que Liz se lea como Liz. -->
+  <g fill="#2F6E8C" stroke="#141A16" stroke-width="1.2" stroke-linejoin="round">
+    <path d="M17 27 Q13 33 15 39 Q19 41 21 37 Q18 32 20 27 Z"/>
+    <path d="M42 26 Q47 32 45 40 Q41 42 39 38 Q42 32 40 26 Z"/>
+    <path d="M36 38 Q40 42 38 46 Q35 47 34 44 Q36 41 34 38 Z"/>
+  </g>
+  <path d="M18 30 Q15 34 16.5 37" stroke="#7FC0DC" stroke-width="1.1" fill="none"/>
+  <path d="M43.5 30 Q46 34 44.5 38" stroke="#7FC0DC" stroke-width="1.1" fill="none"/>
+  <!-- El pico va ENTRE LOS OJOS y apuntando al frente, no de lado: con la
+       cara vista de frente, un pico lateral se lee como una nariz enorme. -->
+  <path d="M25.6 31.4 L34.4 31.4 L30 39.6 Z" fill="#D8A33F" stroke="#141A16"
+        stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M30 32.4 V38" stroke="#141A16" stroke-width=".9" opacity=".55"/>
+  <!-- EL SOMBRERO DE CAMPANA. La gorra de prensa era de repartidor de
+       periódicos, no de fotógrafa: el tocado de los años treinta es la
+       cloche —copa redonda calada hasta las cejas, ala corta vuelta y una
+       cinta ancha con su pliegue de lado—. Se queda el rojo de la familia
+       en la cinta, para que siga siendo la bisnieta de Listillón. -->
+  <path d="M15 22 Q16 6 30 5.5 Q44 6 45 22 Q30 26 15 22 Z" fill="#D8CFB8" stroke="#141A16" stroke-width="1.5"/>
+  <path d="M13.5 21 L46.5 21 Q48 26 44 27.5 L16 27.5 Q12 26 13.5 21 Z" fill="#A6452F" stroke="#141A16" stroke-width="1.4"/>
+  <path d="M13 26 Q8 27.5 9 30.5 Q20 30 30 29.6 Q44 29.4 50 28 Q49 25.6 46.6 25.4 Z"
+        fill="#C9BFA6" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M20 21 Q22 15 26 14 L27 21 Z" fill="#8E3A28" stroke="#141A16" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="24.5" cy="17.5" r="1.5" fill="#D8A33F" stroke="#141A16" stroke-width=".8"/>
+  <!-- ojos, mirando a su izquierda (hacia el texto) -->
+  <circle cx="24.5" cy="29" r="3.3" fill="#EDEAE0"/><circle cx="34" cy="29" r="3.3" fill="#EDEAE0"/>
+  <circle class="ojo" cx="23.4" cy="29.2" r="1.6" fill="#141A16"/><circle class="ojo" cx="32.9" cy="29.2" r="1.6" fill="#141A16"/>
+  <rect x="20.4" y="23.6" width="7" height="1.7" rx=".8" fill="#141A16" transform="rotate(9 23.9 24.4)"/>
+  <rect x="31.6" y="23.4" width="7" height="1.7" rx=".8" fill="#141A16" transform="rotate(-4 35.1 24.2)"/>
+  </g>
+  <!-- la cámara de fuelle, con su fogonazo (invisible hasta que dispara) -->
+  <g class="camara">
+  <rect x="30" y="47" width="17" height="12" rx="1.6" fill="#2C332A" stroke="#141A16" stroke-width="1.4"/>
+  <circle cx="38.5" cy="53" r="3.6" fill="#4E7E96" stroke="#141A16" stroke-width="1.3"/>
+  <circle cx="38.5" cy="53" r="1.5" fill="#EDEAE0" opacity=".8"/>
+  <rect x="33" y="44.6" width="5" height="3" rx="1" fill="#D8A33F" stroke="#141A16" stroke-width="1.1"/>
+  </g>
+  <circle class="fogonazo" cx="35.5" cy="43" r="9" fill="#F5F3EC"/>
+  <path d="M22 50 Q27 49 30 51" stroke="#141A16" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+  <path d="M22 50 Q27 49 30 51" stroke="#5FA0BE" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg></template>
+
+<script src="src/ciudad.js"></script>
+<script src="src/sonido.js"></script>
+<script src="src/plano.js"></script>
+<script src="src/valenciano.js"></script>
+<script src="src/aula.js"></script>
+</body></html>

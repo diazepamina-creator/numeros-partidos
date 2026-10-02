@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Generado por construye.mjs a partir de src/: edita src/pagina.html y los módulos, no este fichero. -->
 <html lang="es"><head><meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -699,7 +700,8 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 }
 .aulaRejilla,.colIzq,.colDer{display:contents}
 #bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}
-</style></head>
+</style>
+</head>
 <body data-modo="pantalla">
 <div id="flash"></div>
 
@@ -3063,7 +3065,8 @@ function pintaActa(){
 }
 document.getElementById('verActa').addEventListener('click', () => { pintaActa(); vista('vActa'); });
 document.getElementById('imprimeActa').addEventListener('click', () => print());
-
+</script>
+<script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
    Cuatro ruidos de despacho, sintetizados en el momento —ni un archivo—:
    la tecla de la máquina, el obturador de Liz, el golpe del sello y la
@@ -3121,7 +3124,8 @@ const Ruido = (() => {
   /* el primer toque de cualquier cosa despierta el audio */
   document.addEventListener('pointerdown', () => Ruido.despierta(), {once:true});
 }
-
+</script>
+<script>
 /* ── EL MAPA Y LAS CARPETAS ─────────────────────────────────────────── */
 const caja = document.getElementById('caso');
 const ABRE = {
@@ -3251,7 +3255,8 @@ traduce();
 [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
 [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
 pintaMapa(); pintaCero();
-
+</script>
+<script>
 /* ═══ EL DICCIONARI. Cada frase del guió, en valencià, amb la seua
    castellana per clau. Es genera a part (extrae.js + va.txt) i s'enganxa
    ací: si es toca una frase en castellà, cal tocar la seua clau. ═══ */
@@ -3683,7 +3688,8 @@ Object.assign(VA, {
 "<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: el negocio cuadra. Pero en su libro hay una columna en rojo con lo que la gente le debe, y el coche del sospechoso ha aparecido esta mañana en el desguace, con la cuenta pendiente.": "<b>Cas tancat.</b> La banca paga una vegada i mitja i es queda un quint: el negoci quadra. Però en el seu llibre hi ha una columna en roig amb el que la gent li deu, i el cotxe del sospitós ha aparegut este matí en el desballestament, amb el compte pendent.",
 "<b>Ciudad cerrada.</b> Ocho expedientes y una sola cinta, que ahora llega hasta donde llegan las deudas. Cada número de esta semana ha sido un punto de una calle: con su sitio, con su nombre, con su espejo al otro lado del cero. Guarde la cinta, Liz. Mañana amanece otra vez sobre la relojería.": "<b>Ciutat tancada.</b> Huit expedients i una sola cinta, que ara arriba fins on arriben els deutes. Cada número d'esta setmana ha sigut un punt d'un carrer: amb el seu lloc, amb el seu nom, amb el seu espill a l'altre costat del zero. Guarda la cinta, Liz. Demà torna a clarejar sobre la rellotgeria."
 });
-
+</script>
+<script>
 /* ── EL MODO AULA ───────────────────────────────────────────────────────
    Se guarda en su propia llave del almacén, aparte del turno, para no tocar
    el guardado de la app. La rejilla —cuando la hay— se monta envolviendo lo
