@@ -126,3 +126,54 @@ footer a{color:inherit}
   body[data-aula="si"] .lienzo{zoom:1.32;max-width:1300px;--z:1.32}
 }
 @media print{ .cab,.ajustes,footer{display:none} body{background:#fff !important} }
+
+/* ── LAS VENTANAS: el acta del turno ── */
+.botones{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center}
+.modal{position:fixed;inset:0;background:rgba(12,8,20,.82);display:grid;place-items:center;padding:16px;z-index:60;overflow:auto}
+.modal[hidden]{display:none}
+.modal .caja2{width:min(640px,100%);max-height:92vh;overflow:auto;border:1px solid var(--linea);border-radius:16px;padding:18px 20px;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 60px rgba(0,0,0,.55);color:var(--tinta)}
+.modal .caja2:focus{outline:none}
+.modal h2{font-family:var(--rotf);color:var(--oro);letter-spacing:1.5px;text-transform:uppercase;font-size:18px;margin:0 0 8px}
+.actaM .actaSub{margin:0 0 10px;color:var(--tenue)}
+.actaNombre{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.actaNombre input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:9px;border:1px solid var(--linea);background:var(--noche);color:var(--tinta)}
+.actaDatos{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:10px}
+.actaDatos div{background:var(--noche);border:1px solid var(--linea);border-radius:9px;padding:6px 9px}
+.actaDatos .etq{display:block;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue)}
+.actaDatos b{display:block;font-family:'Space Mono',monospace;font-size:18px}
+.actaTabla{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:10px}
+.actaTabla th{font-family:var(--rotf);font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue);text-align:left;padding:4px 6px;border-bottom:1px solid var(--linea)}
+.actaTabla td{padding:6px;border-bottom:1px dashed var(--linea);vertical-align:top}
+.actaTabla td b{color:var(--oro)}
+.actaTabla tr.floja td:first-child::after{content:" · floja";color:var(--rojo);font-size:12.5px}
+.actaMsg{min-height:20px;color:var(--verde);margin:6px 0 0}
+.ac-det summary{cursor:pointer;font-family:var(--rotf);font-weight:700;font-size:12.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--tenue)}
+.ac-ej{list-style:none;margin:6px 0 0;padding:0;font-size:13.5px}
+.ac-ej li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 10px;padding:5px 0;border-top:1px dashed var(--linea)}
+.ac-ej .ac-h{font-family:'Space Mono',monospace;font-size:12px;color:var(--tenue)}
+.ac-ej .ac-m{font-family:var(--rotf);font-weight:700;font-size:12.5px;letter-spacing:1px;color:var(--tenue)}
+.ac-ej .ac-como{grid-column:3;color:var(--tenue);font-size:12.5px}
+.ac-ej li.ok .ac-como::before{content:"✓ ";color:var(--verde);font-weight:700}
+.ac-ej li.no .ac-como::before{content:"✗ ";color:var(--rojo);font-weight:700}
+@media (max-width:520px){ .actaTabla{font-size:12.5px} .actaTabla td,.actaTabla th{padding:4px 3px} }
+
+/* ── LA GUÍA: el foco sobre una parte de la ciudad y su nota ── */
+.guia{position:fixed;inset:0;z-index:80;cursor:pointer}
+.guia[hidden]{display:none}
+.guia-foco{position:fixed;border-radius:13px;border:2px solid #F0C75E;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(30,16,6,.72),0 0 22px rgba(240,199,94,.55);
+  transition:top .28s ease,left .28s ease,width .28s ease,height .28s ease}
+.guia-globo{position:fixed;z-index:81;width:min(340px,calc(100vw - 32px));cursor:default;color:var(--tinta);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--oro);border-radius:14px;padding:13px 15px;
+  box-shadow:0 18px 44px rgba(0,0,0,.5);transition:top .28s ease,left .28s ease}
+.guia-globo .tit{font-family:var(--rotf);font-weight:700;font-size:15px;letter-spacing:1.4px;text-transform:uppercase;color:var(--oro);margin-bottom:4px}
+.guia-globo:focus{outline:none}
+.guia-globo p{margin:0;font-size:15.5px;line-height:1.5}
+.guia-globo p b{color:var(--oro)}
+.guia-pie{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px}
+.guia-pie > span{font-family:'Space Mono',monospace;font-size:11px;color:var(--tenue)}
+.guia-pie .botones{margin:0}
+.guia-pie button.b{min-height:36px;padding:5px 12px}
+[data-quieto="si"] .guia-foco,[data-quieto="si"] .guia-globo{transition:none}
+@media print{ .guia,.modal{display:none} }

@@ -127,6 +127,7 @@
     <span class="selloCab" aria-hidden="true"></span>
     <div><h1>La ciudad</h1><div class="sub" data-t>Los números partidos · racionales en la recta</div></div>
     <nav class="acc">
+      <button type="button" id="bGuia" aria-pressed="false" data-t>Guía</button>
       <button type="button" id="bAjustes" aria-pressed="false" data-t>Ajustes</button>
       <button type="button" id="bAula" aria-pressed="false" data-t>Aula</button>
       <button type="button" id="verActa" aria-pressed="false">Acta</button>
@@ -1188,6 +1189,32 @@
 </footer>
 </div><!-- .lienzo -->
 
+<!-- ═══ LA GUÍA: un foco que recorre la ciudad ═══════════════════════ -->
+<div class="guia" id="guia" hidden>
+  <div class="guia-foco" id="guiaFoco"></div>
+  <div class="guia-globo" id="guiaGlobo" role="dialog" aria-modal="true" aria-labelledby="guiaTit" tabindex="-1">
+    <div class="tit" id="guiaTit"></div>
+    <p id="guiaTxt"></p>
+    <div class="guia-pie"><span id="guiaNum"></span>
+      <span class="botones"><button type="button" class="b" id="guiaSalir" data-t>Salir</button><button type="button" class="b ok" id="guiaSig">Siguiente</button></span></div>
+  </div>
+</div>
+
+<!-- ═══ EL ACTA DEL TURNO ════════════════════════════════════════════ -->
+<div class="modal" id="mActa" hidden>
+  <div class="caja2 actaM" role="dialog" aria-modal="true" aria-labelledby="actaTit" tabindex="-1">
+    <h2 id="actaTit" data-t>El acta de la ciudad</h2>
+    <p class="actaSub" data-t>Lo que has hecho en este turno. Cópiala o descárgala para dársela a tu profesor.</p>
+    <label class="actaNombre"><span class="etq" data-t>Tu nombre</span><input id="acNombre" autocomplete="name"></label>
+    <div class="actaDatos" id="acDatos"></div>
+    <table class="actaTabla"><thead><tr><th data-t>Caso</th><th data-t>Encargos</th><th data-t>Fallos</th></tr></thead><tbody id="acFilas"></tbody></table>
+    <details class="ac-det" id="acDet"><summary>Encargo a encargo</summary><ol class="ac-ej" id="acEj"></ol></details>
+    <div class="botones"><button type="button" class="b ok" id="acCopia" data-t>Copiar el acta</button><button type="button" class="b" id="acBaja" data-t>Descargar .txt</button>
+      <button type="button" class="b" id="acConclusiones" data-t>Las conclusiones</button><button type="button" class="b" id="acCierra" data-t>Volver a la ciudad</button></div>
+    <p class="actaMsg" id="acMsg" role="status"></p>
+  </div>
+</div>
+
 <!-- Las caras, UNA sola vez. Antes iban cosidas dentro del caso 1; con más
      casos en marcha, cada carpeta las clona de aquí y no se repite ni un
      trazo. -->
@@ -1276,5 +1303,6 @@
 <script src="src/sonido.js"></script>
 <script src="src/plano.js"></script>
 <script src="src/pestanas.js"></script>
+<script src="src/acta.js"></script>
 <script src="src/aula.js"></script>
 </body></html>

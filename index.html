@@ -6,7 +6,7 @@
 <meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.8
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.9
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -830,6 +830,57 @@ footer a{color:inherit}
   body[data-aula="si"] .lienzo{zoom:1.32;max-width:1300px;--z:1.32}
 }
 @media print{ .cab,.ajustes,footer{display:none} body{background:#fff !important} }
+
+/* ── LAS VENTANAS: el acta del turno ── */
+.botones{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center}
+.modal{position:fixed;inset:0;background:rgba(12,8,20,.82);display:grid;place-items:center;padding:16px;z-index:60;overflow:auto}
+.modal[hidden]{display:none}
+.modal .caja2{width:min(640px,100%);max-height:92vh;overflow:auto;border:1px solid var(--linea);border-radius:16px;padding:18px 20px;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 60px rgba(0,0,0,.55);color:var(--tinta)}
+.modal .caja2:focus{outline:none}
+.modal h2{font-family:var(--rotf);color:var(--oro);letter-spacing:1.5px;text-transform:uppercase;font-size:18px;margin:0 0 8px}
+.actaM .actaSub{margin:0 0 10px;color:var(--tenue)}
+.actaNombre{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.actaNombre input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:9px;border:1px solid var(--linea);background:var(--noche);color:var(--tinta)}
+.actaDatos{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:10px}
+.actaDatos div{background:var(--noche);border:1px solid var(--linea);border-radius:9px;padding:6px 9px}
+.actaDatos .etq{display:block;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue)}
+.actaDatos b{display:block;font-family:'Space Mono',monospace;font-size:18px}
+.actaTabla{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:10px}
+.actaTabla th{font-family:var(--rotf);font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue);text-align:left;padding:4px 6px;border-bottom:1px solid var(--linea)}
+.actaTabla td{padding:6px;border-bottom:1px dashed var(--linea);vertical-align:top}
+.actaTabla td b{color:var(--oro)}
+.actaTabla tr.floja td:first-child::after{content:" · floja";color:var(--rojo);font-size:12.5px}
+.actaMsg{min-height:20px;color:var(--verde);margin:6px 0 0}
+.ac-det summary{cursor:pointer;font-family:var(--rotf);font-weight:700;font-size:12.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--tenue)}
+.ac-ej{list-style:none;margin:6px 0 0;padding:0;font-size:13.5px}
+.ac-ej li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 10px;padding:5px 0;border-top:1px dashed var(--linea)}
+.ac-ej .ac-h{font-family:'Space Mono',monospace;font-size:12px;color:var(--tenue)}
+.ac-ej .ac-m{font-family:var(--rotf);font-weight:700;font-size:12.5px;letter-spacing:1px;color:var(--tenue)}
+.ac-ej .ac-como{grid-column:3;color:var(--tenue);font-size:12.5px}
+.ac-ej li.ok .ac-como::before{content:"✓ ";color:var(--verde);font-weight:700}
+.ac-ej li.no .ac-como::before{content:"✗ ";color:var(--rojo);font-weight:700}
+@media (max-width:520px){ .actaTabla{font-size:12.5px} .actaTabla td,.actaTabla th{padding:4px 3px} }
+
+/* ── LA GUÍA: el foco sobre una parte de la ciudad y su nota ── */
+.guia{position:fixed;inset:0;z-index:80;cursor:pointer}
+.guia[hidden]{display:none}
+.guia-foco{position:fixed;border-radius:13px;border:2px solid #F0C75E;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(30,16,6,.72),0 0 22px rgba(240,199,94,.55);
+  transition:top .28s ease,left .28s ease,width .28s ease,height .28s ease}
+.guia-globo{position:fixed;z-index:81;width:min(340px,calc(100vw - 32px));cursor:default;color:var(--tinta);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--oro);border-radius:14px;padding:13px 15px;
+  box-shadow:0 18px 44px rgba(0,0,0,.5);transition:top .28s ease,left .28s ease}
+.guia-globo .tit{font-family:var(--rotf);font-weight:700;font-size:15px;letter-spacing:1.4px;text-transform:uppercase;color:var(--oro);margin-bottom:4px}
+.guia-globo:focus{outline:none}
+.guia-globo p{margin:0;font-size:15.5px;line-height:1.5}
+.guia-globo p b{color:var(--oro)}
+.guia-pie{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px}
+.guia-pie > span{font-family:'Space Mono',monospace;font-size:11px;color:var(--tenue)}
+.guia-pie .botones{margin:0}
+.guia-pie button.b{min-height:36px;padding:5px 12px}
+[data-quieto="si"] .guia-foco,[data-quieto="si"] .guia-globo{transition:none}
+@media print{ .guia,.modal{display:none} }
 </style>
 </head>
 <body data-modo="papel">
@@ -842,6 +893,7 @@ footer a{color:inherit}
     <span class="selloCab" aria-hidden="true"></span>
     <div><h1>La ciudad</h1><div class="sub" data-t>Los números partidos · racionales en la recta</div></div>
     <nav class="acc">
+      <button type="button" id="bGuia" aria-pressed="false" data-t>Guía</button>
       <button type="button" id="bAjustes" aria-pressed="false" data-t>Ajustes</button>
       <button type="button" id="bAula" aria-pressed="false" data-t>Aula</button>
       <button type="button" id="verActa" aria-pressed="false">Acta</button>
@@ -1899,9 +1951,35 @@ footer a{color:inherit}
 <footer>
   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
   · <a href="https://diazepamina-creator.github.io/">Materiales</a>
-  · versión 0.8
+  · versión 0.9
 </footer>
 </div><!-- .lienzo -->
+
+<!-- ═══ LA GUÍA: un foco que recorre la ciudad ═══════════════════════ -->
+<div class="guia" id="guia" hidden>
+  <div class="guia-foco" id="guiaFoco"></div>
+  <div class="guia-globo" id="guiaGlobo" role="dialog" aria-modal="true" aria-labelledby="guiaTit" tabindex="-1">
+    <div class="tit" id="guiaTit"></div>
+    <p id="guiaTxt"></p>
+    <div class="guia-pie"><span id="guiaNum"></span>
+      <span class="botones"><button type="button" class="b" id="guiaSalir" data-t>Salir</button><button type="button" class="b ok" id="guiaSig">Siguiente</button></span></div>
+  </div>
+</div>
+
+<!-- ═══ EL ACTA DEL TURNO ════════════════════════════════════════════ -->
+<div class="modal" id="mActa" hidden>
+  <div class="caja2 actaM" role="dialog" aria-modal="true" aria-labelledby="actaTit" tabindex="-1">
+    <h2 id="actaTit" data-t>El acta de la ciudad</h2>
+    <p class="actaSub" data-t>Lo que has hecho en este turno. Cópiala o descárgala para dársela a tu profesor.</p>
+    <label class="actaNombre"><span class="etq" data-t>Tu nombre</span><input id="acNombre" autocomplete="name"></label>
+    <div class="actaDatos" id="acDatos"></div>
+    <table class="actaTabla"><thead><tr><th data-t>Caso</th><th data-t>Encargos</th><th data-t>Fallos</th></tr></thead><tbody id="acFilas"></tbody></table>
+    <details class="ac-det" id="acDet"><summary>Encargo a encargo</summary><ol class="ac-ej" id="acEj"></ol></details>
+    <div class="botones"><button type="button" class="b ok" id="acCopia" data-t>Copiar el acta</button><button type="button" class="b" id="acBaja" data-t>Descargar .txt</button>
+      <button type="button" class="b" id="acConclusiones" data-t>Las conclusiones</button><button type="button" class="b" id="acCierra" data-t>Volver a la ciudad</button></div>
+    <p class="actaMsg" id="acMsg" role="status"></p>
+  </div>
+</div>
 
 <!-- Las caras, UNA sola vez. Antes iban cosidas dentro del caso 1; con más
      casos en marcha, cada carpeta las clona de aquí y no se repite ni un
@@ -2064,7 +2142,7 @@ function leeTurno(){
     return d;
   }catch(e){ return null; }
 }
-function borraTurno(){ try{ localStorage.removeItem(GUARDADO); }catch(e){} }
+function borraTurno(){ try{ localStorage.removeItem(GUARDADO); localStorage.removeItem('ciudad.acta.v1'); }catch(e){} }
 
 /* Las caras, clonadas de sus plantillas: cada carpeta pide la suya. */
 document.querySelectorAll('.cara-caja[data-cara]').forEach(c =>
@@ -2433,6 +2511,8 @@ function montaExpediente(cfg){
     if(!quieto()) Ruido.obturador();
     bien ? Ruido.bien() : Ruido.mal();
     q('.infTxt').innerHTML = dice;
+    /* al acta: cada intento, con lo que se dijo si era un interrogatorio */
+    if(typeof anotaActa === 'function' && !(e.ops && elegida === null)) anotaActa(cfg.caso, enc, bien, e.ops && elegida !== null ? e.ops[elegida].t : null);
     if(bien){
       hechos.add(enc);
       if(enc === cfg.encargos.length - 1){ resueltos.add(cfg.caso); pintaMapa(); }
@@ -2446,6 +2526,8 @@ function montaExpediente(cfg){
      puesto y no se teclea otra vez—. El encargo abierto no se guarda porque
      abre() siempre entra por el primero, que es como funcionaba ya. */
   return {
+    total: cfg.encargos.length,
+    hechos: () => hechos.size,
     abre(){ enc = 0; pintaEncargo(); },
     repinta(){ vistos.add(enc); pintaEncargo(); },
     guarda(){ return {h:[...hechos], v:[...vistos]}; },
@@ -3649,6 +3731,8 @@ Object.assign(VA, {
 });
 /* lo nuevo de la versión 0.8: la cabecera, las pestañas, los ajustes y la ruta */
 Object.assign(VA, {"Los números partidos · racionales en la recta": "Els nombres partits · racionals en la recta", "Ajustes": "Ajustos", "Aula": "Aula", "Acta": "Acta", "La cinta": "La cinta", "situar y comparar": "situar i comparar", "Partir": "Partir", "la fracción es una división": "la fracció és una divisió", "Juntar y quitar": "Ajuntar i llevar", "sumar y restar": "sumar i restar", "Partes de partes": "Parts de parts", "la fracción de una cantidad": "la fracció d'una quantitat", "Tema": "Tema", "Claro": "Clar", "Oscuro": "Fosc", "Animaciones": "Animacions", "Sí": "Sí", "No": "No", "Lengua": "Llengua", "Sonido": "So", "Turno": "Torn", "Cerrar": "Tancar", "Los casos de esta pestaña": "Els casos d'esta pestanya", "cerrado": "tancat", "La pizzería de Nick": "La pizzeria de Nick", "cumplida": "complida", "equivalentes, en La grapadora": "equivalents, en La grapadora", "la cinta": "la cinta", "comparar": "comparar", "exacto o periódico": "exacte o periòdic", "los negativos": "els negatius", "parte de una parte": "part d'una part", "fracción de cantidad": "fracció de quantitat"});
+/* lo nuevo de la versión 0.9: la guía y el acta del turno */
+Object.assign(VA, {"Guía": "Guia", "Salir": "Eixir", "Siguiente": "Següent", "Al caso": "Al cas", "El acta de la ciudad": "L'acta de la ciutat", "Lo que has hecho en este turno. Cópiala o descárgala para dársela a tu profesor.": "El que has fet en este torn. Copia-la o descarrega-la per a donar-la al teu professor.", "Tu nombre": "El teu nom", "Caso": "Cas", "Encargos": "Encàrrecs", "Fallos": "Errades", "Copiar el acta": "Copiar l'acta", "Descargar .txt": "Descarregar .txt", "Las conclusiones": "Les conclusions", "Casos cerrados": "Casos tancats", "A la primera": "A la primera", "Acierto": "Encert", "Tiempo": "Temps", "pendiente": "pendent", "Encargo a encargo": "Encàrrec a encàrrec", "Caso ": "Cas ", "bien tras ": "bé després de ", " fallo": " errada", " fallos": " errades", "bien a la primera": "bé a la primera", "sin resolver": "sense resoldre", "LA CIUDAD · acta del turno": "LA CIUTAT · acta del torn", "Nombre: ": "Nom: ", "(sin nombre)": "(sense nom)", "Fecha: ": "Data: ", "Tiempo: ": "Temps: ", "Casos cerrados: ": "Casos tancats: ", "Encargos resueltos: ": "Encàrrecs resolts: ", " a la primera": " a la primera", "Fallos: ": "Errades: ", "Acierto: ": "Encert: ", "Por caso:": "Per cas:", "fallos: ": "errades: ", "Encargo a encargo:": "Encàrrec a encàrrec:", "Copiada. Pégala donde te diga tu profesor.": "Copiada. Apega-la on et diga el teu professor.", "No se ha podido copiar: descárgala.": "No s'ha pogut copiar: descarrega-la.", "Descargada.": "Descarregada.", "Los contenidos": "Els continguts", "El plano": "El plànol", "La ruta": "La ruta", "El aula": "L'aula", "<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.": "<b>La cinta</b>: situar i comparar. <b>Partir</b>: la fracció és una divisió. <b>Ajuntar i llevar</b>: sumar i restar. <b>Parts de parts</b>: la fracció d'una quantitat. Cada pestanya té els seus casos.", "Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.": "Cada xinxeta és un <b>cas</b>. Toca-la per a obrir la seua carpeta. Els casos de la pestanya es veuen encesos; en tancar-los, el <b>fil roig</b> els va unint.", "Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.": "Els casos d'esta pestanya, en orde. En La cinta hi ha també <b>la pizzeria de Nick</b>: les fraccions equivalents es treballen allí, amb pizza.", "El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.": "El suro (clar) o l'asfalt de nit (fosc), les animacions, el <b>valencià</b>, el so i començar de zero.", "Todo más grande, para la pizarra digital.": "Tot més gran, per a la pissarra digital.", "Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.": "El que has fet en el torn, cas a cas i encàrrec a encàrrec, per a <b>entregar-ho al teu professor</b>. Jeff l'espera en l'escena del crim."});
 </script>
 <script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
@@ -3931,11 +4015,191 @@ aplicaAjustes();
 
 /* ── UN ENLACE: ?j=cinta|partir|juntar|partes abre esa pestaña (los QR de
    las fichas). La dirección se limpia. ── */
+let vieneDeEnlace = false;
 try{
   const q = new URLSearchParams(location.search);
-  if(q.get('j')){ if(PESTANAS[q.get('j')]) pestana = q.get('j'); history.replaceState(null, '', location.pathname); }
+  if(q.get('j')){ vieneDeEnlace = true; if(PESTANAS[q.get('j')]) pestana = q.get('j'); history.replaceState(null, '', location.pathname); }
 }catch(err){}
 pintaRuta();
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   EL ACTA Y LA GUÍA
+   El acta de verdad, como en las demás apps: el nombre, el tiempo, los
+   aciertos y los fallos, caso a caso y encargo a encargo, para entregársela
+   al profesor. Se guarda en este aparato y caduca con el turno (cuatro
+   horas); «Empezar de cero» la borra. Las ocho conclusiones de la semana
+   —la hoja mecanografiada de siempre— siguen ahí, a un botón del acta.
+   La guía: un foco que recorre cada parte de la ciudad con una nota; se
+   abre sola la primera vez.
+   ══════════════════════════════════════════════════════════════════════ */
+const LLAVE_ACTA = 'ciudad.acta.v1';
+let acta = {t0: Date.now(), ts: Date.now(), nombre: '', ej: []};
+try{
+  const d = JSON.parse(localStorage.getItem(LLAVE_ACTA) || 'null');
+  if(d && Array.isArray(d.ej) && Date.now() - d.ts < CADUCA) acta = d;
+}catch(err){}
+const guardaActa = () => { acta.ts = Date.now(); try{ localStorage.setItem(LLAVE_ACTA, JSON.stringify(acta)); }catch(err){} };
+
+/* Un intento en un encargo. Los intentos seguidos al mismo encargo van al
+   mismo renglón: los fallos se cuentan, y el acierto lo cierra. */
+function anotaActa(caso, enc, bien, dicho){
+  let e = acta.ej[acta.ej.length - 1];
+  if(!e || e.c !== caso || e.e !== enc || e.ok){
+    e = {t: Date.now(), c: caso, e: enc, fallos: 0, ok: false, d: []};
+    acta.ej.push(e);
+    if(acta.ej.length > 400) acta.ej.shift();
+  }
+  if(bien) e.ok = true; else e.fallos++;
+  if(dicho && !bien) e.d.push(dicho);
+  guardaActa();
+}
+
+const dos = x => String(x).padStart(2, '0');
+const hora = ms => { const f = new Date(ms); return dos(f.getHours()) + ':' + dos(f.getMinutes()); };
+const reloj = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ' min ' + dos(s % 60) + ' s'; };
+const comoFue = e => e.ok
+  ? (e.fallos ? T('bien tras ') + e.fallos + T(e.fallos === 1 ? ' fallo' : ' fallos') : T('bien a la primera'))
+  : T('sin resolver') + (e.fallos ? ' (' + e.fallos + T(e.fallos === 1 ? ' fallo' : ' fallos') + ')' : '');
+function cuentas(){
+  const bien = acta.ej.filter(e => e.ok).length, primera = acta.ej.filter(e => e.ok && !e.fallos).length;
+  const fallos = acta.ej.reduce((a, e) => a + e.fallos, 0);
+  return {bien, primera, fallos, acierto: bien + fallos ? Math.round(100 * bien / (bien + fallos)) : 0};
+}
+const $a = id => document.getElementById(id);
+function pintaActaM(){
+  const k = cuentas(), dato = (n, v) => '<div><span class="etq">' + T(n) + '</span><b>' + v + '</b></div>';
+  $a('acDatos').innerHTML = dato('Casos cerrados', resueltos.size + ' / 8') + dato('Encargos', k.bien)
+    + dato('A la primera', k.primera) + dato('Fallos', k.fallos) + dato('Acierto', k.acierto + '%')
+    + dato('Tiempo', reloj(Date.now() - acta.t0).replace(' min ', ':').replace(' s', ''));
+  $a('acFilas').innerHTML = ORDEN.map(c => {
+    const x = EXPS[c], mios = acta.ej.filter(e => e.c === c), f = mios.reduce((a, e) => a + e.fallos, 0);
+    return '<tr' + (f > x.hechos() && f > 1 ? ' class="floja"' : '') + '><td><b>' + c + '.</b> ' + T(CASOS[c].t) + '</td><td>'
+      + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ' · ' + T('cerrado') : '') + '</td><td>' + f + '</td></tr>';
+  }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>';
+  $a('acDet').hidden = !acta.ej.length;
+  $a('acDet').querySelector('summary').textContent = T('Encargo a encargo') + ' (' + acta.ej.length + ')';
+  $a('acEj').innerHTML = acta.ej.map(e => '<li class="' + (e.ok ? 'ok' : 'no') + '"><span class="ac-h">' + hora(e.t) + '</span>'
+    + '<span class="ac-m">' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '</span><span class="ac-c">' + T(CASOS[e.c].t) + '</span>'
+    + '<span class="ac-como">' + comoFue(e) + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '</span></li>').join('');
+  $a('acNombre').value = acta.nombre || '';
+}
+function actaEnTexto(){
+  const k = cuentas(), f = new Date();
+  let t = T('LA CIUDAD · acta del turno') + '\n';
+  t += T('Nombre: ') + (acta.nombre || T('(sin nombre)')) + '\n';
+  t += T('Fecha: ') + dos(f.getDate()) + '/' + dos(f.getMonth() + 1) + '/' + f.getFullYear() + '  ' + hora(+f) + '\n';
+  t += T('Tiempo: ') + reloj(Date.now() - acta.t0) + '\n';
+  t += T('Casos cerrados: ') + resueltos.size + ' / 8   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
+    + T('Fallos: ') + k.fallos + '   ' + T('Acierto: ') + k.acierto + '%\n';
+  t += T('Por caso:') + '\n';
+  ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);
+    t += '  ' + c + '. ' + T(CASOS[c].t) + ' — ' + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ', ' + T('cerrado') : '') + '; ' + T('fallos: ') + f2 + '\n'; });
+  t += '  ¾. ' + T('La pizzería de Nick') + ' — ' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '\n';
+  if(acta.ej.length){
+    t += T('Encargo a encargo:') + '\n';
+    acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '  ' + comoFue(e)
+      + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '\n'; });
+  }
+  return t;
+}
+function abreActa(){
+  ajustes(false);
+  $a('acMsg').textContent = '';
+  pintaActaM();
+  $a('mActa').hidden = false;
+  $a('verActa').setAttribute('aria-pressed', 'true');
+  $a('mActa').querySelector('.caja2').focus();
+}
+function cierraActa(){ $a('mActa').hidden = true; $a('verActa').setAttribute('aria-pressed', 'false'); $a('verActa').focus(); }
+/* la cabecera abre el acta; la hoja de las conclusiones, desde dentro */
+{
+  const viejo = $a('verActa'), nuevo = viejo.cloneNode(true);   // fuera el manejador de antes
+  viejo.replaceWith(nuevo);
+  nuevo.addEventListener('click', abreActa);
+}
+$a('acCierra').addEventListener('click', cierraActa);
+$a('mActa').addEventListener('click', ev => { if(ev.target.id === 'mActa') cierraActa(); });
+addEventListener('keydown', ev => { if(ev.key === 'Escape' && !$a('mActa').hidden) cierraActa(); });
+$a('acNombre').addEventListener('input', () => { acta.nombre = $a('acNombre').value.trim(); guardaActa(); });
+$a('acConclusiones').addEventListener('click', () => { cierraActa(); pintaActa(); vista('vActa'); });
+$a('acCopia').addEventListener('click', async () => {
+  try{ await navigator.clipboard.writeText(actaEnTexto()); $a('acMsg').textContent = T('Copiada. Pégala donde te diga tu profesor.'); }
+  catch(err){ $a('acMsg').textContent = T('No se ha podido copiar: descárgala.'); }
+});
+$a('acBaja').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([actaEnTexto()], {type: 'text/plain;charset=utf-8'}));
+  a.download = 'acta-ciudad' + (acta.nombre ? '-' + acta.nombre.replace(/\s+/g, '-').toLowerCase() : '') + '.txt';
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $a('acMsg').textContent = T('Descargada.');
+});
+
+/* ── LA GUÍA ── */
+const GUIA = [
+  {sel: '.juegos', c: 'Los contenidos', t: '<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.'},
+  {sel: '#mapa', c: 'El plano', t: 'Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.'},
+  {sel: '#rutaPes', c: 'La ruta', t: 'Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.'},
+  {sel: '#bAjustes', c: 'Ajustes', t: 'El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.'},
+  {sel: '#bAula', c: 'El aula', t: 'Todo más grande, para la pizarra digital.'},
+  {sel: '#verActa', c: 'El acta', t: 'Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.'}
+];
+let guiaI = -1, guiaParadas = [], guiaRetoque = 0;
+const seVe = e => !!(e && e.offsetParent !== null && e.getBoundingClientRect().height > 0);
+function cierraGuia(){
+  $a('guia').hidden = true; guiaI = -1; clearTimeout(guiaRetoque);
+  $a('bGuia').setAttribute('aria-pressed', 'false');
+  try{ localStorage.setItem('ciudad.guia', 'vista'); }catch(err){}
+  $a('bGuia').focus();
+}
+function vaGuia(i){
+  if(i >= guiaParadas.length) return cierraGuia();
+  guiaI = i;
+  const g = guiaParadas[i], e = document.querySelector(g.sel);
+  if(!seVe(e)) return vaGuia(i + 1);
+  $a('guiaTit').textContent = T(g.c); $a('guiaTxt').innerHTML = T(g.t);
+  $a('guiaNum').textContent = (i + 1) + T(' de ') + guiaParadas.length;
+  $a('guiaSig').textContent = T(i === guiaParadas.length - 1 ? 'Al caso' : 'Siguiente');
+  $a('guia').hidden = false;
+  e.scrollIntoView({block: 'center', behavior: 'instant'});
+  colocaGuia(); requestAnimationFrame(() => requestAnimationFrame(colocaGuia));
+  clearTimeout(guiaRetoque); guiaRetoque = setTimeout(colocaGuia, 180);
+}
+function colocaGuia(){
+  const g = guiaParadas[guiaI]; if(!g || $a('guia').hidden) return;
+  const e = document.querySelector(g.sel); if(!seVe(e)) return;
+  const r = e.getBoundingClientRect(), m = 7, f = $a('guiaFoco'), gl = $a('guiaGlobo');
+  /* lo que no cabe en la pantalla (el plano en el móvil) se recorta al borde */
+  const top = Math.max(4, r.top - m), bot = Math.min(innerHeight - 4, r.bottom + m);
+  f.style.top = top + 'px'; f.style.left = (r.left - m) + 'px'; f.style.width = (r.width + 2 * m) + 'px'; f.style.height = (bot - top) + 'px';
+  const alto = gl.offsetHeight || 180, ancho = gl.offsetWidth || 320;
+  const abajo = bot + 12, arriba = top - 12 - alto;
+  gl.style.top = (abajo + alto < innerHeight - 8 ? abajo : arriba > 8 ? arriba : Math.max(8, innerHeight - alto - 8)) + 'px';
+  gl.style.left = Math.min(Math.max(12, r.left + r.width / 2 - ancho / 2), innerWidth - ancho - 12) + 'px';
+}
+function abreGuia(){
+  ajustes(false);
+  if(!$a('mActa').hidden) cierraActa();
+  document.getElementById('caso').classList.remove('abierto');
+  if(!document.getElementById('vMapa').classList.contains('puesta')){ pintaMapa(); vista('vMapa'); }
+  $a('bGuia').setAttribute('aria-pressed', 'true');
+  guiaParadas = GUIA.filter(g => seVe(document.querySelector(g.sel))); vaGuia(0); $a('guiaGlobo').focus();
+}
+$a('bGuia').addEventListener('click', abreGuia);
+$a('guiaSig').addEventListener('click', ev => { ev.stopPropagation(); vaGuia(guiaI + 1); });
+$a('guiaSalir').addEventListener('click', ev => { ev.stopPropagation(); cierraGuia(); });
+$a('guiaGlobo').addEventListener('click', ev => ev.stopPropagation());
+$a('guia').addEventListener('click', () => vaGuia(guiaI + 1));
+addEventListener('keydown', ev => { if($a('guia').hidden) return; ev.stopPropagation();
+  if(ev.key === 'Escape') cierraGuia(); else if(ev.key === 'ArrowRight' || ev.key === 'Enter'){ ev.preventDefault(); vaGuia(guiaI + 1); } }, true);
+addEventListener('scroll', colocaGuia, {passive: true});
+addEventListener('resize', colocaGuia);
+/* la primera vez, sola; no si se llega por un enlace de las fichas */
+{
+  let primera = false;
+  try{ primera = localStorage.getItem('ciudad.guia') !== 'vista'; }catch(err){}
+  if(primera && !vieneDeEnlace) setTimeout(abreGuia, 600);
+}
 </script>
 <script>
 /* ── EL MODO AULA ───────────────────────────────────────────────────────
