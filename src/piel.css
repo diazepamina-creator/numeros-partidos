@@ -194,3 +194,18 @@ footer a{color:inherit}
 /* en Practicar, tampoco el nombre de la marca roja ni la lectura */
 #vPractica:not(.visto) #pMarca .val,#vPractica:not(.visto) #prLec{visibility:hidden}
 #vPractica #prMesa[hidden]{display:none}
+
+/* ── SOBRE EL PAPEL: la cuenta y el resultado, escritos; la cinta, escondida
+   hasta que está bien (0.13) ── */
+.papel{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:11px;align-items:flex-end}
+.papel[hidden],.papel label[hidden]{display:none}
+.papel label{display:flex;flex-direction:column;gap:3px;flex:1 1 150px}
+.papel label.pRe{flex:0 1 130px}
+.papel .etq{font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue)}
+.papel input{font:500 17px/1.2 var(--letra);color:var(--tinta);background:var(--panel);border:1px solid var(--linea);
+  border-bottom:2px solid var(--oro);border-radius:7px;padding:8px 10px;min-height:42px;width:100%;box-sizing:border-box}
+.papel input:focus{outline:2px solid var(--morado);outline-offset:1px}
+.papel input:disabled{opacity:.85;border-bottom-color:var(--verde)}
+.papel .nota{flex:1 1 100%;margin:0;font-size:12.5px;color:var(--tenue)}
+.vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe){display:none}
+#prPapel[aria-pressed="true"]{border-color:var(--oro);background:var(--brillo);color:var(--oro)}

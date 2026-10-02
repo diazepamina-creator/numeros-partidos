@@ -113,7 +113,7 @@ let vieneDeEnlace = false, enlacePr = null;
 try{
   const q = new URLSearchParams(location.search);
   if(q.get('j')){ vieneDeEnlace = true; if(PESTANAS[q.get('j')]) pestana = q.get('j');
-    if(q.get('j') === 'practicar') enlacePr = {m: q.get('m'), c: q.get('c')};
+    if(q.get('j') === 'practicar') enlacePr = {m: q.get('m'), c: q.get('c'), papel: q.has('papel')};
     history.replaceState(null, '', location.pathname); }
 }catch(err){}
 pintaRuta();

@@ -11,6 +11,7 @@
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── LA VISTA ── */
+const vP = document.getElementById('vPractica');
 const prSt = montaCinta({
   esc: 'escP', tira: 'tiraP', farolas: null, pasos: 2, desde: 0, cortes: 1, rozan: 52,
   botones: '#vPractica .nada', activa: 'pMarca',
@@ -29,6 +30,11 @@ let prEnc = null, prElegida = null, prHecho = false, prN = 0, prBien = 0;
 /* el tipo de encargo que pide un enlace: mientras no se cambie de pestaña,
    «Otro encargo» da otro de ese tipo */
 let prTipo = null;
+/* sin cinta: lo de la cinta se contesta sobre el papel (la cuenta y el
+   resultado); lo que tiene respuestas, eligiendo */
+let prSinCinta = false;
+const prPp = montaPapel(vP.querySelector('.encargo'), () => document.getElementById('prComprueba').click());
+document.getElementById('prPapel').addEventListener('click', () => { prSinCinta = !prSinCinta; nuevoPr(); });
 /* dividir: la tela (la verde) sobre la cinta, y la pieza (la roja) copiada
    desde el cero una detrás de otra, como en la sastrería */
 function pintaTejas(st){
@@ -49,7 +55,6 @@ function pintaTejas(st){
     d.style.left = px(n * p) + 'px'; d.style.width = (px(T0) - px(n * p)) + 'px'; tj.appendChild(d);
   }
 }
-const vP = document.getElementById('vPractica');
 /* cualquier cambio en la cinta vuelve a esconder la lectura */
 document.getElementById('escP').addEventListener('pointerdown', () => { if(!prHecho) vP.classList.remove('visto'); });
 
@@ -59,8 +64,8 @@ function pintaCortes(){
     '<button type="button" class="b" data-k="' + k + '" aria-pressed="' + (prSt.cortes === k) + '">' + k + '</button>').join('');
 }
 document.getElementById('prCortes').addEventListener('click', ev => {
-  const b = ev.target.closest('button[data-k]'); if(!b || prHecho) return;
-  prSt.cortes = +b.dataset.k; vP.classList.remove('visto'); pintaCortes(); prSt.repinta();
+  const b = ev.target.closest('button[data-k]'); if(!b) return;
+  prSt.cortes = +b.dataset.k; if(!prHecho) vP.classList.remove('visto'); pintaCortes(); prSt.repinta();
 });
 function pintaOps(){
   const caja = document.getElementById('prOps');
@@ -74,22 +79,26 @@ function pintaOps(){
 }
 /* un encargo nuevo: el que se dé (el de un enlace) o uno de la pestaña */
 function nuevoPr(dado){
-  prEnc = dado || PR.genera(pestana, prTipo); prElegida = null; prHecho = false; prN = Date.now();
+  prEnc = dado ? (prSinCinta && PR.sinCintaVale(dado.tipo) ? PR.aPapel(dado) : dado) : PR.genera(pestana, prTipo, prSinCinta);
+  prElegida = null; prHecho = false; prN = Date.now();
   vP.classList.remove('visto');
-  document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre);
+  document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana].split(' · ')[0]) + ' · ' + T(PR.TIPOS[prEnc.tipo].nombre) + (prSinCinta ? ' · ' + T('sin cinta') : '');
+  document.getElementById('prPapel').setAttribute('aria-pressed', String(prSinCinta));
+  prPp.limpia(); prPp.pon(prEnc.papel, false);
   document.getElementById('prTxt').innerHTML = T(prEnc.t);
   document.getElementById('prInf').hidden = true;
   document.getElementById('prComprueba').textContent = T('Comprobar');
   document.getElementById('prOtro').hidden = false;
   document.getElementById('prCuenta').textContent = prBien ? prBien + T(' bien en este rato') : '';
   document.getElementById('prMesa').hidden = !!prEnc.sinCinta;
+  document.getElementById('prPista').innerHTML = T(prEnc.pista);
   pintaOps();
-  if(!prEnc.sinCinta){
+  /* la cinta se monta también sin cinta: después se puede comprobar en ella */
+  if(prEnc.pasos){
     prSt.pasos = prEnc.pasos; prSt.desde = prEnc.desde; prSt.cortes = 1;
     prSt.marcas.pMarca.v = prEnc.desde < 0 ? 0 : prEnc.desde; prSt.marcas.pMarca.medido = null;
     document.getElementById('pPrueba').hidden = !prEnc.prueba;
     prSt.marcas.pPrueba.v = prEnc.prueba ? prEnc.prueba.v : 0;
-    document.getElementById('prPista').innerHTML = T(prEnc.pista);
     pintaCortes();
     requestAnimationFrame(() => prSt.repinta());
   }
@@ -101,9 +110,11 @@ document.getElementById('prComprueba').addEventListener('click', () => {
     document.getElementById('prInf').hidden = false; document.getElementById('prInfTxt').innerHTML = T('Elija una respuesta, jefe.'); return;
   }
   const enSitio = e.meta === undefined || e.meta === null || Math.abs(prSt.marcas.pMarca.v - e.meta) < 1e-9;
-  const op = e.ops ? e.ops[prElegida] : null, bien = enSitio && (!op || op.ok);
+  const op = e.ops ? e.ops[prElegida] : null, rv = e.papel ? PR.revisa(e.papel, ...prPp.lee()) : null;
+  const bien = enSitio && (!op || op.ok) && (!rv || rv.bien);
   let dice;
   if(bien) dice = T(e.bien);
+  else if(rv) dice = dicePapel(rv);
   else if(!enSitio) dice = T(e.mal);
   else dice = T(op.r);
   vP.classList.add('visto');
@@ -111,15 +122,18 @@ document.getElementById('prComprueba').addEventListener('click', () => {
   inf.className = 'informe'; requestAnimationFrame(() => { inf.className = 'informe nueva' + (bien ? '' : ' mal'); });
   document.getElementById('prInfTxt').innerHTML = dice;
   bien ? Ruido.bien() : Ruido.mal();
-  if(typeof anotaActa === 'function') anotaActa('p:' + e.tipo, prN, bien, op && !op.ok ? op.t : null, e.c);
+  if(typeof anotaActa === 'function') anotaActa('p:' + e.tipo, prN, bien, op && !op.ok ? op.t : rv && !bien ? prPp.dicho() : null, e.c + (e.sinCinta && e.pasos ? ' · ' + T('sin cinta') : ''));
   if(bien){
     prHecho = true; prBien++;
     if(op) vP.querySelectorAll('#prOps .op')[prElegida].classList.add('buena');
     document.getElementById('prComprueba').textContent = T('Otro encargo →');
     document.getElementById('prOtro').hidden = true;
+    /* resuelto sin cinta: ahora se puede comprobar en ella, si se quiere */
+    if(e.papel) prPp.pon(e.papel, true, !!e.pasos);
+    if(e.sinCinta && e.pasos){ document.getElementById('prMesa').hidden = false; requestAnimationFrame(() => prSt.repinta()); }
   }else if(op && !op.ok) vP.querySelectorAll('#prOps .op')[prElegida].classList.add('fallada');
 });
-document.getElementById('prOtro').addEventListener('click', nuevoPr);
+document.getElementById('prOtro').addEventListener('click', () => nuevoPr());
 
 /* ── EL BOTÓN DE LA CABECERA: entra y sale de Practicar, en la pestaña en
    que se esté. Las pestañas, mientras tanto, cambian de tipo de encargo. ── */
@@ -146,5 +160,6 @@ document.getElementById('cAbrir').addEventListener('click', () => { if(enPractic
 if(enlacePr){
   const e = enlacePr.m ? PR.deEnlace(enlacePr.m, enlacePr.c) : null;
   if(e){ pestana = PR.TIPOS[e.tipo].pes; prTipo = e.tipo; pintaRuta(); }
+  if(enlacePr.papel) prSinCinta = true;
   practicar(true, e);
 }

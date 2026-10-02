@@ -360,12 +360,55 @@ function escribe(el, html, alAcabar){
   return remata;
 }
 
+/* ═══ SOBRE EL PAPEL ═════════════════════════════════════════════
+   Un encargo sin cinta: la cuenta se escribe (en la libreta, y aquí) y se
+   resuelve. La cinta se esconde hasta que está bien; después se puede
+   comprobar en ella, si se quiere. Lo usan los casos 5, 6, 7 y 9 y
+   Practicar. La lectura de las cuentas está en encargos.js (PR.revisa). */
+function montaPapel(encargo, alEnter){
+  const el = document.createElement('div'); el.className = 'papel'; el.hidden = true;
+  el.innerHTML = '<label class="pCu"><span class="etq"></span><input type="text" autocomplete="off" spellcheck="false" autocapitalize="off"></label>'
+    + '<label class="pRe"><span class="etq"></span><input type="text" autocomplete="off" spellcheck="false" autocapitalize="off" inputmode="text"></label>'
+    + '<p class="nota"></p>';
+  encargo.insertBefore(el, encargo.querySelector('.fila'));
+  const [cu, re] = el.querySelectorAll('input');
+  [cu, re].forEach(i => i.addEventListener('keydown', ev => { if(ev.key === 'Enter'){ ev.preventDefault(); alEnter(); } }));
+  return {
+    pon(papel, hecho, conCinta = true){
+      el.hidden = !papel; if(!papel) return;
+      el.querySelector('.pCu').hidden = !papel.cuenta;
+      el.querySelector('.pCu .etq').textContent = T('La cuenta');
+      el.querySelector('.pRe .etq').textContent = T('El resultado');
+      el.querySelector('.nota').textContent = T(hecho ? (conCinta ? 'Hecho sobre el papel. Ahora, si se quiere, se puede comprobar en la cinta.' : 'Hecho sobre el papel.') : papel.cuenta ? 'Sin tocar la cinta: en la libreta, y aquí la cuenta y lo que da.' : 'Sin tocar la cinta: en la libreta, y aquí lo que da.');
+      cu.disabled = re.disabled = !!hecho;
+      if(hecho && papel.ej && !cu.value) cu.value = papel.ej;
+      if(hecho && papel.ver && !re.value) re.value = papel.ver;
+    },
+    limpia(){ cu.value = re.value = ''; },
+    lee: () => [cu.value, re.value],
+    /* lo que se escribió, para el acta */
+    dicho: () => (cu.value.trim() && !el.querySelector('.pCu').hidden ? cu.value.trim() + ' = ' : '') + re.value.trim(),
+    foco(){ if(!el.hidden) (el.querySelector('.pCu').hidden ? re : cu).focus({preventScroll: true}); }
+  };
+}
+/* lo que contesta Liz cuando lo escrito no está bien */
+function dicePapel(rv){
+  if(rv.k === 'otra') return T('Esa cuenta da ') + '<b>' + rv.x + '</b>' + T(', y no es la del encargo: hay que volver a leerlo.');
+  if(rv.k === 'trampa') return rv.r;
+  return T({falta: 'Falta la cuenta o el resultado: en la libreta, y aquí.',
+    nocuenta: 'Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.',
+    sinop: 'Eso es un número, no una cuenta: ¿con qué números y qué operación se llega a él?',
+    nores: 'El resultado no se entiende: un número o una fracción, como 7/8.',
+    resmal: 'La cuenta está bien planteada, pero el resultado no. A repasarla en la libreta.'}[rv.k]);
+}
+
 function montaExpediente(cfg){
   const R = document.getElementById(cfg.vista);
   const q = sel => R.querySelector(sel);
   let enc = 0, elegida = null, remata = () => {}, sellado = false;
   const hechos = new Set(), vistos = new Set();
   q('.encTxt').addEventListener('click', () => remata());
+  const pp = montaPapel(q('.encargo'), () => q('.comprobar').click());
 
   function pintaOpciones(){
     const e = cfg.encargos[enc], caja = q('.ops');
@@ -389,7 +432,10 @@ function montaExpediente(cfg){
     const ultimo = enc === cfg.encargos.length - 1, hecho = hechos.has(enc);
     /* un encargo puede montar su cinta (la tela de la sastrería cambia):
        solo al llegar a él, no al repintar por la lengua */
-    if(enc !== preparado){ preparado = enc; if(cfg.encargos[enc].prepara) cfg.encargos[enc].prepara(); }
+    if(enc !== preparado){ preparado = enc; pp.limpia(); if(cfg.encargos[enc].prepara) cfg.encargos[enc].prepara(); }
+    /* sobre el papel, la cinta no se ve hasta que está bien */
+    pp.pon(cfg.encargos[enc].papel, hecho);
+    R.classList.toggle('apapel', !!cfg.encargos[enc].papel && !hecho);
     /* el veredicto de la cinta solo se ve después de comprobar (o con el
        encargo ya resuelto); el sumario se pliega cuando ya se ha leído */
     R.classList.toggle('visto', hecho); R.dataset.hecho = hecho ? 'si' : 'no';
@@ -443,6 +489,9 @@ function montaExpediente(cfg){
       if(elegida === null){ bien = false; dice = T(e.mal); }
       else { bien = e.ops[elegida].ok; dice = T(e.ops[elegida].r);
              if(!bien) R.querySelectorAll('.op')[elegida].classList.add('fallada'); }
+    }else if(e.papel){                          // sobre el papel
+      const rv = PR.revisa(e.papel, ...pp.lee());
+      bien = rv.bien; dice = bien ? T(e.bien) : dicePapel(rv);
     }else{                                      // encargo de la cinta
       bien = e.ok();
       dice = T(bien ? e.bien : (typeof e.mal === 'function' ? e.mal() : e.mal));
@@ -463,12 +512,14 @@ function montaExpediente(cfg){
     bien ? Ruido.bien() : Ruido.mal();
     q('.infTxt').innerHTML = dice;
     /* al acta: cada intento, con lo que se dijo si era un interrogatorio */
-    if(typeof anotaActa === 'function' && !(e.ops && elegida === null)) anotaActa(cfg.caso, enc, bien, e.ops && elegida !== null ? e.ops[elegida].t : null);
+    if(typeof anotaActa === 'function' && !(e.ops && elegida === null)) anotaActa(cfg.caso, enc, bien, e.ops && elegida !== null ? e.ops[elegida].t : e.papel && !bien ? pp.dicho() : null);
     if(bien){
       hechos.add(enc);
       if(enc === cfg.encargos.length - 1){ resueltos.add(cfg.caso); pintaMapa(); }
       guardaTurno();
       pintaEncargo();
+      /* la cinta, que estaba escondida, se ve ya: hay que repintarla */
+      if(e.papel && cfg.cinta) requestAnimationFrame(() => cfg.cinta.repinta());
       inf.hidden = false;                      // pintaEncargo ya lo deja puesto
     }
   });
@@ -961,10 +1012,14 @@ const ENCARGOS5 = [
   bien:'No dormimos, jefe: <b>13/12</b>. Con el dique en doceavos las tres aguas tienen por fin el mismo nombre — 6/12 + 4/12 + 3/12 — y trece trozos de doceavo son <b>más que los doce</b> que hace el dique entero. Igual que los 5/4 de la relojería: cuando el de arriba pasa al de abajo, se ha pasado de la unidad. Avise al barrio bajo.',
   mal:() => cinta5.cortes !== 12
     ? T('En doceavos, jefe: pulse el <b>12</b>. Es el único corte donde caben los medios, los tercios y los cuartos a la vez.')
-    : T('Junte los tres: 6/12 del nivel, 4/12 del tercio y 3/12 del cuarto.')}
+    : T('Junte los tres: 6/12 del nivel, 4/12 del tercio y 3/12 del cuarto.')},
+ {t:'Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.',
+  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4'},
+  bien:'<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.',
+  mal:''}
 ];
 const caso5 = montaExpediente({
-  vista:'vCaso5', caso:5, encargos:ENCARGOS5,
+  vista:'vCaso5', caso:5, encargos:ENCARGOS5, cinta:cinta5,
   cierre:'<b>Caso cerrado.</b> El pantano aguantó por los pelos y el libro del '
     + 'guarda queda corregido. Y en la saca que apareció flotando bajo el '
     + 'puente había doce mil dólares del banco de la calle 4, con una nota de '
@@ -1033,10 +1088,14 @@ const ENCARGOS6 = [
    {t:'La mitad, porque 3/4 y 1/6 son partes pequeñas.', ok:false,
     r:'Tres cuartos de nada tiene de pequeño: es casi todo el botín. Échele el ojo a la cinta antes de fiarse del tamaño de los números.'}],
   bien:'Un doceavo: 9/12 del jefe, 2/12 del chivato, y de doce queda uno.',
-  mal:'Elija una de las cuatro, jefe.'}
+  mal:'Elija una de las cuatro, jefe.'},
+ {t:'Una última cuenta, sobre el papel: de lo suyo, el jefe le pagó al abogado <b>un tercio</b>. ¿Cuántos dólares cobró el abogado? Escríbame la cuenta y el resultado, sin tocar la cinta.',
+  papel:{res:{n:3000, d:1}, cuenta:true, ej:'1/3 · 3/4 · 12000', ver:'3000'},
+  bien:'<b>1/3 · 3/4 · 12 000 = 3.000 dólares.</b> Un tercio de tres cuartos es un cuarto del botín: 1/3 · 3/4 = 1/4, y 12 000 : 4 = 3 000. Si quiere, búsquelo en la cinta.',
+  mal:''}
 ];
 const caso6 = montaExpediente({
-  vista:'vCaso6', caso:6, encargos:ENCARGOS6,
+  vista:'vCaso6', caso:6, encargos:ENCARGOS6, cinta:cinta6,
   cierre:'<b>Caso cerrado.</b> Los dos del coche cantaron por mil dólares. Y '
     + 'todos los caminos —el reloj, la rueda, la barandilla, la saca— acaban '
     + 'en el mismo sitio: el casino de la calle 9, donde la banca se queda su '
@@ -1107,10 +1166,14 @@ const ENCARGOS7 = [
    {t:'Le devuelven 6 fichas: 3 × 2.', ok:false,
     r:'Ojalá. El «a» de «tres a dos» no multiplica: separa lo que le dan de lo que puso.'}],
   bien:'Tres por cada dos: 3/2 de lo apostado, una vez y media.',
-  mal:'Elija una de las cuatro, jefe.'}
+  mal:'Elija una de las cuatro, jefe.'},
+ {t:'En la mesa de al lado juegan con otras reglas: la banca se queda <b>1/4</b> del bote y, de lo que queda, el dueño se lleva <b>2/5</b>. ¿Qué parte del bote se lleva el dueño? Sobre el papel: la cuenta y el resultado.',
+  papel:{res:{n:3, d:10}, cuenta:true, ej:'2/5 · 3/4', ver:'3/10'},
+  bien:'<b>2/5 · 3/4 = 6/20 = 3/10</b> del bote. Lo que queda son 3/4, y los 2/5 de eso se multiplican. Si quiere, compruébelo en la cinta: corte en décimos.',
+  mal:''}
 ];
 const caso7 = montaExpediente({
-  vista:'vCaso7', caso:7, encargos:ENCARGOS7,
+  vista:'vCaso7', caso:7, encargos:ENCARGOS7, cinta:cinta7,
   cierre:'<b>Caso cerrado.</b> La banca paga una vez y media y se queda un quinto: '
     + 'el negocio cuadra. Pero el dueño no viste de confección: su traje salió de la '
     + 'sastrería de la calle 2, y el sastre corta la tela con cinta métrica, como Liz.'
@@ -1335,10 +1398,15 @@ const ENCARGOS9 = [
    {t:'Dividir siempre da menos, así que se multiplica por algo pequeño.', ok:false,
     r:'Ya lo vio en el forro: 2 : 1/3 = 6. Al dividir entre algo menor que 1, sale más.'}],
   bien:'Eso es.',
-  mal:'Elija una de las cuatro, jefe.'}
+  mal:'Elija una de las cuatro, jefe.'},
+ {t:'La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.',
+  prepara: tela(3, 3),
+  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4'},
+  bien:'<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.',
+  mal:''}
 ];
 const caso9 = montaExpediente({
-  vista:'vCaso9', caso:9, encargos:ENCARGOS9,
+  vista:'vCaso9', caso:9, encargos:ENCARGOS9, cinta:cinta9,
   cierre:'<b>Caso cerrado.</b> El libro del sastre cuadra pieza a pieza. Y en la última '
     + 'página hay una nota: el traje del sospechoso se pagó con billetes del banco de la '
     + 'calle 4, y su coche ha acabado esta mañana en el desguace, con una cuenta pendiente.'
