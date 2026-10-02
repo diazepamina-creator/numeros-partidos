@@ -557,16 +557,16 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 [data-modo="pantalla"] .farola::before{animation:faro 3s ease-in-out infinite}
 [data-modo="pantalla"] .farola:nth-child(2n)::before{animation-delay:-1.4s}
 
-/* ── LOS DOS INTERRUPTORES. En papel no se mueve nada —ni el plano se
+/* ── LOS DOS INTERRUPTORES. Sin animaciones no se mueve nada —ni el plano se
    inclina—, y lo mismo si el aparato pide menos movimiento. ── */
-[data-modo="papel"] *,[data-modo="papel"] *::before,[data-modo="papel"] *::after{
+[data-quieto="si"] *,[data-quieto="si"] *::before,[data-quieto="si"] *::after{
   animation:none !important;transition:none !important}
-[data-modo="papel"] .mapa{transform:none}
-[data-modo="papel"] .hilo path{stroke-dashoffset:0}
-[data-modo="papel"] .hilo circle.tendido{opacity:1;r:4}
-[data-modo="papel"] .cara .fogonazo{display:none}
-[data-modo="papel"] #flash{display:none}
-[data-modo="papel"] .escribiendo .ops,[data-modo="papel"] .escribiendo .fila{opacity:1;pointer-events:auto}
+[data-quieto="si"] .mapa{transform:none}
+[data-quieto="si"] .hilo path{stroke-dashoffset:0}
+[data-quieto="si"] .hilo circle.tendido{opacity:1;r:4}
+[data-quieto="si"] .cara .fogonazo{display:none}
+[data-quieto="si"] #flash{display:none}
+[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila{opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
   .mapa{transform:none !important}
@@ -579,7 +579,6 @@ html[lang^="ca"] .dique::after{content:'DIC'}
    desde el fondo de la clase. El zoom escala a la vez letra, botones y
    dibujos, así que no hay que tocar ni un tamaño suelto.                  */
 @media (min-width:900px){
-  body[data-aula="si"] .marco{zoom:1.32;max-width:1300px}
 }
 .aulaRejilla,.colIzq,.colDer{display:contents}
 #bAula[aria-pressed="true"]{color:var(--lima, #C9E265)}

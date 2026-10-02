@@ -15,3 +15,11 @@ test('index.html no depende de ningún fichero del repositorio', () => {
   assert.doesNotMatch(h, /<script src="/);
   assert.doesNotMatch(h, /<link rel="stylesheet" href="src/);
 });
+
+test('la versión sale del fichero VERSION', () => {
+  const v = readFileSync(new URL('../VERSION', import.meta.url), 'utf8').trim();
+  const h = construye();
+  assert.match(v, /^\d+\.\d+$/);
+  assert.ok(h.includes('versión ' + v), 'la página dice «versión ' + v + '»');
+  assert.doesNotMatch(h, /\{\{|prototipo/);
+});

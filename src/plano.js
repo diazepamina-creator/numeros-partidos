@@ -36,20 +36,6 @@ document.getElementById('cAbrir').addEventListener('click', () => {
 document.querySelectorAll('.volver').forEach(b =>
   b.addEventListener('click', () => { pintaMapa(); vista('vMapa'); }));
 
-/* el modo papel, compartido por todas las vistas */
-document.querySelectorAll('.b.modo').forEach(b => b.addEventListener('click', () => {
-  const cuerpo = document.body, papel = cuerpo.dataset.modo === 'papel';
-  cuerpo.dataset.modo = papel ? 'pantalla' : 'papel';
-  guardaTurno();
-  document.querySelectorAll('.b.modo').forEach(o =>
-    o.textContent = T(papel ? 'Modo papel' : 'Modo pantalla'));
-  /* el coche del plano anda con SMIL, que no hace caso al CSS: se le para a mano */
-  const plano = document.querySelector('#mapa svg[aria-label]');
-  papel ? plano.unpauseAnimations() : plano.pauseAnimations();
-  [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
-  div3.repinta();
-}));
-
 /* ── EL INTERRUPTOR DE LA LENGUA. Cambia el diccionario, vuelve a pintar
    los estáticos y repinta todo lo que estuviera en pantalla: cintas,
    pizarra, encargos abiertos, plano. ── */
@@ -61,8 +47,6 @@ document.getElementById('lengua').addEventListener('click', () => {
   [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
   div3.repinta();
   [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
-  document.querySelectorAll('.b.modo').forEach(o =>
-    o.textContent = T(document.body.dataset.modo === 'papel' ? 'Modo pantalla' : 'Modo papel'));
   const so = document.getElementById('sonido');
   so.textContent = Ruido.on ? T('Sonido: sí') : T('Sonido: no');
   pintaMapa(); pintaActa(); pintaCero(); guardaTurno();
@@ -108,10 +92,6 @@ EXPS = {1:caso1, 2:caso2, 3:caso3, 4:caso4, 5:caso5, 6:caso6, 7:caso7, 8:caso8};
     if(ORDEN.includes(d.abierto)) abierto = d.abierto;
     if(d.casos) Object.entries(d.casos).forEach(([k, v]) => EXPS[k] && EXPS[k].carga(v));
     if(d.sonido === false) Ruido.on = false;
-    if(d.modo === 'papel'){
-      document.body.dataset.modo = 'papel';
-      document.querySelectorAll('.b.modo').forEach(o => o.textContent = 'Modo pantalla');
-    }
     if(d.idioma === 'va'){
       idioma = 'va';
       const b = document.getElementById('lengua');

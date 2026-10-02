@@ -81,10 +81,10 @@ function borraTurno(){ try{ localStorage.removeItem(GUARDADO); }catch(e){} }
 document.querySelectorAll('.cara-caja[data-cara]').forEach(c =>
   c.appendChild(document.getElementById(c.dataset.cara).content.cloneNode(true)));
 
-/* ¿Se mueve algo? En papel no, y tampoco si el aparato pide calma. Lo que
+/* ¿Se mueve algo? No si se han quitado las animaciones en Ajustes, ni si el aparato pide calma. Lo que
    dependa de una animación para llegar a su estado final tiene que
    preguntarlo aquí, que si no se queda a medias. */
-const quieto = () => document.body.dataset.modo === 'papel'
+const quieto = () => document.body.dataset.quieto === 'si'
   || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── EL HILO ROJO. El orden de la historia es el de los números: cada caso

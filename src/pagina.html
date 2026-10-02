@@ -2,9 +2,10 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · prototipo v0.7
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión {{versión}}
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -112,16 +113,50 @@
   pisa la réplica buena de Liz con el «bien» genérico.
 -->
 <title>Los números partidos · la ciudad</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/estilo.css">
+<link rel="stylesheet" href="src/piel.css">
 </head>
-<body data-modo="pantalla">
+<body data-modo="papel">
 <div id="flash"></div>
+<div class="lienzo">
+
+<!-- ═══ LA CABECERA: el formato de Las piezas de Miut ════════════════ -->
+<header class="panel cab">
+  <div class="rotulo">
+    <span class="selloCab" aria-hidden="true"></span>
+    <div><h1>La ciudad</h1><div class="sub" data-t>Los números partidos · racionales en la recta</div></div>
+    <nav class="acc">
+      <button type="button" id="bAjustes" aria-pressed="false" data-t>Ajustes</button>
+      <button type="button" id="bAula" aria-pressed="false" data-t>Aula</button>
+      <button type="button" id="verActa" aria-pressed="false">Acta</button>
+    </nav>
+  </div>
+  <!-- LAS PESTAÑAS: los contenidos, cada uno con sus casos en el plano -->
+  <div class="juegos" role="group" aria-label="Contenidos">
+    <button type="button" data-tab="cinta" aria-pressed="true"><b data-t>La cinta</b><small data-t>situar y comparar</small></button>
+    <button type="button" data-tab="partir" aria-pressed="false"><b data-t>Partir</b><small data-t>la fracción es una división</small></button>
+    <button type="button" data-tab="juntar" aria-pressed="false"><b data-t>Juntar y quitar</b><small data-t>sumar y restar</small></button>
+    <button type="button" data-tab="partes" aria-pressed="false"><b data-t>Partes de partes</b><small data-t>la fracción de una cantidad</small></button>
+  </div>
+</header>
+
+<!-- ═══ LOS AJUSTES ═════════════════════════════════════════════════ -->
+<section class="panel ajustes" id="ajustes" hidden>
+  <h2 data-t>Ajustes</h2>
+  <div class="fila2"><span data-t>Tema</span>
+    <div class="opsAj" id="ajTema"><button type="button" data-v="papel" data-t>Claro</button><button type="button" data-v="pantalla" data-t>Oscuro</button></div></div>
+  <div class="fila2"><span data-t>Animaciones</span>
+    <div class="opsAj" id="ajMov"><button type="button" data-v="si" data-t>Sí</button><button type="button" data-v="no" data-t>No</button></div></div>
+  <div class="fila2"><span data-t>Lengua</span><button class="b" id="lengua" lang="ca">Valencià</button></div>
+  <div class="fila2"><span data-t>Sonido</span><button class="b" id="sonido">Sonido: sí</button></div>
+  <div class="fila2"><span data-t>Turno</span><button class="b" id="cero" hidden>Empezar de cero</button></div>
+  <button class="b cierra" id="ajCierra" data-t>Cerrar</button>
+</section>
 
 <!-- ═══ VISTA: EL MAPA ═══════════════════════════════════════════════ -->
 <div class="vista puesta marco" id="vMapa">
-  <h1>LA CIUDAD · MAPA DE CASOS</h1>
-  <div class="sub">Los números partidos · <span id="cuenta"></span></div>
+  <div class="cuentaFila"><span id="cuenta"></span></div>
   <div class="escritorio"><div class="mapa aterriza" id="mapa">
 <svg viewBox="0 0 900 620" aria-label="Mapa de la ciudad">
       <defs>
@@ -643,26 +678,19 @@
          («vecina»), que así ningún recuento de la ciudad la confunde con un
          caso. -->
     <a class="vecina" style="left:73.5%;top:56%" target="_blank" rel="noopener"
-       href="https://diazepamina-creator.github.io/pizzeria-de-nick/">
+       href="https://diazepamina-creator.github.io/grapadora-de-nick/">
       <span class="num">¾</span><span class="rot" data-t>La pizzería</span></a>
     <!-- el hilo rojo del corcho: lo dibuja pintaMapa según qué casos estén cerrados -->
     <svg class="hilo" id="hilo" viewBox="0 0 900 620" preserveAspectRatio="none" aria-hidden="true"></svg>
   </div></div>
-  <div class="barra" style="margin-top:12px">
-    <button class="b" id="lengua" lang="ca">Valencià</button>
-  <button class="b" id="sonido">Sonido: sí</button>
-  <button class="b" id="verActa">El acta</button>
-  <button class="b modo">Modo papel</button>
-  <button class="b" id="cero" hidden>Empezar de cero</button>
-  </div>
+  <!-- la ruta de la pestaña: sus casos, en orden, también en el móvil -->
+  <div class="rutaPes" id="rutaPes"></div>
 </div>
 
 <!-- ═══ VISTA: EL CASO 1 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso1">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LA CINTA</h1>
   <div class="sub">caso 1 · la escena del crimen</div>
@@ -720,8 +748,6 @@
 <div class="vista marco" id="vCaso2">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LA LLAVE</h1>
   <div class="sub">caso 2 · el taller de Nick</div>
@@ -780,8 +806,6 @@
 <div class="vista marco" id="vCaso3">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LAS CELDAS</h1>
   <div class="sub">caso 3 · la comisaría</div>
@@ -842,8 +866,6 @@
 <div class="vista marco" id="vCaso4">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LA BARANDILLA</h1>
   <div class="sub">caso 4 · el puente viejo</div>
@@ -900,8 +922,6 @@
 <div class="vista marco" id="vCaso5">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>EL NIVEL</h1>
   <div class="sub">caso 5 · el pantano</div>
@@ -959,8 +979,6 @@
 <div class="vista marco" id="vCaso6">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>EL REPARTO</h1>
   <div class="sub">caso 6 · el banco de la calle 4</div>
@@ -1017,8 +1035,6 @@
 <div class="vista marco" id="vCaso7">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LA BANCA</h1>
   <div class="sub">caso 7 · el casino de la calle 9</div>
@@ -1078,7 +1094,7 @@
     <button class="b volver">← La ciudad</button>
     <span style="flex:1"></span>
     <button class="b" id="imprimeActa">Imprimir</button>
-    <button class="b modo">Modo papel</button>
+
   </div>
   <h1>EL ACTA</h1>
   <div class="sub">lo que se averiguó, caso por caso</div>
@@ -1096,8 +1112,6 @@
 <div class="vista marco" id="vCaso8">
   <div class="barra">
     <button class="b volver">← La ciudad</button>
-    <span style="flex:1"></span>
-    <button class="b modo">Modo papel</button>
   </div>
   <h1>LA DEUDA</h1>
   <div class="sub">caso 8 · el desguace</div>
@@ -1166,6 +1180,13 @@
   </div>
 </div>
 
+
+<footer>
+  <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
+  · <a href="https://diazepamina-creator.github.io/">Materiales</a>
+  · versión {{versión}}
+</footer>
+</div><!-- .lienzo -->
 
 <!-- Las caras, UNA sola vez. Antes iban cosidas dentro del caso 1; con más
      casos en marcha, cada carpeta las clona de aquí y no se repite ni un
@@ -1251,8 +1272,9 @@
 </svg></template>
 
 <script src="src/ciudad.js"></script>
+<script src="src/valenciano.js"></script>
 <script src="src/sonido.js"></script>
 <script src="src/plano.js"></script>
-<script src="src/valenciano.js"></script>
+<script src="src/pestanas.js"></script>
 <script src="src/aula.js"></script>
 </body></html>

@@ -1,0 +1,37 @@
+# Los números partidos · la ciudad
+
+Números racionales en la recta para 1.º y 2.º de ESO, en una ciudad de novela negra. Un manipulativo de una sola página para el aula, publicado con GitHub Pages, en el formato de *Las piezas de Miut*.
+
+**La cinta.** Una fracción es un punto de la calle: se corta el paso en partes iguales y se cuenta. Comparar es ver cuál queda más a la derecha, y 10/8 y 5/4 son la misma marca con otro nombre. Jeff Azzo hace los encargos y Liz Stillo tiende la cinta y mide.
+
+## Las pestañas
+
+Son los contenidos; cada una tiene sus casos en el plano y su ruta debajo:
+
+- **La cinta** — situar y comparar: casos 1 (la escena) y 2 (el taller), y la misión de **la pizzería de Nick**, que es La grapadora de Nick: la equivalencia se trabaja allí, con pizza, y la ciudad lee de ese mismo aparato si ya está hecha.
+- **Partir** — la fracción es una división: casos 3 (las celdas: exacto o periódico) y 4 (la barandilla).
+- **Juntar y quitar** — sumar y restar: casos 5 (el pantano) y 8 (la deuda, a la izquierda del cero).
+- **Partes de partes** — la fracción de una cantidad: casos 6 (el reparto) y 7 (el casino).
+
+Se abren por enlace: `?j=cinta|partir|juntar|partes`.
+
+## Ficheros
+
+La app es **un solo `index.html`**: se genera con `node construye.mjs` a partir de `src/`. Se edita `src/`, no `index.html`.
+
+- `src/pagina.html` — la cabecera, los ajustes, el plano, los ocho expedientes, el acta y el pie.
+- `src/estilo.css` — el plano, las escenas, la cinta y los expedientes. `src/piel.css` — el formato de Miut: el corcho (claro) y el asfalto de noche (oscuro), la cabecera, las pestañas, las hojas, los ajustes y el pie.
+- `src/ciudad.js` — la cinta, los expedientes y los ocho casos. `src/plano.js` — el plano y las carpetas, la lengua, empezar de cero y la apertura. `src/pestanas.js` — las pestañas, la ruta, la misión de la pizzería y los ajustes. `src/valenciano.js` — el diccionario. `src/sonido.js` — los ruidos del despacho, sintetizados. `src/aula.js` — el modo aula.
+- `pruebas/` — `node --test pruebas/*.test.mjs`: que `index.html` esté construido.
+
+## Historial
+
+1. ✅ Versiones 0.1 a 0.7: el plano, los ocho casos, el valenciano, el modo papel, el acta de conclusiones y la pizzería en el plano.
+2. ✅ Versión 0.8: el formato de Las piezas de Miut. La app pasa a `src/` con `construye.mjs`. Dos temas, elegidos por Andrés: claro, el corcho del detective con Special Elite; oscuro, el asfalto mojado de noche con Bebas Neue; el texto en IBM Plex Sans. La cabecera con Ajustes · Aula · Acta y las cuatro pestañas por contenidos, con su ruta bajo el plano (también para el móvil). La pizzería pasa a ser una misión de La cinta que abre La grapadora de Nick y se marca cumplida al terminar su ruta de Servir. El plano cabe entero en la pantalla, también en el aula. Ajustes: tema, animaciones, lengua, sonido y empezar de cero. Y el pie.
+
+## Pendiente
+
+- La Guía y el acta de verdad (nombre, tiempo, aciertos y fallos, ejercicio a ejercicio).
+- Practicar: encargos nuevos de cada tipo. El veredicto de la cinta, solo después de comprobar.
+
+© 2026 Andrés Asensio · [CC BY-NC-ND 4.0](LICENSE.md)
