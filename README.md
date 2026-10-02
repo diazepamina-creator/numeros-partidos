@@ -42,6 +42,39 @@ Las cuentas se escriben como en la libreta: `3/4 + 1/8`, `2 · 3/5` (también co
 
 Lo que cabe: la marca tiene que caer en un corte de los botones (en 2, 3, 4, 5, 6, 8, 9, 10 o 12); en `sumar` y `restar`, el común denominador también; en `restar`, la cinta va de −2 a 2; en `partes`, los dos denominadores multiplicados son uno de esos cortes. En el acta, cada resolución de Practicar sale con su tipo y su código, y el resumen va tipo a tipo, aparte de los casos.
 
+## La ruta de 1.º
+
+Con `?ruta=1eso` (también junto a los demás enlaces: `?j=cinta&ruta=1eso`, `?j=practicar&m=…&c=…&ruta=1eso`), la ciudad deja a la vista solo lo de 1.º, en el orden de la historia: los casos 1, 2, 4, 5, 6, 7 y 9. Quedan fuera el caso 3 (las celdas: decimales periódicos) y el 8 (la deuda: los negativos), que no se ven en el plano ni en las rutas de las pestañas y no cuentan para cerrar la ciudad: con los siete, se cierra. En Practicar no salen los periódicos, y al restar no se baja del cero (la cinta empieza en 0). La cabecera dice «Ruta de 1.º ESO» y el acta lo apunta. La ruta se mantiene mientras el parámetro esté en la dirección; sin él, la app sigue como siempre, para 2.º.
+
+### Los QR de las fichas de 1.º
+
+Una propuesta de encargos de Practicar para las fichas de 1.º, de dos en dos o de tres en tres por pestaña, de menos a más. Todos llevan `&ruta=1eso`, así que «Otro encargo» sigue en 1.º.
+
+| Pestaña | Encargo | Enlace del QR |
+|---|---|---|
+| La cinta | Situar 3/4 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=situar&c=3/4&ruta=1eso` |
+| La cinta | Situar 5/4 (más de un paso) | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=situar&c=5/4&ruta=1eso` |
+| La cinta | Comparar 3/5 con la prueba 2/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=comparar&c=2/3_3/5&ruta=1eso` |
+| La cinta | Comparar 5/6 con la prueba 3/4 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=comparar&c=3/4_5/6&ruta=1eso` |
+| Partir | Repartir 7 metros en 4 tramos | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=repartir&c=7_4&ruta=1eso` |
+| Partir | Repartir 10 metros en 3 tramos | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=repartir&c=10_3&ruta=1eso` |
+| Juntar y quitar | Sumar 1/2 + 1/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=sumar&c=1/2_1/3&ruta=1eso` |
+| Juntar y quitar | Sumar 3/4 + 5/8 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=sumar&c=3/4_5/8&ruta=1eso` |
+| Juntar y quitar | Restar 5/4 − 1/2 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=restar&c=5/4_1/2&ruta=1eso` |
+| Juntar y quitar | Restar 5/6 − 1/3, sin cinta | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=restar&c=5/6_1/3&papel&ruta=1eso` |
+| Multiplicar y dividir | 3/4 de 12 000 $ | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=cantidad&c=12000_3/4&ruta=1eso` |
+| Multiplicar y dividir | 2/3 de 600 $ | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=cantidad&c=600_2/3&ruta=1eso` |
+| Multiplicar y dividir | 1/2 de 2/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=partes&c=2/3_1/2&ruta=1eso` |
+| Multiplicar y dividir | 2/3 de 3/4 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=partes&c=3/4_2/3&ruta=1eso` |
+| Multiplicar y dividir | 3/4 : 1/8 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=dividir&c=3/4_1/8&ruta=1eso` |
+| Multiplicar y dividir | 2 : 1/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=dividir&c=2_1/3&ruta=1eso` |
+| Multiplicar y dividir | 3/2 : 1/4, sin cinta | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=dividir&c=3/2_1/4&papel&ruta=1eso` |
+| Multiplicar y dividir | 1/2 + 1/4 · 2/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=combinadas&c=1/2s1/4m2/3&ruta=1eso` |
+| Multiplicar y dividir | (1/2 + 1/4) · 2/3 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=combinadas&c=(1/2s1/4)m2/3&ruta=1eso` |
+| Multiplicar y dividir | 3/4 − 1/2 : 2 | `https://diazepamina-creator.github.io/numeros-partidos/?j=practicar&m=combinadas&c=3/4r1/2d2&ruta=1eso` |
+
+Para abrir una pestaña entera de 1.º: `https://diazepamina-creator.github.io/numeros-partidos/?j=cinta&ruta=1eso` (o `partir`, `juntar`, `partes`).
+
 ## Ficheros
 
 La app es **un solo `index.html`**: se genera con `node construye.mjs` a partir de `src/`. Se edita `src/`, no `index.html`.
@@ -63,5 +96,6 @@ La app es **un solo `index.html`**: se genera con `node construye.mjs` a partir 
 
 6. ✅ Versión 0.12: Practicar, tipo a tipo y por enlace. Nueve tipos de encargo generado —situar, comparar, repartir, ¿exacto o periódico?, sumar, restar, la fracción de una cantidad, la parte de una parte y, nuevo, dividir, con la tela y las piezas de la sastrería—, y cada uno se abre por enlace con sus datos (`?j=practicar&m=<tipo>&c=<datos>`, arriba) para ponerlo como QR en las fichas. El veredicto sigue sin verse hasta comprobar. En el acta, cada resolución de Practicar va con su tipo y su código, y el resumen, tipo a tipo y aparte de los casos.
 7. ✅ Versión 0.13: sobre el papel. Los casos de operaciones (5, 6, 7 y 9) acaban con un encargo en el que se escribe la cuenta y se resuelve sin tocar la cinta, que está escondida hasta que sale bien; después se puede comprobar en ella, si se quiere: el nivel del martes (2/3 + 1/4 − 1/6), lo que cobra el abogado (1/3 · 3/4 · 12 000), lo que se lleva el dueño en la otra mesa (2/5 · 3/4) y los pañuelos del sastre (3 : 3/4). Liz distingue la cuenta que no es la del encargo del resultado mal sacado. En Practicar, el modo **sin cinta** (`&papel` en los enlaces) y un tipo nuevo, **las operaciones combinadas**, con paréntesis: la réplica señala si se han hecho en el orden en que se leen o saltándose el paréntesis, y la buena va paso a paso.
+8. ✅ Versión 0.14: la ruta de 1.º. Con `?ruta=1eso`, solo lo de 1.º y en orden: fuera el caso 3 (periódicos) y el 8 (la deuda, negativos), que no se ven en el plano ni cuentan para cerrar la ciudad (con siete casos, se cierra); en Practicar, sin periódicos y sin bajar del cero al restar. La cabecera y el acta dicen en qué ruta se está, y la dirección conserva el parámetro. Sin él, la ciudad entera, como siempre, para 2.º. Y en el README, la tabla de los QR de Practicar para las fichas de 1.º.
 
 © 2026 Andrés Asensio · [CC BY-NC-ND 4.0](LICENSE.md)

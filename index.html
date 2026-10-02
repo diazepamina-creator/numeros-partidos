@@ -6,7 +6,7 @@
 <meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.13
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.14
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -928,6 +928,7 @@ footer a{color:inherit}
 .papel .nota{flex:1 1 100%;margin:0;font-size:12.5px;color:var(--tenue)}
 .vista.apapel > :not(.cabezaCaso):not(.sumario):not(.encargo):not(.informe){display:none}
 #prPapel[aria-pressed="true"]{border-color:var(--oro);background:var(--brillo);color:var(--oro)}
+.cab .rutaCab{color:var(--oro);font-weight:700}
 </style>
 </head>
 <body data-modo="papel">
@@ -2093,7 +2094,7 @@ footer a{color:inherit}
 <footer>
   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
   · <a href="https://diazepamina-creator.github.io/">Materiales</a>
-  · versión 0.13
+  · versión 0.14
 </footer>
 </div><!-- .lienzo -->
 
@@ -2304,8 +2305,15 @@ const quieto = () => document.body.dataset.quieto === 'si'
    plano; el hilo, en el viewBox de 900×620, así que se convierte. Un hilo
    tirante queda muerto: cada tramo se comba un poco hacia abajo, que es lo
    que hace un hilo que cuelga entre dos chinchetas. ── */
+/* LA RUTA DE 1.º: con ?ruta=1eso se ve solo lo de 1.º, en orden. Quedan
+   fuera el caso 3 (decimales periódicos) y el 8 (la deuda: los negativos),
+   y en Practicar, sus tipos. Sin el parámetro, la ciudad entera, para 2.º. */
+const RUTA = (() => { try{ return new URLSearchParams(location.search).get('ruta') === '1eso' ? '1eso' : ''; }catch(err){ return ''; } })();
+const FUERA_1ESO = [3, 8];
 /* el orden de la historia: la sastrería (9) va entre el casino y el desguace */
-const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8];
+const ORDEN = [1, 2, 3, 4, 5, 6, 7, 9, 8].filter(c => !(RUTA === '1eso' && FUERA_1ESO.includes(c)));
+/* los casos cerrados de la ruta (los de fuera, si se cerraron otro día, no cuentan) */
+const cerrados = () => ORDEN.filter(c => resueltos.has(c)).length;
 const hilosTendidos = new Set();
 function pos(c){
   const st = document.querySelector('.chincheta[data-c="' + c + '"]').style;
@@ -2331,18 +2339,19 @@ function pintaHilo(){
 }
 function pintaMapa(){
   document.querySelectorAll('.chincheta').forEach(b => {
+    b.style.display = ORDEN.includes(+b.dataset.c) ? '' : 'none';
     b.classList.toggle('resuelto', resueltos.has(+b.dataset.c));
     const n = b.querySelector('.num');
     if(resueltos.has(+b.dataset.c) && !n.querySelector('span'))
       n.innerHTML = '<span>' + b.dataset.c + '</span>';
   });
   document.getElementById('cuenta').textContent =
-    resueltos.size === ORDEN.length ? T('ciudad cerrada')
-    : resueltos.size ? resueltos.size + T(' de 9 cerrados') : T('nueve casos abiertos');
+    cerrados() === ORDEN.length ? T('ciudad cerrada')
+    : cerrados() ? cerrados() + T(' de ') + ORDEN.length + T(' cerrados') : T(ORDEN.length === 9 ? 'nueve casos abiertos' : 'siete casos abiertos');
   pintaHilo();
   /* los siete cerrados: el sello gordo cae sobre el plano, una sola vez */
   const mapa = document.getElementById('mapa');
-  if(resueltos.size === ORDEN.length && !mapa.querySelector('.sellazo')){
+  if(cerrados() === ORDEN.length && !mapa.querySelector('.sellazo')){
     const z = document.createElement('div');
     z.className = 'sellazo golpea'; z.textContent = T('CIUDAD CERRADA');
     mapa.appendChild(z);
@@ -4101,6 +4110,8 @@ Object.assign(VA, {"Cabe ": "Hi cap ", " pieza entera y sobra ": " peça sencera
 Object.assign(VA, {"Situar": "Situar", "Comparar": "Comparar", "Repartir": "Repartir", "¿Exacto o periódico?": "Exacte o periòdic?", "Sumar": "Sumar", "Restar": "Restar", "Fracción de una cantidad": "Fracció d'una quantitat", "Parte de una parte": "Part d'una part", "Dividir": "Dividir"});
 /* lo nuevo de la versión 0.13: sobre el papel, sin cinta y las operaciones combinadas */
 Object.assign(VA, {"La cuenta": "El compte", "El resultado": "El resultat", "Hecho sobre el papel. Ahora, si se quiere, se puede comprobar en la cinta.": "Fet sobre el paper. Ara, si es vol, es pot comprovar en la cinta.", "Hecho sobre el papel.": "Fet sobre el paper.", "Sin tocar la cinta: en la libreta, y aquí la cuenta y lo que da.": "Sense tocar la cinta: en la llibreta, i ací el compte i el que dona.", "Sin tocar la cinta: en la libreta, y aquí lo que da.": "Sense tocar la cinta: en la llibreta, i ací el que dona.", "Esa cuenta da ": "Eixe compte dona ", ", y no es la del encargo: hay que volver a leerlo.": ", i no és el de l'encàrrec: cal tornar a llegir-lo.", "Falta la cuenta o el resultado: en la libreta, y aquí.": "Falta el compte o el resultat: en la llibreta, i ací.", "Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.": "Eixe compte no s'entén. S'escriu amb números i signes: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, amb parèntesis si en calen.", "Eso es un número, no una cuenta: ¿con qué números y qué operación se llega a él?": "Això és un número, no un compte: amb quins números i quina operació s'hi arriba?", "El resultado no se entiende: un número o una fracción, como 7/8.": "El resultat no s'entén: un número o una fracció, com 7/8.", "La cuenta está bien planteada, pero el resultado no. A repasarla en la libreta.": "El compte està ben plantejat, però el resultat no. A repassar-lo en la llibreta.", "Sin cinta": "Sense cinta", "sin cinta": "sense cinta", "Operaciones combinadas": "Operacions combinades", "Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.": "Sobre el paper, que el guarda no es fia de les cintes: dilluns el nivell estava en <b>2/3</b> del dic; a la nit va ploure <b>1/4</b>, i dimarts al matí van obrir la comporta i va baixar <b>1/6</b>. Escriga'm el compte i el nivell de dimarts, sense tocar el limnímetre.", "<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.": "<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Just en la línia de perill: la comporta es va obrir a temps. Si vol, pose-ho en la cinta: talle en dotzens.", "Una última cuenta, sobre el papel: de lo suyo, el jefe le pagó al abogado <b>un tercio</b>. ¿Cuántos dólares cobró el abogado? Escríbame la cuenta y el resultado, sin tocar la cinta.": "Un últim compte, sobre el paper: del que era seu, el cap li va pagar a l'advocat <b>un terç</b>. Quants dòlars va cobrar l'advocat? Escriga'm el compte i el resultat, sense tocar la cinta.", "<b>1/3 · 3/4 · 12 000 = 3.000 dólares.</b> Un tercio de tres cuartos es un cuarto del botín: 1/3 · 3/4 = 1/4, y 12 000 : 4 = 3 000. Si quiere, búsquelo en la cinta.": "<b>1/3 · 3/4 · 12 000 = 3.000 dòlars.</b> Un terç de tres quarts és un quart del botí: 1/3 · 3/4 = 1/4, i 12 000 : 4 = 3 000. Si vol, busque-ho en la cinta.", "En la mesa de al lado juegan con otras reglas: la banca se queda <b>1/4</b> del bote y, de lo que queda, el dueño se lleva <b>2/5</b>. ¿Qué parte del bote se lleva el dueño? Sobre el papel: la cuenta y el resultado.": "En la taula del costat juguen amb altres regles: la banca es queda <b>1/4</b> del pot i, del que queda, l'amo se'n porta <b>2/5</b>. Quina part del pot se'n porta l'amo? Sobre el paper: el compte i el resultat.", "<b>2/5 · 3/4 = 6/20 = 3/10</b> del bote. Lo que queda son 3/4, y los 2/5 de eso se multiplican. Si quiere, compruébelo en la cinta: corte en décimos.": "<b>2/5 · 3/4 = 6/20 = 3/10</b> del pot. El que queda són 3/4, i els 2/5 d'això es multipliquen. Si vol, comprove-ho en la cinta: talle en dècims.", "La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.": "L'últim compte del sastre, sobre el paper: queden <b>3 metres</b> de lli, i cada mocador porta <b>3/4 de metre</b>. Quants mocadors n'ixen? El compte i el resultat, sense tocar la cinta.", "<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.": "<b>3 : 3/4 = 3 · 4/3 = 4</b> mocadors. Si vol, pose-ho en la cinta: la peça en 3/4, i en caben quatre justes."});
+/* lo nuevo de la versión 0.14: la ruta de 1.º */
+Object.assign(VA, {" cerrados": " tancats", "siete casos abiertos": "set casos oberts", "Ruta: ": "Ruta: ", "1.º ESO": "1r d'ESO", "Ruta de 1.º ESO": "Ruta de 1r d'ESO"});
 </script>
 <script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
@@ -4300,6 +4311,8 @@ const PESTANAS = {
   partes: {casos: [6, 7, 9]}
 };
 const GRAPADORA = 'https://diazepamina-creator.github.io/grapadora-de-nick/';
+/* en la ruta de 1.º, cada pestaña lleva solo sus casos de 1.º */
+for(const k in PESTANAS) PESTANAS[k].casos = PESTANAS[k].casos.filter(c => ORDEN.includes(c));
 let pestana = 'cinta';
 try{ const p = localStorage.getItem('ciudad.pestana'); if(PESTANAS[p]) pestana = p; }catch(err){}
 
@@ -4331,6 +4344,10 @@ function pintaRuta(){
       + '<span><b>' + T('La pizzería de Nick') + '</b></span><small>' + T(hecha ? 'cumplida' : 'equivalentes, en La grapadora') + '</small></a>';
   }
   r.innerHTML = h;
+  /* en la cabecera, que se vea en qué ruta se está */
+  let rc = document.getElementById('rutaCab');
+  if(RUTA && !rc){ rc = document.createElement('div'); rc.id = 'rutaCab'; rc.className = 'sub rutaCab'; document.querySelector('.cab .sub').after(rc); }
+  if(rc) rc.textContent = T('Ruta de 1.º ESO');
 }
 document.getElementById('rutaPes').addEventListener('click', ev => {
   const b = ev.target.closest('button[data-c]');
@@ -4396,7 +4413,7 @@ try{
   const q = new URLSearchParams(location.search);
   if(q.get('j')){ vieneDeEnlace = true; if(PESTANAS[q.get('j')]) pestana = q.get('j');
     if(q.get('j') === 'practicar') enlacePr = {m: q.get('m'), c: q.get('c'), papel: q.has('papel')};
-    history.replaceState(null, '', location.pathname); }
+    history.replaceState(null, '', location.pathname + (RUTA ? '?ruta=' + RUTA : '')); }
 }catch(err){}
 pintaRuta();
 </script>
@@ -4430,6 +4447,8 @@ pintaRuta();
    ══════════════════════════════════════════════════════════════════════ */
 const PR = (() => {
   let azar = Math.random;
+  /* la ruta de 1.º (?ruta=1eso, en ciudad.js): sin periódicos ni negativos */
+  let uno = typeof RUTA !== 'undefined' && RUTA === '1eso';
   const ent = (a, b) => a + Math.floor(azar() * (b - a + 1));
   const elige = l => l[Math.floor(azar() * l.length)];
   const mcdN = (a, b) => { a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a || 1; };
@@ -4614,13 +4633,15 @@ const PR = (() => {
     /* restar, también por debajo del cero */
     restar: {pes: 'juntar', nombre: 'Restar',
       azar: () => { const d = elige([2, 3, 4, 6, 8]); return {a: Q(ent(-d, d), d), c: Q(ent(1, 2 * d - 1), d)}; },
-      vale: ({a, c}) => a.n !== 0 && c.n > 0 && Math.abs(v(a)) <= 2 && v(a) - v(c) > -2 && CORTES.includes(Math.max(2, mcmN(a.d, c.d))),
+      vale: ({a, c}) => a.n !== 0 && c.n > 0 && Math.abs(v(a)) <= 2 && v(a) - v(c) > -2 && CORTES.includes(Math.max(2, mcmN(a.d, c.d)))
+        && (!uno || (a.n > 0 && v(a) > v(c))),
       cod: ({a, c}) => cq(a) + '_' + cq(c),
       lee: c => { const x = lee2(c, lq, lq); return x && {a: x[0], c: x[1]}; },
       crea: ({a, c}) => { const m = Math.max(2, mcmN(a.d, c.d)), nc = c.n * m / c.d, meta = v(a) - v(c);
         return {t: L('El sospechoso tiene <b>' + t(a) + '</b> de fajo en la banca y paga <b>' + t(c) + '</b>. ¿Cómo queda su saldo?', 'El sospitós té <b>' + t(a) + '</b> de feix en la banca i paga <b>' + t(c) + '</b>. Com queda el seu saldo?'),
-          pasos: 4, desde: -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
-          pista: L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
+          pasos: uno ? pasosPara(v(a)) : 4, desde: uno ? 0 : -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
+          pista: uno ? L('La verde es lo que tenía. Lo que paga se cuenta hacia la izquierda.', 'La verda és el que tenia. El que paga es compta cap a l\'esquerra.')
+            : L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
           bien: t(a) + ' − ' + t(c) + ' = <b>' + fr(a.n * m / a.d - nc, m) + '</b>' + (meta < 0 ? L(': ahora debe.', ': ara deu.') : '.'),
           mal: L('Desde la verde, cuenta <b>' + nc + '</b> trozos de ' + fr(1, m) + ' hacia la izquierda.', 'Des de la verda, compta <b>' + nc + '</b> trossos de ' + fr(1, m) + ' cap a l\'esquerra.')}; }},
     /* la fracción de una cantidad */
@@ -4726,6 +4747,8 @@ const PR = (() => {
   /* Sin cinta: el encargo se contesta eligiendo (si tiene respuestas) o
      escribiendo la cuenta y el resultado. Situar no tiene sentido sin cinta. */
   const sinCintaVale = tipo => tipo !== 'situar';
+  /* los tipos de una pestaña (en la ruta de 1.º, sin los periódicos) */
+  const deLaPestana = pes => (PESTANAS[pes] || PESTANAS.cinta).filter(k => !(uno && k === 'decimal'));
   function aPapel(e){
     if(e.papel || e.sinCinta) return e;
     e.sinCinta = true; e.meta = null; if(e.tp) e.t = e.tp;
@@ -4736,7 +4759,7 @@ const PR = (() => {
   /* un encargo de la pestaña (de uno de sus tipos, o del que se pida) */
   function genera(pes, tipo, papel){
     if(papel && !sinCintaVale(tipo)) tipo = null;
-    const e = TIPOS[tipo] ? deTipo(tipo) : deTipo(elige((PESTANAS[pes] || PESTANAS.cinta).filter(k => !papel || sinCintaVale(k))));
+    const e = TIPOS[tipo] ? deTipo(tipo) : deTipo(elige(deLaPestana(pes).filter(k => !papel || sinCintaVale(k))));
     return papel ? aPapel(e) : e;
   }
   /* lo que pide un enlace: el tipo m con los datos c; si no se leen o no
@@ -4746,7 +4769,9 @@ const PR = (() => {
     let d = null; try{ d = c ? TIPOS[m].lee(c) : null; }catch(err){ d = null; }
     return deTipo(m, d);
   }
-  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, fr, conAzar: f => { azar = f; }};
+  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, deLaPestana, fr, conAzar: f => { azar = f; },
+    /* para las pruebas: ponerse en la ruta de 1.º, o quitarse */
+    ponRuta: r => { uno = r === '1eso'; }};
 })();
 if(typeof module !== 'undefined' && module.exports) module.exports = PR;
 </script>
@@ -4978,7 +5003,7 @@ function cuentas(){
 const $a = id => document.getElementById(id);
 function pintaActaM(){
   const k = cuentas(), dato = (n, v) => '<div><span class="etq">' + T(n) + '</span><b>' + v + '</b></div>';
-  $a('acDatos').innerHTML = dato('Casos cerrados', resueltos.size + ' / ' + ORDEN.length) + dato('Encargos', k.bien)
+  $a('acDatos').innerHTML = dato('Casos cerrados', cerrados() + ' / ' + ORDEN.length) + dato('Encargos', k.bien)
     + dato('A la primera', k.primera) + dato('Fallos', k.fallos) + dato('Acierto', k.acierto + '%')
     + dato('Tiempo', reloj(Date.now() - acta.t0).replace(' min ', ':').replace(' s', ''));
   $a('acFilas').innerHTML = ORDEN.map(c => {
@@ -5000,7 +5025,8 @@ function actaEnTexto(){
   t += T('Nombre: ') + (acta.nombre || T('(sin nombre)')) + '\n';
   t += T('Fecha: ') + dos(f.getDate()) + '/' + dos(f.getMonth() + 1) + '/' + f.getFullYear() + '  ' + hora(+f) + '\n';
   t += T('Tiempo: ') + reloj(Date.now() - acta.t0) + '\n';
-  t += T('Casos cerrados: ') + resueltos.size + ' / ' + ORDEN.length + '   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
+  if(RUTA === '1eso') t += T('Ruta: ') + T('1.º ESO') + '\n';
+  t += T('Casos cerrados: ') + cerrados() + ' / ' + ORDEN.length + '   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
     + T('Fallos: ') + k.fallos + '   ' + T('Acierto: ') + k.acierto + '%\n';
   t += T('Por caso:') + '\n';
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);

@@ -58,7 +58,7 @@ function cuentas(){
 const $a = id => document.getElementById(id);
 function pintaActaM(){
   const k = cuentas(), dato = (n, v) => '<div><span class="etq">' + T(n) + '</span><b>' + v + '</b></div>';
-  $a('acDatos').innerHTML = dato('Casos cerrados', resueltos.size + ' / ' + ORDEN.length) + dato('Encargos', k.bien)
+  $a('acDatos').innerHTML = dato('Casos cerrados', cerrados() + ' / ' + ORDEN.length) + dato('Encargos', k.bien)
     + dato('A la primera', k.primera) + dato('Fallos', k.fallos) + dato('Acierto', k.acierto + '%')
     + dato('Tiempo', reloj(Date.now() - acta.t0).replace(' min ', ':').replace(' s', ''));
   $a('acFilas').innerHTML = ORDEN.map(c => {
@@ -80,7 +80,8 @@ function actaEnTexto(){
   t += T('Nombre: ') + (acta.nombre || T('(sin nombre)')) + '\n';
   t += T('Fecha: ') + dos(f.getDate()) + '/' + dos(f.getMonth() + 1) + '/' + f.getFullYear() + '  ' + hora(+f) + '\n';
   t += T('Tiempo: ') + reloj(Date.now() - acta.t0) + '\n';
-  t += T('Casos cerrados: ') + resueltos.size + ' / ' + ORDEN.length + '   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
+  if(RUTA === '1eso') t += T('Ruta: ') + T('1.º ESO') + '\n';
+  t += T('Casos cerrados: ') + cerrados() + ' / ' + ORDEN.length + '   ' + T('Encargos resueltos: ') + k.bien + ' (' + k.primera + T(' a la primera') + ')   '
     + T('Fallos: ') + k.fallos + '   ' + T('Acierto: ') + k.acierto + '%\n';
   t += T('Por caso:') + '\n';
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);

@@ -27,6 +27,8 @@
    ══════════════════════════════════════════════════════════════════════ */
 const PR = (() => {
   let azar = Math.random;
+  /* la ruta de 1.º (?ruta=1eso, en ciudad.js): sin periódicos ni negativos */
+  let uno = typeof RUTA !== 'undefined' && RUTA === '1eso';
   const ent = (a, b) => a + Math.floor(azar() * (b - a + 1));
   const elige = l => l[Math.floor(azar() * l.length)];
   const mcdN = (a, b) => { a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a || 1; };
@@ -211,13 +213,15 @@ const PR = (() => {
     /* restar, también por debajo del cero */
     restar: {pes: 'juntar', nombre: 'Restar',
       azar: () => { const d = elige([2, 3, 4, 6, 8]); return {a: Q(ent(-d, d), d), c: Q(ent(1, 2 * d - 1), d)}; },
-      vale: ({a, c}) => a.n !== 0 && c.n > 0 && Math.abs(v(a)) <= 2 && v(a) - v(c) > -2 && CORTES.includes(Math.max(2, mcmN(a.d, c.d))),
+      vale: ({a, c}) => a.n !== 0 && c.n > 0 && Math.abs(v(a)) <= 2 && v(a) - v(c) > -2 && CORTES.includes(Math.max(2, mcmN(a.d, c.d)))
+        && (!uno || (a.n > 0 && v(a) > v(c))),
       cod: ({a, c}) => cq(a) + '_' + cq(c),
       lee: c => { const x = lee2(c, lq, lq); return x && {a: x[0], c: x[1]}; },
       crea: ({a, c}) => { const m = Math.max(2, mcmN(a.d, c.d)), nc = c.n * m / c.d, meta = v(a) - v(c);
         return {t: L('El sospechoso tiene <b>' + t(a) + '</b> de fajo en la banca y paga <b>' + t(c) + '</b>. ¿Cómo queda su saldo?', 'El sospitós té <b>' + t(a) + '</b> de feix en la banca i paga <b>' + t(c) + '</b>. Com queda el seu saldo?'),
-          pasos: 4, desde: -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
-          pista: L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
+          pasos: uno ? pasosPara(v(a)) : 4, desde: uno ? 0 : -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
+          pista: uno ? L('La verde es lo que tenía. Lo que paga se cuenta hacia la izquierda.', 'La verda és el que tenia. El que paga es compta cap a l\'esquerra.')
+            : L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
           bien: t(a) + ' − ' + t(c) + ' = <b>' + fr(a.n * m / a.d - nc, m) + '</b>' + (meta < 0 ? L(': ahora debe.', ': ara deu.') : '.'),
           mal: L('Desde la verde, cuenta <b>' + nc + '</b> trozos de ' + fr(1, m) + ' hacia la izquierda.', 'Des de la verda, compta <b>' + nc + '</b> trossos de ' + fr(1, m) + ' cap a l\'esquerra.')}; }},
     /* la fracción de una cantidad */
@@ -323,6 +327,8 @@ const PR = (() => {
   /* Sin cinta: el encargo se contesta eligiendo (si tiene respuestas) o
      escribiendo la cuenta y el resultado. Situar no tiene sentido sin cinta. */
   const sinCintaVale = tipo => tipo !== 'situar';
+  /* los tipos de una pestaña (en la ruta de 1.º, sin los periódicos) */
+  const deLaPestana = pes => (PESTANAS[pes] || PESTANAS.cinta).filter(k => !(uno && k === 'decimal'));
   function aPapel(e){
     if(e.papel || e.sinCinta) return e;
     e.sinCinta = true; e.meta = null; if(e.tp) e.t = e.tp;
@@ -333,7 +339,7 @@ const PR = (() => {
   /* un encargo de la pestaña (de uno de sus tipos, o del que se pida) */
   function genera(pes, tipo, papel){
     if(papel && !sinCintaVale(tipo)) tipo = null;
-    const e = TIPOS[tipo] ? deTipo(tipo) : deTipo(elige((PESTANAS[pes] || PESTANAS.cinta).filter(k => !papel || sinCintaVale(k))));
+    const e = TIPOS[tipo] ? deTipo(tipo) : deTipo(elige(deLaPestana(pes).filter(k => !papel || sinCintaVale(k))));
     return papel ? aPapel(e) : e;
   }
   /* lo que pide un enlace: el tipo m con los datos c; si no se leen o no
@@ -343,6 +349,8 @@ const PR = (() => {
     let d = null; try{ d = c ? TIPOS[m].lee(c) : null; }catch(err){ d = null; }
     return deTipo(m, d);
   }
-  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, fr, conAzar: f => { azar = f; }};
+  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, deLaPestana, fr, conAzar: f => { azar = f; },
+    /* para las pruebas: ponerse en la ruta de 1.º, o quitarse */
+    ponRuta: r => { uno = r === '1eso'; }};
 })();
 if(typeof module !== 'undefined' && module.exports) module.exports = PR;
