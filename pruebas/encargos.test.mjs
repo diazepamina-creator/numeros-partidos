@@ -17,7 +17,9 @@ function resoluble(e){
     assert.ok(e.ops.length >= 2, 'hay entre qué elegir: ' + e.t);
     assert.equal(new Set(e.ops.map(o => o.t)).size, e.ops.length, 'sin respuestas repetidas: ' + e.t);
   }
-  if(e.sinCinta){ assert.ok(e.ops, 'sin cinta, se contesta eligiendo'); return; }
+  if(e.sinCinta){ assert.ok(e.ops || e.papel, 'sin cinta, se contesta eligiendo o escribiendo');
+    if(e.papel) assert.ok(PR.revisa(e.papel, PR.fr(e.res.n, e.res.d) + ' + 0', PR.fr(e.res.n, e.res.d)).bien, 'el resultado vale: ' + e.t);
+    return; }
   assert.ok(e.meta !== null && e.meta !== undefined, 'tiene meta');
   assert.ok(e.meta > e.desde && e.meta < e.desde + e.pasos, 'la meta cabe en la cinta: ' + e.t);
   /* algún corte de los botones pasa justo por la meta */
@@ -68,7 +70,7 @@ test('un código que no vale da uno al azar del mismo tipo', () => {
 
 test('los códigos del README se pueden abrir', () => {
   const md = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
-  const enl = [...md.matchAll(/j=practicar&m=(\w+)&c=([-\d/_]+)/g)];
+  const enl = [...md.matchAll(/j=practicar&m=(\w+)&c=([-\d/_()srmd]+)/g)];
   assert.ok(enl.length >= 9, 'el README trae los enlaces');
   for(const [, m, c] of enl){ assert.ok(PR.TIPOS[m], m); assert.equal(PR.deEnlace(m, c).c, c, m + ' ' + c); }
 });
@@ -77,4 +79,60 @@ test('las fracciones se escriben simplificadas y con su signo', () => {
   assert.equal(PR.fr(6, 8), '3/4');
   assert.equal(PR.fr(-2, 4), '−1/2');
   assert.equal(PR.fr(8, 4), '2');
+});
+
+test('las cuentas escritas se leen con fracciones exactas', () => {
+  const v = s => { const q = PR.cuenta(s); return q && q.n + '/' + q.d; };
+  assert.equal(v('3/4 + 1/8'), '7/8');
+  assert.equal(v('2 : 2/5'), '5/1');
+  assert.equal(v('2 : 3/4'), '8/3', 'la fracción va junta: 2 : (3/4)');
+  assert.equal(v('(1/2 + 1/4) · 2/3'), '1/2');
+  assert.equal(v('1/2 + 1/4 * 2/3'), '2/3', 'primero el ·');
+  assert.equal(v('2/3 − 1/6 x 2'), '1/3');
+  assert.equal(v('0,5 - 1/3'), '1/6');
+  assert.equal(v('-1/2 + 1'), '1/2');
+  for(const malo of ['', '2(3)', '1/0', '3 +', '(1/2', 'hola']) assert.equal(PR.cuenta(malo), null, malo);
+  assert.deepEqual(PR.pasos('(1/2 + 1/4) · 2/3'), ['(1/2 + 1/4) · 2/3', '3/4 · 2/3', '1/2']);
+});
+
+test('lo escrito sobre el papel se revisa', () => {
+  const P = {res: {n: 3, d: 4}, cuenta: true};
+  assert.equal(PR.revisa(P, '2/3 + 1/4 − 1/6', '3/4').bien, true);
+  assert.equal(PR.revisa(P, '2/3 + 1/4 − 1/6', '9/12').bien, true, 'vale sin simplificar');
+  assert.equal(PR.revisa(P, '1/4 + 1/2', '3/4').bien, true, 'cualquier cuenta que dé lo mismo');
+  assert.equal(PR.revisa(P, '', '3/4').k, 'falta');
+  assert.equal(PR.revisa(P, '3/4', '3/4').k, 'sinop');
+  assert.equal(PR.revisa(P, '2/3 + 1/4 + 1/6', '13/12').k, 'otra');
+  assert.equal(PR.revisa(P, '2/3 + 1/4 − 1/6', '2/3').k, 'resmal');
+  assert.equal(PR.revisa(P, '2/3 + 1/4 − 1/6', 'tres').k, 'nores');
+  assert.equal(PR.revisa({res: {n: 1, d: 2}, cuenta: false, trampas: [{q: {n: 2, d: 3}, r: 'orden'}]}, '', '2/3').k, 'trampa');
+});
+
+test('las combinadas: la cuenta da su resultado y la trampa es otra', () => {
+  for(let i = 0; i < 300; i++){
+    const e = PR.genera(null, 'combinadas');
+    assert.ok(e.papel && !e.papel.cuenta && e.sinCinta);
+    const cu = e.t.match(/<b>(.*?)<\/b>/)[1];
+    assert.equal(PR.revisa(e.papel, '', PR.pasos(cu).pop()).bien, true, cu);
+    e.papel.trampas.forEach(t => assert.notEqual(t.q.n * e.res.d, e.res.n * t.q.d, 'la trampa no es la buena: ' + cu));
+  }
+});
+
+test('sin cinta: cada tipo de la pestaña se contesta eligiendo o escribiendo', () => {
+  for(const pes of ['cinta', 'partir', 'juntar', 'partes']) for(let i = 0; i < 100; i++){
+    const e = PR.genera(pes, null, true);
+    assert.notEqual(e.tipo, 'situar');
+    assert.ok(e.sinCinta && (e.ops || e.papel), e.tipo);
+    if(e.papel && e.papel.cuenta){
+      /* la cuenta del propio encargo, escrita, da el resultado */
+      assert.ok(e.res && e.res.d > 0, e.tipo);
+    }
+  }
+});
+
+test('sin cinta, ningún encargo pide marcas', () => {
+  for(const pes of ['cinta', 'partir', 'juntar', 'partes']) for(let i = 0; i < 100; i++){
+    const e = PR.genera(pes, null, true);
+    assert.doesNotMatch(e.t, /[Pp]onme|[Pp]on su marca|[Pp]on la pieza/, e.tipo + ': ' + e.t);
+  }
 });
