@@ -423,6 +423,8 @@ function dicePapel(rv){
   if(rv.k === 'otra') return T('Esa cuenta da ') + '<b>' + rv.x + '</b>' + T(', y no es la del encargo: hay que volver a leerlo.');
   if(rv.k === 'trampa') return rv.r;
   /* da lo mismo, pero con otros números: así no vale inventarse la cuenta */
+  /* la buena, con el orden al revés: se dice qué ha pasado */
+  if(rv.k === 'reves') return T(rv.r || 'Está al revés: al restar y al dividir, el orden importa.');
   if(rv.k === 'otrosnum') return T('Eso da lo mismo, pero no son los números del encargo') + (rv.r ? ': ' + T(rv.r) : '.');
   return T({falta: 'Falta la cuenta o el resultado: en la libreta, y aquí.',
     nocuenta: 'Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.',
@@ -1043,7 +1045,7 @@ const ENCARGOS5 = [
     ? T('En doceavos, jefe: pulse el <b>12</b>. Es el único corte donde caben los medios, los tercios y los cuartos a la vez.')
     : T('Junte los tres: 6/12 del nivel, 4/12 del tercio y 3/12 del cuarto.')},
  {t:'Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.',
-  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4', formas:['2/3 + 1/4 − 1/6'], pregunta:'¿dónde estaba el nivel, cuánto llovió y cuánto bajó?'},
+  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4', formas:['2/3 + 1/4 − 1/6'], pregunta:'¿dónde estaba el nivel, cuánto llovió y cuánto bajó?', reves:'Está al revés: lo que bajó se quita de lo que había.'},
   bien:'<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.',
   mal:''}
 ];
@@ -1430,7 +1432,7 @@ const ENCARGOS9 = [
   mal:'Elija una de las cuatro, jefe.'},
  {t:'La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.',
   prepara: tela(3, 3),
-  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4', formas:['3 : 3/4'], pregunta:'¿cuánta tela hay y cuánto lleva cada pañuelo?'},
+  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4', formas:['3 : 3/4'], pregunta:'¿cuánta tela hay y cuánto lleva cada pañuelo?', reves:'Está al revés: es la tela entre lo que lleva cada pañuelo.'},
   bien:'<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.',
   mal:''}
 ];
