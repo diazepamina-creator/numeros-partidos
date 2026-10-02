@@ -30,6 +30,10 @@ function anotaActa(caso, enc, bien, dicho){
   guardaActa();
 }
 
+/* de qué es cada renglón: un encargo de un caso, o uno de Practicar ('p:cinta'…) */
+const esPr = e => typeof e.c === 'string';
+const nombreEj = e => esPr(e) ? T('Practicar') + ' · ' + T(NOMBRE_PES[e.c.slice(2)].split(' · ')[0]) : T(CASOS[e.c].t);
+const etqEj = e => esPr(e) ? T('Practicar') : T('Caso ') + e.c + ' · ' + (e.e + 1);
 const dos = x => String(x).padStart(2, '0');
 const hora = ms => { const f = new Date(ms); return dos(f.getHours()) + ':' + dos(f.getMinutes()); };
 const reloj = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ' min ' + dos(s % 60) + ' s'; };
@@ -51,11 +55,13 @@ function pintaActaM(){
     const x = EXPS[c], mios = acta.ej.filter(e => e.c === c), f = mios.reduce((a, e) => a + e.fallos, 0);
     return '<tr' + (f > x.hechos() && f > 1 ? ' class="floja"' : '') + '><td><b>' + c + '.</b> ' + T(CASOS[c].t) + '</td><td>'
       + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ' · ' + T('cerrado') : '') + '</td><td>' + f + '</td></tr>';
-  }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>';
+  }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>'
+    + (() => { const p = acta.ej.filter(esPr); if(!p.length) return '';
+      return '<tr><td><b>+</b> ' + T('Practicar') + '</td><td>' + p.filter(e => e.ok).length + T(' bien') + '</td><td>' + p.reduce((a, e) => a + e.fallos, 0) + '</td></tr>'; })();
   $a('acDet').hidden = !acta.ej.length;
   $a('acDet').querySelector('summary').textContent = T('Encargo a encargo') + ' (' + acta.ej.length + ')';
   $a('acEj').innerHTML = acta.ej.map(e => '<li class="' + (e.ok ? 'ok' : 'no') + '"><span class="ac-h">' + hora(e.t) + '</span>'
-    + '<span class="ac-m">' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '</span><span class="ac-c">' + T(CASOS[e.c].t) + '</span>'
+    + '<span class="ac-m">' + etqEj(e) + '</span><span class="ac-c">' + nombreEj(e) + '</span>'
     + '<span class="ac-como">' + comoFue(e) + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '</span></li>').join('');
   $a('acNombre').value = acta.nombre || '';
 }
@@ -71,9 +77,10 @@ function actaEnTexto(){
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);
     t += '  ' + c + '. ' + T(CASOS[c].t) + ' — ' + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ', ' + T('cerrado') : '') + '; ' + T('fallos: ') + f2 + '\n'; });
   t += '  ¾. ' + T('La pizzería de Nick') + ' — ' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '\n';
+  { const p = acta.ej.filter(esPr); if(p.length) t += '  +. ' + T('Practicar') + ' — ' + p.filter(e => e.ok).length + T(' bien') + '; ' + T('fallos: ') + p.reduce((a, e) => a + e.fallos, 0) + '\n'; }
   if(acta.ej.length){
     t += T('Encargo a encargo:') + '\n';
-    acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '  ' + comoFue(e)
+    acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + (esPr(e) ? nombreEj(e) : etqEj(e)) + '  ' + comoFue(e)
       + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '\n'; });
   }
   return t;
@@ -115,6 +122,7 @@ const GUIA = [
   {sel: '.juegos', c: 'Los contenidos', t: '<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.'},
   {sel: '#mapa', c: 'El plano', t: 'Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.'},
   {sel: '#rutaPes', c: 'La ruta', t: 'Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.'},
+  {sel: '#bPracticar', c: 'Practicar', t: 'Encargos <b>nuevos cada vez</b>, de la pestaña en que estés, sin fin. No cuentan para la ruta, pero sí van al acta. El nombre de tu marca no se ve hasta que compruebas.'},
   {sel: '#bAjustes', c: 'Ajustes', t: 'El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.'},
   {sel: '#bAula', c: 'El aula', t: 'Todo más grande, para la pizarra digital.'},
   {sel: '#verActa', c: 'El acta', t: 'Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.'}

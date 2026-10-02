@@ -108,3 +108,8 @@ traduce();
 [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
 pintaMapa(); pintaCero();
 
+
+/* el sumario plegado se despliega al tocarlo */
+document.querySelectorAll('.sumario').forEach(s => s.addEventListener('click', () => {
+  if(s.classList.contains('plegado')) s.classList.toggle('desplegado');
+}));

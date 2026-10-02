@@ -6,7 +6,7 @@
 <meta name="author" content="Andrés Asensio">
 <!--
   LOS NÚMEROS PARTIDOS · la ciudad
-  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.9
+  Manipulativo de números racionales para 1.º y 2.º de ESO · versión 0.10
   © Andrés Asensio · CC BY-NC-ND 4.0
 
   v0.7 · LA PIZZERÍA, EN EL PLANO. La ciudad y la pizzería de Nick son dos
@@ -881,6 +881,23 @@ footer a{color:inherit}
 .guia-pie button.b{min-height:36px;padding:5px 12px}
 [data-quieto="si"] .guia-foco,[data-quieto="si"] .guia-globo{transition:none}
 @media print{ .guia,.modal{display:none} }
+
+/* ── LOS CASOS, MÁS COMPACTOS: el título junto al botón de volver y el
+   sumario plegado cuando ya se ha leído; así la cinta cabe en la pantalla ── */
+.cabezaCaso{align-items:center}
+.cabezaCaso h1{font-size:19px;margin:0}
+.cabezaCaso .sub{margin:0}
+.sumario.plegado{max-height:3.2em;overflow:hidden;cursor:pointer;position:relative}
+.sumario.plegado::after{content:'▾';position:absolute;right:10px;bottom:4px;color:var(--tenue)}
+.sumario.plegado.desplegado{max-height:none}
+.sumario.plegado.desplegado::after{content:'▴'}
+.op{font-family:var(--letra);background:var(--noche);color:var(--tinta);border-color:var(--linea)}
+/* EL VEREDICTO, SOLO DESPUÉS DE COMPROBAR (en las celdas, no: allí el
+   veredicto es la propia cuenta) */
+.vista[id^="vCaso"]:not(#vCaso3):not(.visto) .veredicto{visibility:hidden}
+/* en Practicar, tampoco el nombre de la marca roja ni la lectura */
+#vPractica:not(.visto) #pMarca .val,#vPractica:not(.visto) #prLec{visibility:hidden}
+#vPractica #prMesa[hidden]{display:none}
 </style>
 </head>
 <body data-modo="papel">
@@ -894,6 +911,7 @@ footer a{color:inherit}
     <div><h1>La ciudad</h1><div class="sub" data-t>Los números partidos · racionales en la recta</div></div>
     <nav class="acc">
       <button type="button" id="bGuia" aria-pressed="false" data-t>Guía</button>
+      <button type="button" id="bPracticar" aria-pressed="false" data-t>Practicar</button>
       <button type="button" id="bAjustes" aria-pressed="false" data-t>Ajustes</button>
       <button type="button" id="bAula" aria-pressed="false" data-t>Aula</button>
       <button type="button" id="verActa" aria-pressed="false">Acta</button>
@@ -1456,11 +1474,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 1 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso1">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LA CINTA</h1><div class="sub">caso 1 · la escena del crimen</div></div>
   </div>
-  <h1>LA CINTA</h1>
-  <div class="sub">caso 1 · la escena del crimen</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1513,11 +1530,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 2 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso2">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LA LLAVE</h1><div class="sub">caso 2 · el taller de Nick</div></div>
   </div>
-  <h1>LA LLAVE</h1>
-  <div class="sub">caso 2 · el taller de Nick</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1571,11 +1587,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 3 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso3">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LAS CELDAS</h1><div class="sub">caso 3 · la comisaría</div></div>
   </div>
-  <h1>LAS CELDAS</h1>
-  <div class="sub">caso 3 · la comisaría</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1631,11 +1646,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 4 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso4">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LA BARANDILLA</h1><div class="sub">caso 4 · el puente viejo</div></div>
   </div>
-  <h1>LA BARANDILLA</h1>
-  <div class="sub">caso 4 · el puente viejo</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1687,11 +1701,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 5 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso5">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>EL NIVEL</h1><div class="sub">caso 5 · el pantano</div></div>
   </div>
-  <h1>EL NIVEL</h1>
-  <div class="sub">caso 5 · el pantano</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1744,11 +1757,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 6 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso6">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>EL REPARTO</h1><div class="sub">caso 6 · el banco de la calle 4</div></div>
   </div>
-  <h1>EL REPARTO</h1>
-  <div class="sub">caso 6 · el banco de la calle 4</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1800,11 +1812,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 7 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso7">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LA BANCA</h1><div class="sub">caso 7 · el casino de la calle 9</div></div>
   </div>
-  <h1>LA BANCA</h1>
-  <div class="sub">caso 7 · el casino de la calle 9</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1863,7 +1874,7 @@ footer a{color:inherit}
     <button class="b" id="imprimeActa">Imprimir</button>
 
   </div>
-  <h1>EL ACTA</h1>
+  <h1>LAS CONCLUSIONES</h1>
   <div class="sub">lo que se averiguó, caso por caso</div>
   <div class="acta">
     <div class="cabecera"><b>ACTA DE LA SEMANA</b><span>Los números partidos · Jeff Azzo &amp; Liz Stillo</span></div>
@@ -1877,11 +1888,10 @@ footer a{color:inherit}
 
 <!-- ═══ VISTA: EL CASO 8 ═════════════════════════════════════════════ -->
 <div class="vista marco" id="vCaso8">
-  <div class="barra">
+  <div class="barra cabezaCaso">
     <button class="b volver">← La ciudad</button>
+    <div><h1>LA DEUDA</h1><div class="sub">caso 8 · el desguace</div></div>
   </div>
-  <h1>LA DEUDA</h1>
-  <div class="sub">caso 8 · el desguace</div>
 
   <div class="sumario">
     <div class="sello">CONFIDENCIAL</div>
@@ -1934,6 +1944,42 @@ footer a{color:inherit}
   <div class="veredicto" id="ver8"></div>
 </div>
 
+<!-- ═══ VISTA: PRACTICAR ═════════════════════════════════════════════
+     Encargos nuevos de cada pestaña, sin fin y con una sola cinta que cambia
+     de tamaño, de cortes y de marcas según lo que pida Jeff. No cuentan para
+     la ruta, pero van al acta. -->
+<div class="vista marco" id="vPractica">
+  <div class="barra cabezaCaso">
+    <button class="b volver">← La ciudad</button>
+    <div><h1 data-t>Practicar</h1><div class="sub" id="prSub"></div></div>
+  </div>
+  <div class="encargo">
+    <div class="cara-caja" data-cara="tplJeff"></div>
+    <div class="quien">JEFF AZZO</div>
+    <p class="encTxt" id="prTxt"></p>
+    <div class="ops" id="prOps" hidden></div>
+    <div class="fila">
+      <button class="b ok comprobar" id="prComprueba">Comprobar</button>
+      <button class="b" id="prOtro" data-t>Otro encargo</button>
+      <span class="paso" id="prCuenta"></span>
+    </div>
+  </div>
+  <div class="informe" id="prInf" hidden>
+    <div class="cara-caja liz" data-cara="tplLiz"></div>
+    <div class="quien liz">LIZ STILLO</div><p class="infTxt" id="prInfTxt"></p>
+  </div>
+  <div id="prMesa">
+    <div class="barra" id="prCortes"></div>
+    <div class="escena" id="escP">
+      <div class="tira" id="tiraP"></div>
+      <div class="chin" id="pPrueba" style="left:120px"><div class="val">0</div><div class="pal"></div><div class="pin"></div></div>
+      <div class="chin dos" id="pMarca" style="left:60px"><div class="val">0</div><div class="pal"></div><div class="pin"></div></div>
+    </div>
+    <p class="pista" id="prPista"></p>
+    <div class="lectura" id="prLec"></div>
+  </div>
+</div>
+
 <div class="caso" id="caso">
   <div class="carpeta">
     <div class="sello">CONFIDENCIAL</div>
@@ -1951,7 +1997,7 @@ footer a{color:inherit}
 <footer>
   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es" rel="license">© 2026 Andrés Asensio · CC BY-NC-ND 4.0</a>
   · <a href="https://diazepamina-creator.github.io/">Materiales</a>
-  · versión 0.9
+  · versión 0.10
 </footer>
 </div><!-- .lienzo -->
 
@@ -2340,6 +2386,10 @@ function montaCinta(cfg){
   for(const id of Object.keys(st.marcas))
     if(id !== cfg.activa) document.getElementById(id).classList.add('prueba');
 
+  /* mover la marca o cortar otra vez esconde el veredicto hasta que se
+     vuelva a comprobar (si el encargo ya está resuelto, se deja a la vista) */
+  const V = esc.closest('.vista');
+  const escondeVeredicto = () => { if(V && V.dataset.hecho !== 'si') V.classList.remove('visto'); };
   let cogida = false;
   function alPunto(ev){
     const r = tira.getBoundingClientRect();
@@ -2348,6 +2398,7 @@ function montaCinta(cfg){
     m.v = st.desde + Math.round(x / r.width * st.pasos * st.cortes) / st.cortes;
     m.medido = st.texto(m.v);   // el nombre de pila: con el corte con que se puso
     document.getElementById(cfg.activa).classList.add('arrastrando');
+    escondeVeredicto();
     pinta();
   }
   esc.addEventListener('pointerdown', ev => {
@@ -2363,6 +2414,7 @@ function montaCinta(cfg){
   /* los botones de corte del caso: cada vista lleva los suyos */
   document.querySelectorAll(cfg.botones).forEach(b => b.addEventListener('click', () => {
     st.cortes = +b.dataset.b;   // el punto no se toca: solo cambia su nombre
+    escondeVeredicto();
     document.querySelectorAll(cfg.botones).forEach(o =>
       o.setAttribute('aria-pressed', String(+o.dataset.b === st.cortes)));
     pintaTira(); pinta();
@@ -2444,6 +2496,10 @@ function montaExpediente(cfg){
   }
   function pintaEncargo(){
     const ultimo = enc === cfg.encargos.length - 1, hecho = hechos.has(enc);
+    /* el veredicto de la cinta solo se ve después de comprobar (o con el
+       encargo ya resuelto); el sumario se pliega cuando ya se ha leído */
+    R.classList.toggle('visto', hecho); R.dataset.hecho = hecho ? 'si' : 'no';
+    const sum = q('.sumario'); if(sum) sum.classList.toggle('plegado', enc > 0 || hechos.size > 0);
     elegida = hecho && cfg.encargos[enc].ops
             ? cfg.encargos[enc].ops.findIndex(o => o.ok) : null;
     pintaOpciones();
@@ -2498,6 +2554,7 @@ function montaExpediente(cfg){
       dice = T(bien ? e.bien : (typeof e.mal === 'function' ? e.mal() : e.mal));
     }
     inf.hidden = false;
+    R.classList.add('visto');
     /* Liz entra con la cámara y Jeff reacciona: las clases se quitan y se
        vuelven a poner en el fotograma siguiente, que si no el navegador no
        relanza la animación */
@@ -3733,6 +3790,8 @@ Object.assign(VA, {
 Object.assign(VA, {"Los números partidos · racionales en la recta": "Els nombres partits · racionals en la recta", "Ajustes": "Ajustos", "Aula": "Aula", "Acta": "Acta", "La cinta": "La cinta", "situar y comparar": "situar i comparar", "Partir": "Partir", "la fracción es una división": "la fracció és una divisió", "Juntar y quitar": "Ajuntar i llevar", "sumar y restar": "sumar i restar", "Partes de partes": "Parts de parts", "la fracción de una cantidad": "la fracció d'una quantitat", "Tema": "Tema", "Claro": "Clar", "Oscuro": "Fosc", "Animaciones": "Animacions", "Sí": "Sí", "No": "No", "Lengua": "Llengua", "Sonido": "So", "Turno": "Torn", "Cerrar": "Tancar", "Los casos de esta pestaña": "Els casos d'esta pestanya", "cerrado": "tancat", "La pizzería de Nick": "La pizzeria de Nick", "cumplida": "complida", "equivalentes, en La grapadora": "equivalents, en La grapadora", "la cinta": "la cinta", "comparar": "comparar", "exacto o periódico": "exacte o periòdic", "los negativos": "els negatius", "parte de una parte": "part d'una part", "fracción de cantidad": "fracció de quantitat"});
 /* lo nuevo de la versión 0.9: la guía y el acta del turno */
 Object.assign(VA, {"Guía": "Guia", "Salir": "Eixir", "Siguiente": "Següent", "Al caso": "Al cas", "El acta de la ciudad": "L'acta de la ciutat", "Lo que has hecho en este turno. Cópiala o descárgala para dársela a tu profesor.": "El que has fet en este torn. Copia-la o descarrega-la per a donar-la al teu professor.", "Tu nombre": "El teu nom", "Caso": "Cas", "Encargos": "Encàrrecs", "Fallos": "Errades", "Copiar el acta": "Copiar l'acta", "Descargar .txt": "Descarregar .txt", "Las conclusiones": "Les conclusions", "Casos cerrados": "Casos tancats", "A la primera": "A la primera", "Acierto": "Encert", "Tiempo": "Temps", "pendiente": "pendent", "Encargo a encargo": "Encàrrec a encàrrec", "Caso ": "Cas ", "bien tras ": "bé després de ", " fallo": " errada", " fallos": " errades", "bien a la primera": "bé a la primera", "sin resolver": "sense resoldre", "LA CIUDAD · acta del turno": "LA CIUTAT · acta del torn", "Nombre: ": "Nom: ", "(sin nombre)": "(sense nom)", "Fecha: ": "Data: ", "Tiempo: ": "Temps: ", "Casos cerrados: ": "Casos tancats: ", "Encargos resueltos: ": "Encàrrecs resolts: ", " a la primera": " a la primera", "Fallos: ": "Errades: ", "Acierto: ": "Encert: ", "Por caso:": "Per cas:", "fallos: ": "errades: ", "Encargo a encargo:": "Encàrrec a encàrrec:", "Copiada. Pégala donde te diga tu profesor.": "Copiada. Apega-la on et diga el teu professor.", "No se ha podido copiar: descárgala.": "No s'ha pogut copiar: descarrega-la.", "Descargada.": "Descarregada.", "Los contenidos": "Els continguts", "El plano": "El plànol", "La ruta": "La ruta", "El aula": "L'aula", "<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.": "<b>La cinta</b>: situar i comparar. <b>Partir</b>: la fracció és una divisió. <b>Ajuntar i llevar</b>: sumar i restar. <b>Parts de parts</b>: la fracció d'una quantitat. Cada pestanya té els seus casos.", "Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.": "Cada xinxeta és un <b>cas</b>. Toca-la per a obrir la seua carpeta. Els casos de la pestanya es veuen encesos; en tancar-los, el <b>fil roig</b> els va unint.", "Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.": "Els casos d'esta pestanya, en orde. En La cinta hi ha també <b>la pizzeria de Nick</b>: les fraccions equivalents es treballen allí, amb pizza.", "El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.": "El suro (clar) o l'asfalt de nit (fosc), les animacions, el <b>valencià</b>, el so i començar de zero.", "Todo más grande, para la pizarra digital.": "Tot més gran, per a la pissarra digital.", "Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.": "El que has fet en el torn, cas a cas i encàrrec a encàrrec, per a <b>entregar-ho al teu professor</b>. Jeff l'espera en l'escena del crim."});
+/* lo nuevo de la versión 0.10: Practicar */
+Object.assign(VA, {"Practicar": "Practicar", "Otro encargo": "Un altre encàrrec", "Otro encargo →": "Un altre encàrrec →", "Prueba: ": "Prova: ", "Tu marca: ": "La teua marca: ", " bien en este rato": " bé en esta estona", "Elija una respuesta, jefe.": "Trie una resposta, cap.", "La cinta · situar y comparar": "La cinta · situar i comparar", "Partir · la fracción es una división": "Partir · la fracció és una divisió", "Juntar y quitar · sumar y restar": "Ajuntar i llevar · sumar i restar", "Partes de partes · la fracción de una cantidad": "Parts de parts · la fracció d'una quantitat", "LAS CONCLUSIONES": "LES CONCLUSIONS", " bien": " bé", "Encargos <b>nuevos cada vez</b>, de la pestaña en que estés, sin fin. No cuentan para la ruta, pero sí van al acta. El nombre de tu marca no se ve hasta que compruebas.": "Encàrrecs <b>nous cada vegada</b>, de la pestanya on estigues, sense fi. No compten per a la ruta, però sí que van a l'acta. El nom de la teua marca no es veu fins que comproves."});
 </script>
 <script>
 /* ═══ EL SONIDO ═════════════════════════════════════════════════════
@@ -3903,6 +3962,12 @@ traduce();
 [cinta1, cinta2, cinta4, cinta5, cinta6, cinta7, cinta8].forEach(c => c.repinta());
 [caso1, caso2, caso3, caso4, caso5, caso6, caso7, caso8].forEach(c => c.repinta());
 pintaMapa(); pintaCero();
+
+
+/* el sumario plegado se despliega al tocarlo */
+document.querySelectorAll('.sumario').forEach(s => s.addEventListener('click', () => {
+  if(s.classList.contains('plegado')) s.classList.toggle('desplegado');
+}));
 </script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
@@ -4024,6 +4089,246 @@ pintaRuta();
 </script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
+   LOS ENCARGOS DE PRACTICAR · los generadores, sin pantalla
+   Cada pestaña tiene dos tipos de encargo. Cada encargo dice cómo es la
+   cinta (pasos, desde dónde, cortes), si lleva la prueba verde de Liz,
+   adónde tiene que ir la marca roja (meta) y, si hace falta, qué respuesta
+   se elige. Vale en el navegador y en Node (pruebas/encargos.test.mjs).
+   ══════════════════════════════════════════════════════════════════════ */
+const PR = (() => {
+  let azar = Math.random;
+  const ent = (a, b) => a + Math.floor(azar() * (b - a + 1));
+  const elige = l => l[Math.floor(azar() * l.length)];
+  const mcdN = (a, b) => { a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a || 1; };
+  /* una fracción, escrita: 5/4, −1/2, 3 */
+  const fr = (n, d) => { const g = mcdN(n, d); n /= g; d /= g;
+    return (n < 0 ? '−' : '') + (d === 1 ? Math.abs(n) : Math.abs(n) + '/' + d); };
+  const baraja = l => { const c = l.slice(); for(let i = c.length - 1; i > 0; i--){ const j = Math.floor(azar() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; } return c; };
+  const CORTES = [2, 3, 4, 5, 6, 8, 9, 10, 12];
+  /* los encargos se escriben con números dentro: el diccionario no los
+     encuentra, así que cada frase va en las dos lenguas */
+  const L = (es, va) => (typeof idioma !== 'undefined' && idioma === 'va') ? va : es;
+  const $$ = x => x.toLocaleString('es-ES');
+
+  /* Cada generador devuelve un encargo:
+     {t, pasos, desde, cortes:[…], prueba:{v, nombre}|null, meta:v|null,
+      ops:[{t, ok, r}]|null, pista, bien, mal} */
+  const GEN = {
+    cinta: [
+      /* situar: la marca en a/b */
+      () => { const d = elige([2, 3, 4, 5, 6, 8]), n = ent(1, 2 * d - 1);
+        if(n % d === 0) return null;
+        return {t: L('Liz ha encontrado una colilla a <b>' + fr(n, d) + '</b> de paso de la esquina. Corta el paso como haga falta y ponme ahí la marca.', 'Liz ha trobat una burilla a <b>' + fr(n, d) + '</b> de pas de la cantonada. Talla el pas com calga i posa-hi la marca.'),
+          pasos: 2, desde: 0, prueba: null, meta: n / d,
+          pista: L('Toca la cinta para llevar la marca roja.', 'Toca la cinta per a portar la marca roja.'),
+          bien: L('Ahí está: ' + fr(n, d) + '. El paso, cortado en ' + d + ', y ' + n + ' trozos desde la esquina.', 'Ací està: ' + fr(n, d) + '. El pas, tallat en ' + d + ', i ' + n + ' trossos des de la cantonada.'),
+          mal: L('Todavía no. Corta el paso en <b>' + d + '</b> trozos iguales y cuenta <b>' + n + '</b> desde la esquina.', 'Encara no. Talla el pas en <b>' + d + '</b> trossos iguals i compta-ne <b>' + n + '</b> des de la cantonada.')}; },
+      /* comparar: la prueba en p, la marca en q, y el signo */
+      () => { const d1 = elige([2, 3, 4, 5, 6, 8]), d2 = elige([2, 3, 4, 5, 6, 8].filter(x => x !== d1));
+        const n1 = ent(1, 2 * d1 - 1), n2 = ent(1, 2 * d2 - 1), p = n1 / d1, q = n2 / d2;
+        if(Math.abs(p - q) < 1e-9 || n1 % d1 === 0 || n2 % d2 === 0) return null;
+        const mayor = q > p;
+        return {t: L('La verde es la prueba: <b>' + fr(n1, d1) + '</b>. El sospechoso dice que estuvo en <b>' + fr(n2, d2) + '</b>. Pon su marca y dime: ¿pasó de largo o se quedó antes?', 'La verda és la prova: <b>' + fr(n1, d1) + '</b>. El sospitós diu que va estar en <b>' + fr(n2, d2) + '</b>. Posa la seua marca i digues-me: va passar de llarg o es va quedar abans?'),
+          pasos: 2, desde: 0, prueba: {v: p, nombre: fr(n1, d1)}, meta: q,
+          ops: baraja([
+            {t: L('Pasó de largo: su marca queda a la derecha.', 'Va passar de llarg: la seua marca queda a la dreta.'), ok: mayor, r: mayor ? L('Eso es: más a la derecha, mayor.', 'Això és: més a la dreta, major.') : L('Mira la cinta: su marca queda a la IZQUIERDA de la prueba.', 'Mira la cinta: la seua marca queda a l\'ESQUERRA de la prova.')},
+            {t: L('Se quedó antes: su marca queda a la izquierda.', 'Es va quedar abans: la seua marca queda a l\'esquerra.'), ok: !mayor, r: !mayor ? L('Eso es: más a la izquierda, menor.', 'Això és: més a l\'esquerra, menor.') : L('Mira la cinta: su marca queda a la DERECHA de la prueba.', 'Mira la cinta: la seua marca queda a la DRETA de la prova.')},
+            {t: L('Pasó de largo, porque su número de arriba es más grande.', 'Va passar de llarg, perquè el seu número de dalt és més gran.'), ok: false, r: L('Con el número de arriba solo no se compara: hay que mirar en cuántos trozos está cortado el paso.', 'Amb el número de dalt només no es compara: cal mirar en quants trossos està tallat el pas.')}]),
+          pista: L('La verde no se toca. Lleva la roja con la cinta, y luego elige.', 'La verda no es toca. Porta la roja amb la cinta, i després tria.'),
+          bien: fr(n2, d2) + L(mayor ? ' es mayor que ' : ' es menor que ', mayor ? ' és major que ' : ' és menor que ') + fr(n1, d1) + ': ' + L(mayor ? 'más a la derecha.' : 'más a la izquierda.', mayor ? 'més a la dreta.' : 'més a l\'esquerra.'),
+          mal: L('La marca roja tiene que ir en <b>' + fr(n2, d2) + '</b>: corta el paso en ' + d2 + '.', 'La marca roja ha d\'anar en <b>' + fr(n2, d2) + '</b>: talla el pas en ' + d2 + '.')}; }
+    ],
+    partir: [
+      /* repartir: n metros en k tramos */
+      () => { const k = elige([2, 3, 4, 5, 6, 8]), n = ent(1, 3 * k - 1);
+        if(n % k === 0) return null;
+        const pasos = Math.max(2, Math.ceil(n / k) + 1);
+        return {t: L('Hay <b>' + n + ' metros</b> de barandilla para <b>' + k + ' tramos</b> iguales. Ponme la marca donde acaba el primer tramo.', 'Hi ha <b>' + n + ' metres</b> de barana per a <b>' + k + ' trams</b> iguals. Posa\'m la marca on acaba el primer tram.'),
+          pasos, desde: 0, prueba: null, meta: n / k,
+          pista: L('La cinta mide metros. Toca la cinta para llevar la marca roja.', 'La cinta mesura metres. Toca la cinta per a portar la marca roja.'),
+          bien: L('Cada tramo mide ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metro. La fracción es una división.', 'Cada tram mesura ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metre. La fracció és una divisió.'),
+          mal: L('Un tramo es lo que toca a cada uno al repartir ' + n + ' entre ' + k + ': corta cada metro en <b>' + k + '</b> y cuenta <b>' + n + '</b> trozos.', 'Un tram és el que toca a cadascun en repartir ' + n + ' entre ' + k + ': talla cada metre en <b>' + k + '</b> i compta <b>' + n + '</b> trossos.')}; },
+      /* exacto o periódico */
+      () => { const d = elige([3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 20, 25]), n = ent(1, d - 1);
+        if(mcdN(n, d) !== 1) return null;
+        let m = d; while(m % 2 === 0) m /= 2; while(m % 5 === 0) m /= 5;
+        const exacto = m === 1;
+        return {t: L('Una coartada dice <b>' + fr(n, d) + '</b> de hora. Al pasarla a decimal, ¿la cuenta se acaba o se repite para siempre?', 'Una coartada diu <b>' + fr(n, d) + '</b> d\'hora. En passar-la a decimal, el compte s\'acaba o es repetix per sempre?'),
+          sinCinta: true,
+          ops: [{t: L('Se acaba: es un decimal exacto.', 'S\'acaba: és un decimal exacte.'), ok: exacto, r: exacto ? L('Eso es.', 'Això és.') : L('No se acaba: el ' + d + ' tiene factores que no son 2 ni 5, y los restos acaban repitiéndose.', 'No s\'acaba: el ' + d + ' té factors que no són 2 ni 5, i els restos acaben repetint-se.')},
+                {t: L('Se repite: es un decimal periódico.', 'Es repetix: és un decimal periòdic.'), ok: !exacto, r: !exacto ? L('Eso es.', 'Això és.') : L('Se acaba: el ' + d + ' solo tiene doses y cincos, y algún resto llega a cero.', 'S\'acaba: el ' + d + ' només té dosos i cincs, i algun resto arriba a zero.')}],
+          pista: L('Piensa en la pizarra de la comisaría: ¿algún resto llegará a cero?', 'Pensa en la pissarra de la comissaria: algun resto arribarà a zero?'),
+          bien: exacto ? L('Exacto: el ' + d + ' solo tiene doses y cincos, y la cuenta llega a resto cero.', 'Exacte: el ' + d + ' només té dosos i cincs, i el compte arriba a resto zero.') : L('Periódico: el ' + d + ' tiene otros factores, y los restos vuelven a salir.', 'Periòdic: el ' + d + ' té altres factors, i els restos tornen a eixir.')}; }
+    ],
+    juntar: [
+      /* sumar: el nivel sube */
+      () => { const d = elige([4, 6, 8, 10, 12]), b = elige([2, 3, 4, 5, 6].filter(x => d % x === 0 && x < d));
+        const a = ent(1, b - 1), c = ent(1, d - 1), meta = a / b + c / d;
+        if(meta >= 2) return null;
+        return {t: L('El nivel estaba en <b>' + fr(a, b) + '</b> del dique y anoche subió <b>' + fr(c, d) + '</b>. Ponme el nivel de esta mañana.', 'El nivell estava en <b>' + fr(a, b) + '</b> del dic i anit va pujar <b>' + fr(c, d) + '</b>. Posa\'m el nivell d\'este matí.'),
+          pasos: 2, desde: 0, prueba: {v: a / b, nombre: fr(a, b)}, meta,
+          pista: L('La verde es el nivel de ayer. Toca la cinta para llevar el de hoy.', 'La verda és el nivell d\'ahir. Toca la cinta per a portar el d\'hui.'),
+          bien: fr(a, b) + ' + ' + fr(c, d) + ' = ' + (a * d / b) + '/' + d + ' + ' + c + '/' + d + ' = <b>' + fr(a * d / b + c, d) + '</b>. ' + L('Primero, los trozos del mismo tamaño.', 'Primer, els trossos de la mateixa grandària.'),
+          mal: L('Corta el dique en <b>' + d + '</b>: ' + fr(a, b) + ' son ' + (a * d / b) + ' trozos, y suben ' + c + ' más.', 'Talla el dic en <b>' + d + '</b>: ' + fr(a, b) + ' són ' + (a * d / b) + ' trossos, i en pugen ' + c + ' més.')}; },
+      /* restar, también por debajo del cero */
+      () => { const d = elige([2, 3, 4, 6, 8]), a = ent(-d, d), c = ent(1, 2 * d - 1), meta = (a - c) / d;
+        if(meta <= -2 || a === 0) return null;
+        return {t: L('El sospechoso tiene <b>' + fr(a, d) + '</b> de fajo en la banca y paga <b>' + fr(c, d) + '</b>. ¿Cómo queda su saldo?', 'El sospitós té <b>' + fr(a, d) + '</b> de feix en la banca i paga <b>' + fr(c, d) + '</b>. Com queda el seu saldo?'),
+          pasos: 4, desde: -2, prueba: {v: a / d, nombre: fr(a, d)}, meta,
+          pista: L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
+          bien: fr(a, d) + ' − ' + fr(c, d) + ' = <b>' + fr(a - c, d) + '</b>' + (meta < 0 ? L(': ahora debe.', ': ara deu.') : '.'),
+          mal: L('Desde la verde, cuenta <b>' + c + '</b> trozos de ' + fr(1, d) + ' hacia la izquierda.', 'Des de la verda, compta <b>' + c + '</b> trossos de ' + fr(1, d) + ' cap a l\'esquerra.')}; }
+    ],
+    partes: [
+      /* la fracción de una cantidad */
+      () => { const d = elige([2, 3, 4, 5, 6, 8]), n = ent(1, d - 1), parte = elige([1, 2, 3, 5]) * 1000, N = parte * d;
+        if(mcdN(n, d) !== 1) return null;
+        const ok = n * parte, malos = [N / n, parte, N - n * parte, n * d * 1000].filter(x => x !== ok && x > 0 && Number.isInteger(x));
+        const ops = baraja([{t: $$(ok) + ' $', ok: true, r: L('Eso es.', 'Això és.')}].concat(
+          [...new Set(malos)].slice(0, 3).map(x => ({t: $$(x) + ' $', ok: false,
+            r: L('No: primero se parte la saca en ' + d + ' partes iguales (' + $$(parte) + ' $ cada una) y luego se cogen ' + n + '.', 'No: primer es partix la saca en ' + d + ' parts iguals (' + $$(parte) + ' $ cadascuna) i després se n\'agafen ' + n + '.')}))));
+        return {t: L('En la saca hay <b>' + $$(N) + ' dólares</b>, y a Spats le tocan <b>' + fr(n, d) + '</b>. ¿Cuánto se lleva?', 'En la saca hi ha <b>' + $$(N) + ' dòlars</b>, i a Spats li toquen <b>' + fr(n, d) + '</b>. Quant se\'n porta?'),
+          sinCinta: true, ops,
+          pista: L('Parte la saca en partes iguales, y coge las que le tocan.', 'Partix la saca en parts iguals, i agafa les que li toquen.'),
+          bien: $$(N) + ' : ' + d + ' = ' + $$(parte) + L(', y por ', ', i per ') + n + ': <b>' + $$(ok) + ' $</b>.'}; },
+      /* la parte de una parte */
+      () => { const b = elige([2, 3, 4]), dd = elige([2, 3]), a = ent(1, b - 1), c = ent(1, dd - 1);
+        if(b * dd > 12) return null;
+        return {t: L('De cada bote, la banca deja <b>' + fr(a, b) + '</b> sobre la mesa, y el dueño se lleva <b>' + fr(c, dd) + '</b> de eso. Ponme la marca de lo que se lleva el dueño.', 'De cada pot, la banca deixa <b>' + fr(a, b) + '</b> sobre la taula, i l\'amo se\'n porta <b>' + fr(c, dd) + '</b> d\'això. Posa\'m la marca del que se\'n porta l\'amo.'),
+          pasos: 1, desde: 0, prueba: {v: a / b, nombre: fr(a, b)}, meta: a * c / (b * dd),
+          pista: L('La cinta es el bote entero. La verde, lo que queda en la mesa.', 'La cinta és el pot sencer. La verda, el que queda en la taula.'),
+          bien: fr(c, dd) + L(' de ', ' de ') + fr(a, b) + ' = <b>' + fr(a * c, b * dd) + '</b> ' + L('del bote: se corta en ' + (b * dd) + ' y se cuentan ' + (a * c) + '.', 'del pot: es talla en ' + (b * dd) + ' i se\'n compten ' + (a * c) + '.'),
+          mal: L('Corta el bote en <b>' + (b * dd) + '</b>: así cada trozo de la mesa se parte en ' + dd + '.', 'Talla el pot en <b>' + (b * dd) + '</b>: així cada tros de la taula es partix en ' + dd + '.')}; }
+    ]
+  };
+  function genera(pes){
+    for(let i = 0; i < 80; i++){ const e = elige(GEN[pes])(); if(e){ e.cortes = CORTES; return e; } }
+    return GEN.cinta[0]() || genera(pes);
+  }
+  return {genera, fr, conAzar: f => { azar = f; }};
+})();
+if(typeof module !== 'undefined' && module.exports) module.exports = PR;
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   PRACTICAR · encargos nuevos de cada pestaña, sin fin
+   Una sola cinta, que cada encargo monta a su medida: cuántos pasos tiene,
+   desde dónde empieza, en cuánto se puede cortar, si lleva la prueba verde
+   de Liz y adónde tiene que ir la marca roja. Algunos encargos se contestan
+   además (o solo) eligiendo una respuesta.
+   Lo de siempre en la ciudad, y más aquí: el nombre de la marca roja y la
+   lectura no se ven hasta comprobar. Si no, bastaría con mover la marca
+   hasta que el rótulo dijera lo que pide Jeff.
+   No cuenta para la ruta; sí va al acta.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── LA VISTA ── */
+const prSt = montaCinta({
+  esc: 'escP', tira: 'tiraP', farolas: null, pasos: 2, desde: 0, cortes: 1, rozan: 52,
+  botones: '#vPractica .nada', activa: 'pMarca',
+  marcas: {pPrueba: {v: 0.5}, pMarca: {v: 0}},
+  alCambiar(st){
+    const m = st.marcas.pMarca, P = prEnc && prEnc.prueba;
+    const l = document.getElementById('prLec');
+    l.innerHTML = (P ? '<span>' + T('Prueba: ') + '<b>' + P.nombre + '</b> = <b>' + dec(P.v) + '</b></span>' : '')
+      + '<span>' + T('Tu marca: ') + '<b>' + st.texto(m.v) + '</b> = <b>' + dec(m.v) + '</b></span>';
+  }
+});
+/* la prueba lleva el nombre con que la firmó Liz */
+prSt.marcas.pPrueba.nombre = () => prEnc && prEnc.prueba ? prEnc.prueba.nombre : '';
+let prEnc = null, prElegida = null, prHecho = false, prN = 0, prBien = 0;
+const vP = document.getElementById('vPractica');
+/* cualquier cambio en la cinta vuelve a esconder la lectura */
+document.getElementById('escP').addEventListener('pointerdown', () => { if(!prHecho) vP.classList.remove('visto'); });
+
+function pintaCortes(){
+  const c = document.getElementById('prCortes');
+  c.innerHTML = '<span class="etq">' + T('cortar el paso en') + '</span>' + prEnc.cortes.map(k =>
+    '<button type="button" class="b" data-k="' + k + '" aria-pressed="' + (prSt.cortes === k) + '">' + k + '</button>').join('');
+}
+document.getElementById('prCortes').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-k]'); if(!b || prHecho) return;
+  prSt.cortes = +b.dataset.k; vP.classList.remove('visto'); pintaCortes(); prSt.repinta();
+});
+function pintaOps(){
+  const caja = document.getElementById('prOps');
+  caja.hidden = !prEnc.ops; caja.innerHTML = '';
+  (prEnc.ops || []).forEach((o, i) => {
+    const b = document.createElement('button'); b.className = 'op'; b.textContent = T(o.t);
+    b.setAttribute('aria-pressed', String(prElegida === i));
+    b.addEventListener('click', () => { if(prHecho) return; prElegida = i; vP.classList.remove('visto'); pintaOps(); });
+    caja.appendChild(b);
+  });
+}
+function nuevoPr(){
+  prEnc = PR.genera(pestana); prElegida = null; prHecho = false; prN = Date.now();
+  vP.classList.remove('visto');
+  document.getElementById('prSub').textContent = T(NOMBRE_PES[pestana]);
+  document.getElementById('prTxt').innerHTML = T(prEnc.t);
+  document.getElementById('prInf').hidden = true;
+  document.getElementById('prComprueba').textContent = T('Comprobar');
+  document.getElementById('prOtro').hidden = false;
+  document.getElementById('prCuenta').textContent = prBien ? prBien + T(' bien en este rato') : '';
+  document.getElementById('prMesa').hidden = !!prEnc.sinCinta;
+  pintaOps();
+  if(!prEnc.sinCinta){
+    prSt.pasos = prEnc.pasos; prSt.desde = prEnc.desde; prSt.cortes = 1;
+    prSt.marcas.pMarca.v = prEnc.desde < 0 ? 0 : prEnc.desde; prSt.marcas.pMarca.medido = null;
+    document.getElementById('pPrueba').hidden = !prEnc.prueba;
+    prSt.marcas.pPrueba.v = prEnc.prueba ? prEnc.prueba.v : 0;
+    document.getElementById('prPista').innerHTML = T(prEnc.pista);
+    pintaCortes();
+    requestAnimationFrame(() => prSt.repinta());
+  }
+}
+document.getElementById('prComprueba').addEventListener('click', () => {
+  if(prHecho){ nuevoPr(); return; }
+  const e = prEnc;
+  if(e.ops && prElegida === null){
+    document.getElementById('prInf').hidden = false; document.getElementById('prInfTxt').innerHTML = T('Elija una respuesta, jefe.'); return;
+  }
+  const enSitio = e.meta === undefined || e.meta === null || Math.abs(prSt.marcas.pMarca.v - e.meta) < 1e-9;
+  const op = e.ops ? e.ops[prElegida] : null, bien = enSitio && (!op || op.ok);
+  let dice;
+  if(bien) dice = T(e.bien);
+  else if(!enSitio) dice = T(e.mal);
+  else dice = T(op.r);
+  vP.classList.add('visto');
+  const inf = document.getElementById('prInf'); inf.hidden = false;
+  inf.className = 'informe'; requestAnimationFrame(() => { inf.className = 'informe nueva' + (bien ? '' : ' mal'); });
+  document.getElementById('prInfTxt').innerHTML = dice;
+  bien ? Ruido.bien() : Ruido.mal();
+  if(typeof anotaActa === 'function') anotaActa('p:' + pestana, prN, bien, op && !op.ok ? op.t : null);
+  if(bien){
+    prHecho = true; prBien++;
+    if(op) vP.querySelectorAll('#prOps .op')[prElegida].classList.add('buena');
+    document.getElementById('prComprueba').textContent = T('Otro encargo →');
+    document.getElementById('prOtro').hidden = true;
+  }else if(op && !op.ok) vP.querySelectorAll('#prOps .op')[prElegida].classList.add('fallada');
+});
+document.getElementById('prOtro').addEventListener('click', nuevoPr);
+
+/* ── EL BOTÓN DE LA CABECERA: entra y sale de Practicar, en la pestaña en
+   que se esté. Las pestañas, mientras tanto, cambian de tipo de encargo. ── */
+const NOMBRE_PES = {cinta: 'La cinta · situar y comparar', partir: 'Partir · la fracción es una división',
+  juntar: 'Juntar y quitar · sumar y restar', partes: 'Partes de partes · la fracción de una cantidad'};
+let enPractica = false;
+function practicar(si){
+  enPractica = si;
+  document.getElementById('bPracticar').setAttribute('aria-pressed', String(si));
+  document.getElementById('caso').classList.remove('abierto');
+  if(si){ ajustes(false); vista('vPractica'); nuevoPr(); }
+  else if(vP.classList.contains('puesta')){ pintaMapa(); vista('vMapa'); }
+}
+document.getElementById('bPracticar').addEventListener('click', () => practicar(!enPractica));
+vP.querySelector('.volver').addEventListener('click', () => practicar(false));
+{ const antes = ponPestana; ponPestana = function(id){ if(enPractica && PESTANAS[id]){ pestana = id;
+    try{ localStorage.setItem('ciudad.pestana', id); }catch(err){} pintaRuta(); nuevoPr(); } else antes(id); }; }
+/* abrir un caso desde el plano saca de Practicar */
+document.getElementById('cAbrir').addEventListener('click', () => { if(enPractica){ enPractica = false; document.getElementById('bPracticar').setAttribute('aria-pressed', 'false'); } });
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
    EL ACTA Y LA GUÍA
    El acta de verdad, como en las demás apps: el nombre, el tiempo, los
    aciertos y los fallos, caso a caso y encargo a encargo, para entregársela
@@ -4055,6 +4360,10 @@ function anotaActa(caso, enc, bien, dicho){
   guardaActa();
 }
 
+/* de qué es cada renglón: un encargo de un caso, o uno de Practicar ('p:cinta'…) */
+const esPr = e => typeof e.c === 'string';
+const nombreEj = e => esPr(e) ? T('Practicar') + ' · ' + T(NOMBRE_PES[e.c.slice(2)].split(' · ')[0]) : T(CASOS[e.c].t);
+const etqEj = e => esPr(e) ? T('Practicar') : T('Caso ') + e.c + ' · ' + (e.e + 1);
 const dos = x => String(x).padStart(2, '0');
 const hora = ms => { const f = new Date(ms); return dos(f.getHours()) + ':' + dos(f.getMinutes()); };
 const reloj = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ' min ' + dos(s % 60) + ' s'; };
@@ -4076,11 +4385,13 @@ function pintaActaM(){
     const x = EXPS[c], mios = acta.ej.filter(e => e.c === c), f = mios.reduce((a, e) => a + e.fallos, 0);
     return '<tr' + (f > x.hechos() && f > 1 ? ' class="floja"' : '') + '><td><b>' + c + '.</b> ' + T(CASOS[c].t) + '</td><td>'
       + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ' · ' + T('cerrado') : '') + '</td><td>' + f + '</td></tr>';
-  }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>';
+  }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>'
+    + (() => { const p = acta.ej.filter(esPr); if(!p.length) return '';
+      return '<tr><td><b>+</b> ' + T('Practicar') + '</td><td>' + p.filter(e => e.ok).length + T(' bien') + '</td><td>' + p.reduce((a, e) => a + e.fallos, 0) + '</td></tr>'; })();
   $a('acDet').hidden = !acta.ej.length;
   $a('acDet').querySelector('summary').textContent = T('Encargo a encargo') + ' (' + acta.ej.length + ')';
   $a('acEj').innerHTML = acta.ej.map(e => '<li class="' + (e.ok ? 'ok' : 'no') + '"><span class="ac-h">' + hora(e.t) + '</span>'
-    + '<span class="ac-m">' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '</span><span class="ac-c">' + T(CASOS[e.c].t) + '</span>'
+    + '<span class="ac-m">' + etqEj(e) + '</span><span class="ac-c">' + nombreEj(e) + '</span>'
     + '<span class="ac-como">' + comoFue(e) + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '</span></li>').join('');
   $a('acNombre').value = acta.nombre || '';
 }
@@ -4096,9 +4407,10 @@ function actaEnTexto(){
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);
     t += '  ' + c + '. ' + T(CASOS[c].t) + ' — ' + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ', ' + T('cerrado') : '') + '; ' + T('fallos: ') + f2 + '\n'; });
   t += '  ¾. ' + T('La pizzería de Nick') + ' — ' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '\n';
+  { const p = acta.ej.filter(esPr); if(p.length) t += '  +. ' + T('Practicar') + ' — ' + p.filter(e => e.ok).length + T(' bien') + '; ' + T('fallos: ') + p.reduce((a, e) => a + e.fallos, 0) + '\n'; }
   if(acta.ej.length){
     t += T('Encargo a encargo:') + '\n';
-    acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + T('Caso ') + e.c + ' · ' + (e.e + 1) + '  ' + comoFue(e)
+    acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + (esPr(e) ? nombreEj(e) : etqEj(e)) + '  ' + comoFue(e)
       + (e.d.length ? ' — «' + e.d.map(T).join('», «') + '»' : '') + '\n'; });
   }
   return t;
@@ -4140,6 +4452,7 @@ const GUIA = [
   {sel: '.juegos', c: 'Los contenidos', t: '<b>La cinta</b>: situar y comparar. <b>Partir</b>: la fracción es una división. <b>Juntar y quitar</b>: sumar y restar. <b>Partes de partes</b>: la fracción de una cantidad. Cada pestaña tiene sus casos.'},
   {sel: '#mapa', c: 'El plano', t: 'Cada chincheta es un <b>caso</b>. Tócala para abrir su carpeta. Los casos de la pestaña se ven encendidos; al cerrarlos, el <b>hilo rojo</b> los va uniendo.'},
   {sel: '#rutaPes', c: 'La ruta', t: 'Los casos de esta pestaña, en orden. En La cinta está también <b>la pizzería de Nick</b>: las fracciones equivalentes se trabajan allí, con pizza.'},
+  {sel: '#bPracticar', c: 'Practicar', t: 'Encargos <b>nuevos cada vez</b>, de la pestaña en que estés, sin fin. No cuentan para la ruta, pero sí van al acta. El nombre de tu marca no se ve hasta que compruebas.'},
   {sel: '#bAjustes', c: 'Ajustes', t: 'El corcho (claro) o el asfalto de noche (oscuro), las animaciones, el <b>valenciano</b>, el sonido y empezar de cero.'},
   {sel: '#bAula', c: 'El aula', t: 'Todo más grande, para la pizarra digital.'},
   {sel: '#verActa', c: 'El acta', t: 'Lo que has hecho en el turno, caso a caso y encargo a encargo, para <b>entregárselo a tu profesor</b>. Jeff le espera en la escena del crimen.'}
