@@ -17,11 +17,13 @@ try{
 const guardaActa = () => { acta.ts = Date.now(); try{ localStorage.setItem(LLAVE_ACTA, JSON.stringify(acta)); }catch(err){} };
 
 /* Un intento en un encargo. Los intentos seguidos al mismo encargo van al
-   mismo renglón: los fallos se cuentan, y el acierto lo cierra. */
-function anotaActa(caso, enc, bien, dicho){
+   mismo renglón: los fallos se cuentan, y el acierto lo cierra. Los de
+   Practicar llevan además el código de sus datos (el de los enlaces). */
+function anotaActa(caso, enc, bien, dicho, cod){
   let e = acta.ej[acta.ej.length - 1];
   if(!e || e.c !== caso || e.e !== enc || e.ok){
     e = {t: Date.now(), c: caso, e: enc, fallos: 0, ok: false, d: []};
+    if(cod) e.k = cod;
     acta.ej.push(e);
     if(acta.ej.length > 400) acta.ej.shift();
   }
@@ -30,9 +32,17 @@ function anotaActa(caso, enc, bien, dicho){
   guardaActa();
 }
 
-/* de qué es cada renglón: un encargo de un caso, o uno de Practicar ('p:cinta'…) */
+/* de qué es cada renglón: un encargo de un caso, o uno de Practicar
+   ('p:sumar'…; en la 0.10 era por pestaña, 'p:cinta'…) */
 const esPr = e => typeof e.c === 'string';
-const nombreEj = e => esPr(e) ? T('Practicar') + ' · ' + T(NOMBRE_PES[e.c.slice(2)].split(' · ')[0]) : T(CASOS[e.c].t);
+const nombreTipo = k => T(PR.TIPOS[k] ? PR.TIPOS[k].nombre : (NOMBRE_PES[k] || '').split(' · ')[0]);
+const nombreEj = e => esPr(e) ? T('Practicar') + ' · ' + nombreTipo(e.c.slice(2)) + (e.k ? ' · ' + e.k : '') : T(CASOS[e.c].t);
+/* Practicar, tipo a tipo, en el orden en que salieron: [[tipo, bien, fallos]] */
+function prPorTipo(){
+  const m = new Map();
+  acta.ej.filter(esPr).forEach(e => { const k = e.c.slice(2), x = m.get(k) || [k, 0, 0]; if(e.ok) x[1]++; x[2] += e.fallos; m.set(k, x); });
+  return [...m.values()];
+}
 const etqEj = e => esPr(e) ? T('Practicar') : T('Caso ') + e.c + ' · ' + (e.e + 1);
 const dos = x => String(x).padStart(2, '0');
 const hora = ms => { const f = new Date(ms); return dos(f.getHours()) + ':' + dos(f.getMinutes()); };
@@ -56,8 +66,7 @@ function pintaActaM(){
     return '<tr' + (f > x.hechos() && f > 1 ? ' class="floja"' : '') + '><td><b>' + c + '.</b> ' + T(CASOS[c].t) + '</td><td>'
       + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ' · ' + T('cerrado') : '') + '</td><td>' + f + '</td></tr>';
   }).join('') + '<tr><td><b>¾</b> ' + T('La pizzería de Nick') + '</td><td>' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '</td><td>—</td></tr>'
-    + (() => { const p = acta.ej.filter(esPr); if(!p.length) return '';
-      return '<tr><td><b>+</b> ' + T('Practicar') + '</td><td>' + p.filter(e => e.ok).length + T(' bien') + '</td><td>' + p.reduce((a, e) => a + e.fallos, 0) + '</td></tr>'; })();
+    + prPorTipo().map(([k, b, f]) => '<tr class="pr"><td><b>+</b> ' + T('Practicar') + ' · ' + nombreTipo(k) + '</td><td>' + b + T(' bien') + '</td><td>' + f + '</td></tr>').join('');
   $a('acDet').hidden = !acta.ej.length;
   $a('acDet').querySelector('summary').textContent = T('Encargo a encargo') + ' (' + acta.ej.length + ')';
   $a('acEj').innerHTML = acta.ej.map(e => '<li class="' + (e.ok ? 'ok' : 'no') + '"><span class="ac-h">' + hora(e.t) + '</span>'
@@ -77,7 +86,8 @@ function actaEnTexto(){
   ORDEN.forEach(c => { const x = EXPS[c], f2 = acta.ej.filter(e => e.c === c).reduce((a, e) => a + e.fallos, 0);
     t += '  ' + c + '. ' + T(CASOS[c].t) + ' — ' + x.hechos() + T(' de ') + x.total + (resueltos.has(c) ? ', ' + T('cerrado') : '') + '; ' + T('fallos: ') + f2 + '\n'; });
   t += '  ¾. ' + T('La pizzería de Nick') + ' — ' + T(pizzeriaHecha() ? 'cumplida' : 'pendiente') + '\n';
-  { const p = acta.ej.filter(esPr); if(p.length) t += '  +. ' + T('Practicar') + ' — ' + p.filter(e => e.ok).length + T(' bien') + '; ' + T('fallos: ') + p.reduce((a, e) => a + e.fallos, 0) + '\n'; }
+  if(prPorTipo().length) t += T('Practicar') + ':\n';
+  prPorTipo().forEach(([k, b, f]) => { t += '  ' + nombreTipo(k) + ' — ' + b + T(' bien') + '; ' + T('fallos: ') + f + '\n'; });
   if(acta.ej.length){
     t += T('Encargo a encargo:') + '\n';
     acta.ej.forEach(e => { t += '  ' + hora(e.t) + '  ' + (esPr(e) ? nombreEj(e) : etqEj(e)) + '  ' + comoFue(e)
