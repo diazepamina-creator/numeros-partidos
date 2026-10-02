@@ -520,7 +520,7 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 .encTxt .cursor{display:inline-block;width:.55em;height:1em;vertical-align:-.15em;
   background:var(--oxido);margin-left:2px;animation:cursor .7s steps(1) infinite}
 @keyframes cursor{50%{opacity:0}}
-.escribiendo .ops,.escribiendo .fila{opacity:.25;pointer-events:none;transition:opacity .3s}
+.escribiendo .ops,.escribiendo .fila,.escribiendo ~ .responde .ops,.escribiendo ~ .responde .fila{opacity:.25;pointer-events:none;transition:opacity .3s}
 
 /* ── CASO CERRADO. El sello gordo, sobre el último encargo. ── */
 .encargo{overflow:hidden}
@@ -566,7 +566,7 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 [data-quieto="si"] .hilo circle.tendido{opacity:1;r:4}
 [data-quieto="si"] .cara .fogonazo{display:none}
 [data-quieto="si"] #flash{display:none}
-[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila{opacity:1;pointer-events:auto}
+[data-quieto="si"] .escribiendo .ops,[data-quieto="si"] .escribiendo .fila,[data-quieto="si"] .escribiendo ~ .responde .ops,[data-quieto="si"] .escribiendo ~ .responde .fila{opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
   .mapa{transform:none !important}
@@ -597,3 +597,8 @@ html[lang^="ca"] .dique::after{content:'DIC'}
 .teja{position:absolute;top:0;height:12px;background:rgba(176,68,44,.85);border:1px solid #FFF8EC;box-sizing:border-box;border-radius:2px}
 .teja.par{background:rgba(212,120,90,.85)}
 .teja.sobra{background:repeating-linear-gradient(-45deg,rgba(176,68,44,.7) 0 3px,transparent 3px 6px);border-style:dashed;border-color:#B0442C}
+
+/* en el móvil, las respuestas y «Comprobar» van debajo de la cinta (0.15) */
+.responde{margin-top:6px}
+.responde .ops{margin-top:4px}
+.ops[hidden]{display:none}

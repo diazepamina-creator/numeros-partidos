@@ -69,7 +69,10 @@ const PR = (() => {
   function fichas(s){
     s = String(s || '').replace(/[−–]/g, '-').replace(/[×*x]/gi, '·').replace(/÷/g, ':').replace(/\s+/g, '');
     const out = []; let i = 0;
-    const num = () => { const m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)); if(!m) return null; i += m[0].length;
+    /* 12.000 es doce mil (el punto de los miles); 0,5 y 0.5, un medio */
+    const num = () => { const mil = /^[1-9]\d{0,2}(?:\.\d{3})+(?![\d,])/.exec(s.slice(i));
+      if(mil){ i += mil[0].length; return Q(+mil[0].replace(/\./g, ''), 1); }
+      const m = /^\d+(?:[.,]\d+)?/.exec(s.slice(i)); if(!m) return null; i += m[0].length;
       const [e, f = ''] = m[0].split(/[.,]/); return Q(+(e + f), Math.pow(10, f.length)); };
     while(i < s.length){
       const c = s[i];
@@ -116,9 +119,52 @@ const PR = (() => {
     while(!a.q){ a = paso(a); l.push(escribe(a)); }
     return l;
   }
+  /* LA FORMA DE UNA CUENTA: qué números lleva y con qué operaciones, para
+     que no valga cualquier cuenta que dé lo mismo. Los números se comparan
+     por su valor (10/12 es 5/6, 0,5 es 1/2). Las sumas y restas son una
+     lista de términos con su signo, y los productos y cocientes, una lista
+     de factores; en las dos, el orden no importa, pero restar no es sumar
+     (1/3 − 5/6 no es 5/6 − 1/3) y dividir entre x es multiplicar por 1/x
+     (3/2 : 1/4 y 3/2 · 4 son la misma cuenta). */
+  function forma(a){
+    if(a.q) return {q: a.q};
+    if(a.menos) return {s: [{sg: -1, f: forma(a.b)}]};
+    if(a.o === '+' || a.o === '-'){
+      const l = [], mete = (x, sg) => { const f = forma(x); if(f.s) f.s.forEach(y => l.push({sg: y.sg * sg, f: y.f})); else l.push({sg, f}); };
+      mete(a.a, 1); mete(a.b, a.o === '-' ? -1 : 1);
+      return {s: l};
+    }
+    const l = [], mete = (x, inv) => { const f = forma(x);
+      if(f.p) f.p.forEach(y => l.push(inv ? vuelta(y) : y)); else l.push(inv ? vuelta(f) : f); };
+    mete(a.a, false); mete(a.b, a.o === ':');
+    return {p: l};
+  }
+  const vuelta = f => f.q ? {q: Q(f.q.d, f.q.n)} : {inv: f};
+  /* dos listas son la misma si se pueden emparejar una a una */
+  function empareja(x, y, eq){
+    if(x.length !== y.length) return false;
+    const usado = new Array(y.length).fill(false);
+    const va = i => { if(i === x.length) return true;
+      for(let j = 0; j < y.length; j++) if(!usado[j] && eq(x[i], y[j])){ usado[j] = true; if(va(i + 1)) return true; usado[j] = false; }
+      return false; };
+    return va(0);
+  }
+  function misma(x, y){
+    if(x.q && y.q) return igual(x.q, y.q);
+    if(x.s && y.s) return empareja(x.s, y.s, (a, b) => a.sg === b.sg && misma(a.f, b.f));
+    if(x.p && y.p) return empareja(x.p, y.p, misma);
+    if(x.inv && y.inv) return misma(x.inv, y.inv);
+    return false;
+  }
+  /* ¿la cuenta escrita es una de las del encargo? */
+  const esDeLasFormas = (cu, formas) => { const a = arbol(cu); if(!a) return false; const f = forma(a);
+    return formas.some(g => misma(f, forma(arbol(g)))); };
+
   /* Revisa lo escrito sobre el papel: la cuenta (si se pide) y el resultado.
-     papel = {res, cuenta: true|false, trampas: [{q, r}]}. Devuelve {bien, k}
-     con k: falta, nocuenta, sinop, otra (con x, lo que da), nores, trampa (con r), resmal */
+     papel = {res, cuenta: true|false, formas: [cuentas que valen], pregunta,
+     trampas: [{q, r}]}. Devuelve {bien, k} con k: falta, nocuenta, sinop,
+     otra (con x, lo que da), otrosnum (con r, la pregunta), nores, trampa
+     (con r), resmal */
   function revisa(papel, cu, re){
     if(papel.cuenta){
       if(!String(cu || '').trim()) return {bien: false, k: 'falta'};
@@ -126,6 +172,8 @@ const PR = (() => {
       if(!v) return {bien: false, k: 'nocuenta'};
       if(!conOp(cu)) return {bien: false, k: 'sinop'};
       if(!igual(v, papel.res)) return {bien: false, k: 'otra', x: t(v)};
+      /* da lo mismo, pero ¿con los números y la operación del encargo? */
+      if(papel.formas && !esDeLasFormas(cu, papel.formas)) return {bien: false, k: 'otrosnum', r: papel.pregunta || ''};
     }
     if(!String(re || '').trim()) return {bien: false, k: 'falta'};
     const r = cuenta(re);
@@ -179,6 +227,7 @@ const PR = (() => {
       crea: ({n, k}) => ({t: L('Hay <b>' + n + ' metros</b> de barandilla para <b>' + k + ' tramos</b> iguales. Ponme la marca donde acaba el primer tramo.', 'Hi ha <b>' + n + ' metres</b> de barana per a <b>' + k + ' trams</b> iguals. Posa\'m la marca on acaba el primer tram.'),
         tp: L('Hay <b>' + n + ' metros</b> de barandilla para <b>' + k + ' tramos</b> iguales. ¿Cuánto mide cada tramo?', 'Hi ha <b>' + n + ' metres</b> de barana per a <b>' + k + ' trams</b> iguals. Quant mesura cada tram?'),
         pasos: Math.max(2, Math.ceil(n / k) + 1), desde: 0, prueba: null, meta: n / k, res: Q(n, k),
+        formas: [n + ' : ' + k], pregunta: L('¿cuántos metros hay y entre cuántos tramos?', 'quants metres hi ha i entre quants trams?'),
         pista: L('La cinta mide metros. Toca la cinta para llevar la marca roja.', 'La cinta mesura metres. Toca la cinta per a portar la marca roja.'),
         bien: L('Cada tramo mide ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metro. La fracción es una división.', 'Cada tram mesura ' + n + ' : ' + k + ' = <b>' + fr(n, k) + '</b> de metre. La fracció és una divisió.'),
         mal: L('Un tramo es lo que toca a cada uno al repartir ' + n + ' entre ' + k + ': corta cada metro en <b>' + k + '</b> y cuenta <b>' + n + '</b> trozos.', 'Un tram és el que toca a cadascun en repartir ' + n + ' entre ' + k + ': talla cada metre en <b>' + k + '</b> i compta <b>' + n + '</b> trossos.')})},
@@ -207,6 +256,7 @@ const PR = (() => {
         return {t: L('El nivel estaba en <b>' + t(a) + '</b> del dique y anoche subió <b>' + t(c) + '</b>. Ponme el nivel de esta mañana.', 'El nivell estava en <b>' + t(a) + '</b> del dic i anit va pujar <b>' + t(c) + '</b>. Posa\'m el nivell d\'este matí.'),
           tp: L('El nivel estaba en <b>' + t(a) + '</b> del dique y anoche subió <b>' + t(c) + '</b>. ¿En cuánto está esta mañana?', 'El nivell estava en <b>' + t(a) + '</b> del dic i anit va pujar <b>' + t(c) + '</b>. En quant està este matí?'),
           pasos: pasosPara(meta), desde: 0, prueba: {v: v(a), nombre: t(a)}, meta, res: sumaQ(a, c),
+          formas: [cq(a) + ' + ' + cq(c)], pregunta: L('¿dónde estaba el nivel y cuánto subió?', 'on estava el nivell i quant va pujar?'),
           pista: L('La verde es el nivel de ayer. Toca la cinta para llevar el de hoy.', 'La verda és el nivell d\'ahir. Toca la cinta per a portar el d\'hui.'),
           bien: t(a) + ' + ' + t(c) + ' = ' + na + '/' + m + ' + ' + nc + '/' + m + ' = <b>' + fr(na + nc, m) + '</b>. ' + L('Primero, los trozos del mismo tamaño.', 'Primer, els trossos de la mateixa grandària.'),
           mal: L('Corta el dique en <b>' + m + '</b>: ' + t(a) + ' son ' + na + ' trozos, y suben ' + nc + ' más.', 'Talla el dic en <b>' + m + '</b>: ' + t(a) + ' són ' + na + ' trossos, i en pugen ' + nc + ' més.')}; }},
@@ -220,6 +270,7 @@ const PR = (() => {
       crea: ({a, c}) => { const m = Math.max(2, mcmN(a.d, c.d)), nc = c.n * m / c.d, meta = v(a) - v(c);
         return {t: L('El sospechoso tiene <b>' + t(a) + '</b> de fajo en la banca y paga <b>' + t(c) + '</b>. ¿Cómo queda su saldo?', 'El sospitós té <b>' + t(a) + '</b> de feix en la banca i paga <b>' + t(c) + '</b>. Com queda el seu saldo?'),
           pasos: uno ? pasosPara(v(a)) : 4, desde: uno ? 0 : -2, prueba: {v: v(a), nombre: t(a)}, meta, res: OPS['-'](a, c),
+          formas: [cq(a) + ' − ' + cq(c)], pregunta: L('¿qué tenía y qué pagó?', 'què tenia i què va pagar?'),
           pista: uno ? L('La verde es lo que tenía. Lo que paga se cuenta hacia la izquierda.', 'La verda és el que tenia. El que paga es compta cap a l\'esquerra.')
             : L('A la derecha del cero, lo que tiene; a la izquierda, lo que debe. La verde es lo que tenía.', 'A la dreta del zero, el que té; a l\'esquerra, el que deu. La verda és el que tenia.'),
           bien: t(a) + ' − ' + t(c) + ' = <b>' + fr(a.n * m / a.d - nc, m) + '</b>' + (meta < 0 ? L(': ahora debe.', ': ara deu.') : '.'),
@@ -236,7 +287,9 @@ const PR = (() => {
           [...new Set(malos)].slice(0, 3).map(x => ({t: $$(x) + ' $', ok: false,
             r: L('No: primero se parte la saca en ' + d + ' partes iguales (' + $$(parte) + ' $ cada una) y luego se cogen ' + n + '.', 'No: primer es partix la saca en ' + d + ' parts iguals (' + $$(parte) + ' $ cadascuna) i després se n\'agafen ' + n + '.')}))));
         return {t: L('En la saca hay <b>' + $$(N) + ' dólares</b>, y a Spats le tocan <b>' + t(q) + '</b>. ¿Cuánto se lleva?', 'En la saca hi ha <b>' + $$(N) + ' dòlars</b>, i a Spats li toquen <b>' + t(q) + '</b>. Quant se\'n porta?'),
-          sinCinta: true, ops,
+          sinCinta: true, ops, res: Q(ok, 1),
+          /* 3/4 de 12 000: 3/4 · 12 000, o 12 000 : 4 · 3 */
+          formas: [cq(q) + ' · ' + N, N + ' : ' + d + ' · ' + n], pregunta: L('¿cuánto hay en la saca y qué parte le toca?', 'quant hi ha en la saca i quina part li toca?'),
           pista: L('Parte la saca en partes iguales, y coge las que le tocan.', 'Partix la saca en parts iguals, i agafa les que li toquen.'),
           bien: $$(N) + ' : ' + d + ' = ' + $$(parte) + L(', y por ', ', i per ') + n + ': <b>' + $$(ok) + ' $</b>.'}; }},
     /* la parte de una parte: c de a */
@@ -249,6 +302,7 @@ const PR = (() => {
         return {t: L('De cada bote, la banca deja <b>' + t(a) + '</b> sobre la mesa, y el dueño se lleva <b>' + t(c) + '</b> de eso. Ponme la marca de lo que se lleva el dueño.', 'De cada pot, la banca deixa <b>' + t(a) + '</b> sobre la taula, i l\'amo se\'n porta <b>' + t(c) + '</b> d\'això. Posa\'m la marca del que se\'n porta l\'amo.'),
           tp: L('De cada bote, la banca deja <b>' + t(a) + '</b> sobre la mesa, y el dueño se lleva <b>' + t(c) + '</b> de eso. ¿Qué parte del bote se lleva el dueño?', 'De cada pot, la banca deixa <b>' + t(a) + '</b> sobre la taula, i l\'amo se\'n porta <b>' + t(c) + '</b> d\'això. Quina part del pot se\'n porta l\'amo?'),
           pasos: 1, desde: 0, prueba: {v: v(a), nombre: t(a)}, meta: N / D, res: Q(N, D),
+          formas: [cq(c) + ' · ' + cq(a)], pregunta: L('¿qué queda en la mesa y qué parte de eso se lleva el dueño?', 'què queda en la taula i quina part d\'això se\'n porta l\'amo?'),
           pista: L('La cinta es el bote entero. La verde, lo que queda en la mesa.', 'La cinta és el pot sencer. La verda, el que queda en la taula.'),
           bien: t(c) + ' de ' + t(a) + ' = <b>' + fr(N, D) + '</b> ' + L('del bote: se corta en ' + D + ' y se cuentan ' + N + '.', 'del pot: es talla en ' + D + ' i se\'n compten ' + N + '.'),
           mal: L('Corta el bote en <b>' + D + '</b>: así cada trozo de la mesa se parte en ' + c.d + '.', 'Talla el pot en <b>' + D + '</b>: així cada tros de la taula es partix en ' + c.d + '.')}; }},
@@ -272,6 +326,8 @@ const PR = (() => {
         return {t: L('Al sastre le quedan <b>' + met(tt) + '</b> de tela, y cada pieza lleva <b>' + met(p) + '</b>. Pon la pieza en la cinta y dime: ¿cuántas piezas salen?', 'Al sastre li queden <b>' + met(tt) + '</b> de tela, i cada peça porta <b>' + met(p) + '</b>. Posa la peça en la cinta i digues-me: quantes peces n\'ixen?'),
           tp: L('Al sastre le quedan <b>' + met(tt) + '</b> de tela, y cada pieza lleva <b>' + met(p) + '</b>. ¿Cuántas piezas salen?', 'Al sastre li queden <b>' + met(tt) + '</b> de tela, i cada peça porta <b>' + met(p) + '</b>. Quantes peces n\'ixen?'),
           pasos: Math.max(1, Math.ceil(v(tt)), Math.floor(v(p)) + 1), desde: 0, prueba: {v: v(tt), nombre: t(tt)}, meta: v(p), tejas: true,
+          /* sin cinta, se escribe: 3/2 : 1/4, o 3/2 · 4, que es la misma */
+          res: r, formas: [cq(tt) + ' : ' + cq(p)], pregunta: L('¿cuánta tela hay y cuánto lleva cada pieza?', 'quanta tela hi ha i quant porta cada peça?'),
           ops: baraja(ops),
           pista: L('La verde es la tela, y no se toca. Lleva la roja a lo que mide la pieza: la cinta la copia una detrás de otra.', 'La verda és la tela, i no es toca. Porta la roja al que mesura la peça: la cinta la copia una darrere de l\'altra.'),
           bien: t(tt) + ' : ' + t(p) + ' = ' + t(tt) + ' · ' + t(vuelta) + ' = <b>' + t(r) + '</b>. ' + L('Dividir entre ' + t(p) + ' es multiplicar por ' + t(vuelta) + '.', 'Dividir entre ' + t(p) + ' és multiplicar per ' + t(vuelta) + '.'),
@@ -330,9 +386,13 @@ const PR = (() => {
   /* los tipos de una pestaña (en la ruta de 1.º, sin los periódicos) */
   const deLaPestana = pes => (PESTANAS[pes] || PESTANAS.cinta).filter(k => !(uno && k === 'decimal'));
   function aPapel(e){
-    if(e.papel || e.sinCinta) return e;
+    if(e.papel) return e;
+    /* lo que se puede escribir (sumar, restar, repartir, cantidad, partes,
+       dividir) se escribe: la cuenta, con sus números, y el resultado. Lo
+       demás (comparar, ¿exacto o periódico?) se sigue eligiendo. */
+    if(e.formas){ e.papel = {res: e.res, cuenta: true, formas: e.formas, pregunta: e.pregunta, trampas: []}; e.ops = null; }
+    else if(e.sinCinta) return e;
     e.sinCinta = true; e.meta = null; if(e.tp) e.t = e.tp;
-    if(!e.ops) e.papel = {res: e.res, cuenta: true, trampas: []};
     e.pista = L('Sin cinta: en la libreta, y aquí la cuenta y el resultado.', 'Sense cinta: en la llibreta, i ací el compte i el resultat.');
     return e;
   }
@@ -349,7 +409,7 @@ const PR = (() => {
     let d = null; try{ d = c ? TIPOS[m].lee(c) : null; }catch(err){ d = null; }
     return deTipo(m, d);
   }
-  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, deLaPestana, fr, conAzar: f => { azar = f; },
+  return {TIPOS, PESTANAS, genera, deTipo, deEnlace, aPapel, sinCintaVale, cuenta, pasos, revisa, esDeLasFormas, deLaPestana, fr, conAzar: f => { azar = f; },
     /* para las pruebas: ponerse en la ruta de 1.º, o quitarse */
     ponRuta: r => { uno = r === '1eso'; }};
 })();

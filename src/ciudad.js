@@ -399,10 +399,31 @@ function montaPapel(encargo, alEnter){
     foco(){ if(!el.hidden) (el.querySelector('.pCu').hidden ? re : cu).focus({preventScroll: true}); }
   };
 }
+/* EN EL MÓVIL, LA CINTA ANTES QUE LAS RESPUESTAS. En una pantalla
+   estrecha, el encargo, la cinta y luego las respuestas y «Comprobar»
+   (y el informe de Liz debajo): si no, se contesta sin mirar la cinta y,
+   para usarla, hay que bajar y volver a subir. En el portátil y en el aula
+   todo sigue dentro del encargo, como siempre. */
+const MOVIL = matchMedia('(max-width: 700px)');
+function ordenMovil(){
+  document.querySelectorAll('.vista').forEach(v => {
+    const enc = v.querySelector(':scope > .encargo'), inf = v.querySelector(':scope > .informe');
+    if(!enc || !v.querySelector(':scope > .escena, #prMesa')) return;
+    if(!v._resp) v._resp = {r: Object.assign(document.createElement('div'), {className: 'responde'}),
+      piezas: [...enc.querySelectorAll(':scope > .ops, :scope > .papel, :scope > .fila')]};
+    const {r, piezas} = v._resp;
+    if(MOVIL.matches){ piezas.forEach(x => r.appendChild(x)); v.appendChild(r); if(inf) v.appendChild(inf); }
+    else{ piezas.forEach(x => enc.appendChild(x)); r.remove(); if(inf) enc.after(inf); }
+  });
+}
+MOVIL.addEventListener('change', ordenMovil);
+
 /* lo que contesta Liz cuando lo escrito no está bien */
 function dicePapel(rv){
   if(rv.k === 'otra') return T('Esa cuenta da ') + '<b>' + rv.x + '</b>' + T(', y no es la del encargo: hay que volver a leerlo.');
   if(rv.k === 'trampa') return rv.r;
+  /* da lo mismo, pero con otros números: así no vale inventarse la cuenta */
+  if(rv.k === 'otrosnum') return T('Eso da lo mismo, pero no son los números del encargo') + (rv.r ? ': ' + T(rv.r) : '.');
   return T({falta: 'Falta la cuenta o el resultado: en la libreta, y aquí.',
     nocuenta: 'Esa cuenta no se entiende. Se escribe con números y signos: 3/4 + 1/8, 2 · 3/5, 3/4 : 1/8, con paréntesis si hacen falta.',
     sinop: 'Eso es un número, no una cuenta: ¿con qué números y qué operación se llega a él?',
@@ -1022,7 +1043,7 @@ const ENCARGOS5 = [
     ? T('En doceavos, jefe: pulse el <b>12</b>. Es el único corte donde caben los medios, los tercios y los cuartos a la vez.')
     : T('Junte los tres: 6/12 del nivel, 4/12 del tercio y 3/12 del cuarto.')},
  {t:'Sobre el papel, que el guarda no se fía de las cintas: el lunes el nivel estaba en <b>2/3</b> del dique; por la noche llovió <b>1/4</b>, y el martes por la mañana abrieron la compuerta y bajó <b>1/6</b>. Escríbame la cuenta y el nivel del martes, sin tocar el limnímetro.',
-  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4'},
+  papel:{res:{n:3, d:4}, cuenta:true, ej:'2/3 + 1/4 − 1/6', ver:'3/4', formas:['2/3 + 1/4 − 1/6'], pregunta:'¿dónde estaba el nivel, cuánto llovió y cuánto bajó?'},
   bien:'<b>2/3 + 1/4 − 1/6 = 8/12 + 3/12 − 2/12 = 9/12 = 3/4.</b> Justo en la línea de peligro: la compuerta se abrió a tiempo. Si quiere, póngalo en la cinta: corte en doceavos.',
   mal:''}
 ];
@@ -1098,7 +1119,7 @@ const ENCARGOS6 = [
   bien:'Un doceavo: 9/12 del jefe, 2/12 del chivato, y de doce queda uno.',
   mal:'Elija una de las cuatro, jefe.'},
  {t:'Una última cuenta, sobre el papel: de lo suyo, el jefe le pagó al abogado <b>un tercio</b>. ¿Cuántos dólares cobró el abogado? Escríbame la cuenta y el resultado, sin tocar la cinta.',
-  papel:{res:{n:3000, d:1}, cuenta:true, ej:'1/3 · 3/4 · 12000', ver:'3000'},
+  papel:{res:{n:3000, d:1}, cuenta:true, ej:'1/3 · 3/4 · 12000', ver:'3000', formas:['1/3 · 3/4 · 12000', '1/3 · 9000'], pregunta:'¿qué parte del botín es del jefe, y qué parte de eso cobra el abogado?'},
   bien:'<b>1/3 · 3/4 · 12 000 = 3.000 dólares.</b> Un tercio de tres cuartos es un cuarto del botín: 1/3 · 3/4 = 1/4, y 12 000 : 4 = 3 000. Si quiere, búsquelo en la cinta.',
   mal:''}
 ];
@@ -1176,7 +1197,7 @@ const ENCARGOS7 = [
   bien:'Tres por cada dos: 3/2 de lo apostado, una vez y media.',
   mal:'Elija una de las cuatro, jefe.'},
  {t:'En la mesa de al lado juegan con otras reglas: la banca se queda <b>1/4</b> del bote y, de lo que queda, el dueño se lleva <b>2/5</b>. ¿Qué parte del bote se lleva el dueño? Sobre el papel: la cuenta y el resultado.',
-  papel:{res:{n:3, d:10}, cuenta:true, ej:'2/5 · 3/4', ver:'3/10'},
+  papel:{res:{n:3, d:10}, cuenta:true, ej:'2/5 · 3/4', ver:'3/10', formas:['2/5 · 3/4', '2/5 · (1 − 1/4)'], pregunta:'¿qué deja la banca en la mesa y qué parte de eso se lleva el dueño?'},
   bien:'<b>2/5 · 3/4 = 6/20 = 3/10</b> del bote. Lo que queda son 3/4, y los 2/5 de eso se multiplican. Si quiere, compruébelo en la cinta: corte en décimos.',
   mal:''}
 ];
@@ -1409,7 +1430,7 @@ const ENCARGOS9 = [
   mal:'Elija una de las cuatro, jefe.'},
  {t:'La última cuenta del sastre, sobre el papel: quedan <b>3 metros</b> de lino, y cada pañuelo lleva <b>3/4 de metro</b>. ¿Cuántos pañuelos salen? La cuenta y el resultado, sin tocar la cinta.',
   prepara: tela(3, 3),
-  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4'},
+  papel:{res:{n:4, d:1}, cuenta:true, ej:'3 : 3/4', ver:'4', formas:['3 : 3/4'], pregunta:'¿cuánta tela hay y cuánto lleva cada pañuelo?'},
   bien:'<b>3 : 3/4 = 3 · 4/3 = 4</b> pañuelos. Si quiere, póngalo en la cinta: la pieza en 3/4, y caben cuatro justas.',
   mal:''}
 ];
